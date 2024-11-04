@@ -51,7 +51,7 @@
 请求数据格式
 
 - `name` 商家名称
-- `contact_info` 联系方式
+- `phone` 联系方式
 - `email` 用户邮箱（作为用户唯一标识）
 - `password` 密码
 
