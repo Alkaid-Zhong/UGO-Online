@@ -8,7 +8,6 @@
 | -------- | ----------------- | ------------------ | -------------------- | ------------------------- |
 | 商家ID   | merchant_id       | INT AUTO_INCREMENT | 商家的唯一标识       | PRIMARY KEY               |
 | 商家名称 | name              | VARCHAR(255)       | 商家的名称           | NOT NULL                  |
-| 联系方式 | contact_info      | VARCHAR(255)       | 商家的联系方式       |                           |
 | 邮箱     | email             | VARCHAR(255)       | 商家的邮箱地址       | UNIQUE, NOT NULL          |
 | 密码     | password          | VARCHAR(255)       | 登录密码（加密存储） | NOT NULL                  |
 | 注册日期 | registration_date | DATETIME           | 注册时间             | DEFAULT CURRENT_TIMESTAMP |
