@@ -2,19 +2,36 @@ from rest_framework import serializers
 from .models import User
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, error_messages={
+        'required': '密码不能为空',
+        'blank': '密码不能为空',
+    })
+    email = serializers.EmailField(error_messages={
+        'required': '邮箱不能为空',
+        'blank': '邮箱不能为空',
+        'invalid': '请输入有效的邮箱地址',
+    })
+    name = serializers.CharField(error_messages={
+        'required': '用户名不能为空',
+        'blank': '用户名不能为空',
+    })
 
     class Meta:
         model = User
         fields = ['email', 'name', 'phone', 'password']
 
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError('该邮箱已被注册')
+        return value
+
     def create(self, validated_data):
         password = validated_data.pop('password')
         user = User(**validated_data)
         user.set_password(password)
-        user.role = 'CUSTOMER'
         user.save()
         return user
+
 
 
 class MerchantRegistrationSerializer(serializers.ModelSerializer):
@@ -34,8 +51,20 @@ class MerchantRegistrationSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.CharField()
-    password = serializers.CharField(write_only=True)
+    email = serializers.EmailField(
+        error_messages={
+            'required': '邮箱不能为空',
+            'blank': '邮箱不能为空',
+            'invalid': '请输入有效的邮箱地址',
+        }
+    )
+    password = serializers.CharField(
+        write_only=True,
+        error_messages={
+            'required': '密码不能为空',
+            'blank': '密码不能为空',
+        }
+    )
 
     def validate(self, data):
         email = data.get('email')
