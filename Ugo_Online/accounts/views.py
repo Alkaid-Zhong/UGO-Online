@@ -15,13 +15,13 @@ from .serializers import (
 from .models import User
 
 
-def api_response(success, code=0, message='', data=None):
+def api_response(success, code=0, message='', data=None, status_code=status.HTTP_200_OK):
     return Response({
         'success': success,
         'code': code,
         'message': message,
         'data': data
-    })
+    }, status=status_code)
 
 
 class CustomerRegistrationView(APIView):
@@ -34,7 +34,7 @@ class CustomerRegistrationView(APIView):
             serializer.save()
             return api_response(True, message='注册成功')
         else:
-            return api_response(False, code=1, message='注册失败', data=serializer.errors)
+            return api_response(False, code=402, message='注册失败', data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
 
 class SellerRegistrationView(APIView):
@@ -47,7 +47,7 @@ class SellerRegistrationView(APIView):
             serializer.save()
             return api_response(True, message='注册成功')
         else:
-            return api_response(False, code=1, message='注册失败', data=serializer.errors)
+            return api_response(False, code=402, message='注册失败', data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
@@ -61,20 +61,18 @@ class LoginView(APIView):
             login(request, user)
             return api_response(True, message='登录成功')
         else:
-            return api_response(False, code=1, message='登录失败', data=serializer.errors)
+            return api_response(False, code=403, message='登录失败', data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
     # authentication_classes = [BasicAuthentication]
     # permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
-    @csrf_exempt
+
     def post(self, request):
 
-        # print("登出!")
-
         if not request.user.is_authenticated:
-            return api_response(False, code=1, message='用户未登录')
+            return api_response(False, code=401, message='用户未登录', status_code=status.HTTP_401_UNAUTHORIZED)
 
         logout(request)
         return api_response(True, message='登出成功')
@@ -88,7 +86,7 @@ class UserProfileView(APIView):
     def get(self, request):
 
         if not request.user.is_authenticated:
-            return api_response(False, code=1, message='用户未登录')
+            return api_response(False, code=401, message='用户未登录', status_code=status.HTTP_401_UNAUTHORIZED)
 
         serializer = UserProfileSerializer(request.user)
         return api_response(True, data=serializer.data)
