@@ -7,7 +7,7 @@ export const login = async (email: string, password: string) => {
 	if (response.success) {
 		const res = await profile();
 		if (res.success) {
-			snackbar.success(`Welcome ${res.data.name}!`)
+			snackbar.success(`你好，${res.data.name}`);
 		}
 	} else {
 		user.login = false;
@@ -16,7 +16,7 @@ export const login = async (email: string, password: string) => {
 
 export const logout = async () => {
   if(await server.post("/user/logout")) {
-		snackbar.success("退出成功!");
+		snackbar.success("退出成功");
 		user.login = false;
 		user.name = "";
 		user.email = "";

@@ -133,11 +133,13 @@ const submitRegister = async () => {
   }
   loading.value = true
   if (registerRole.value === 'CUSTOMER') {
-    await registerCustomer(name.value, phone.value, email.value, password.value)
-    await login(email.value, password.value)
+    if ((await registerCustomer(name.value, phone.value, email.value, password.value)).success) {
+      await login(email.value, password.value)
+    }
   } else {
-    await registerSeller(name.value, phone.value, email.value, password.value)
-    await login(email.value, password.value)
+    if ((await registerSeller(name.value, phone.value, email.value, password.value)).success) {
+      await login(email.value, password.value)
+    }
   }
   loading.value = false
 }

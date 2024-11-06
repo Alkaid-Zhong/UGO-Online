@@ -1,5 +1,6 @@
 import axios from "axios";
 import snackbar from "./snackbar";
+import router from "@/router";
 
 interface Response {
 	success: boolean;
@@ -52,6 +53,9 @@ const errorHandler = (error: any) => {
 	if (error.response) {
 		const { code, message } = error.response.data;
 		snackbar.error(message);
+		if (code === 401) {
+			router.push("/user/login");
+		}
 	} else {
 		snackbar.error("Network Error");
 	}
