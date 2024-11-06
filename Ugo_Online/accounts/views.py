@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -25,6 +27,7 @@ def api_response(success, code=0, message='', data=None):
 class CustomerRegistrationView(APIView):
     permission_classes = [AllowAny]
 
+    @csrf_exempt
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -37,6 +40,7 @@ class CustomerRegistrationView(APIView):
 class SellerRegistrationView(APIView):
     permission_classes = [AllowAny]
 
+    @csrf_exempt
     def post(self, request):
         serializer = MerchantRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -49,6 +53,7 @@ class SellerRegistrationView(APIView):
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
+    @csrf_exempt
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -60,16 +65,30 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-
+    # authentication_classes = [BasicAuthentication]
+    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+    @csrf_exempt
     def post(self, request):
+
+        # print("登出!")
+
+        if not request.user.is_authenticated:
+            return api_response(False, code=1, message='用户未登录')
+
         logout(request)
         return api_response(True, message='登出成功')
 
 
 class UserProfileView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
+    @csrf_exempt
     def get(self, request):
+
+        if not request.user.is_authenticated:
+            return api_response(False, code=1, message='用户未登录')
+
         serializer = UserProfileSerializer(request.user)
         return api_response(True, data=serializer.data)
