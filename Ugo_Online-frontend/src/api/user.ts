@@ -1,10 +1,14 @@
 import server from "./server";
 import { user } from "@/store/user";
+import snackbar from "./snackbar";
 
 export const login = async (email: string, password: string) => {
   const response = await server.post("/user/login", { email, password });
 	if (response.success) {
-		profile();
+		const res = await profile();
+		if (res.success) {
+			snackbar.success(`Welcome ${res.data.name}!`)
+		}
 	} else {
 		user.login = false;
 	}
@@ -12,7 +16,13 @@ export const login = async (email: string, password: string) => {
 
 export const logout = async () => {
   if(await server.post("/user/logout")) {
-		profile();
+		snackbar.success("退出成功!");
+		user.login = false;
+		user.name = "";
+		user.email = "";
+		user.role = "CUSTOMER";
+	} else {
+		snackbar.error("退出失败了...");
 	}
 };
 
@@ -25,7 +35,7 @@ export const registerSeller = async (name: string, phone: string, email: string,
 };
 
 export const profile = async () => {
-  const response = await server.get("/user/profile");
+	const response = await server.get("/user/profile");
 	if (response.success) {
 		user.login = true;
 		user.name = response.data.name;
@@ -34,4 +44,5 @@ export const profile = async () => {
 	} else {
 		user.login = false;
 	}
+	return response;
 };

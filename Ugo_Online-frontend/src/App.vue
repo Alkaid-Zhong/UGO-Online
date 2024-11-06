@@ -21,15 +21,41 @@
       </v-btn>
     </v-bottom-navigation>
   </v-app>
+  <v-snackbar
+    v-model="snackbar.show"
+    :color="snackbar.color"
+    :text="snackbar.text"
+    :timeout="snackbar.timeout"
+  >
+    <template #actions>
+      <v-btn
+        variant="text"
+        @click="snackbar.show = false"
+      >
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
+import router from './router';
 import { user } from './store/user'
+import { snackbar } from './store/app';
 import { profile, logout } from './api/user';
+
 
 onMounted(async () => {
   await profile();
+});
+
+watch(user, async (newVal) => {
+  if (newVal.login) {
+    router.replace('/user/profile');
+  } else {
+    router.replace('/user/login');
+  }
 });
 
 </script>

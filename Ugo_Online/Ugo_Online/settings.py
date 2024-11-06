@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     'accounts',  # 用户和商家的注册和登录
-    'shop',  # 商家和商品
+    # 'shop',  # 商家和商品
     'corsheaders',
 ]
 
