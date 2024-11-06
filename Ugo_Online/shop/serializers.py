@@ -7,3 +7,10 @@ class ShopSerializer(serializers.ModelSerializer):
         model = Shop
         fields = ['name', 'address', 'description', 'create_date']
 
+
+class ShopProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ['name', 'address', 'description', 'create_date']
+
+

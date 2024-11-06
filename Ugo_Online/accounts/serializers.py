@@ -35,11 +35,28 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class MerchantRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, error_messages={
+        'required': '密码不能为空',
+        'blank': '密码不能为空',
+    })
+    email = serializers.EmailField(error_messages={
+        'required': '邮箱不能为空',
+        'blank': '邮箱不能为空',
+        'invalid': '请输入有效的邮箱地址',
+    })
+    name = serializers.CharField(error_messages={
+        'required': '用户名不能为空',
+        'blank': '用户名不能为空',
+    })
 
     class Meta:
         model = User
         fields = ['email', 'name', 'phone', 'password']
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError('该邮箱已被注册')
+        return value
 
     def create(self, validated_data):
         password = validated_data.pop('password')
@@ -48,6 +65,7 @@ class MerchantRegistrationSerializer(serializers.ModelSerializer):
         user.role = 'SELLER'
         user.save()
         return user
+
 
 
 class LoginSerializer(serializers.Serializer):
@@ -83,7 +101,49 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError({'error': '必须提供邮箱和密码'})
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['name', 'email', 'role']
+
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(
+        write_only=True,
+        error_messages={
+            'required': '密码不能为空',
+            'blank': '密码不能为空',
+        }
+    )
+    password = serializers.CharField(
+        write_only=True,
+        error_messages={
+            'required': '密码不能为空',
+            'blank': '密码不能为空',
+        }
+    )
+    password_confirm = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['old_password', 'password', 'password_confirm']
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError({'error': '旧密码不正确'})
+        return value
+
+    def validate(self, data):
+        if data['password'] != data['password_confirm']:
+            raise serializers.ValidationError({'error': '两次输入的密码不一致'})
+        return data
+
+    def update_password(self):
+        user = self.context['request'].user
+        new_password = self.validated_data['password']
+
+        user.set_password(new_password)
+        user.save()
+        return user
+

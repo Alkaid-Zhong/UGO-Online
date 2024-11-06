@@ -6,25 +6,31 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import login, logout
+
+from . import serializers
 from .serializers import (
     UserRegistrationSerializer,
     MerchantRegistrationSerializer,
     LoginSerializer,
-    UserProfileSerializer
+    ProfileSerializer, ChangePasswordSerializer
 )
 from .models import User
 
 
 def get_error_message(errors):
-    """
-    从 serializer.errors 中提取错误信息，返回一个中文字符串
-    """
-    messages = []
     for field, error_list in errors.items():
-        for error in error_list:
-            return str(error)
-            # messages.append(str(error))
-    return "，".join(messages)
+        if isinstance(error_list, dict):
+            return get_error_message(error_list)  # 递归找到第一个错误
+        elif isinstance(error_list, list):
+            for error in error_list:
+                if isinstance(error, dict):
+                    return get_error_message(error)  # 如果是嵌套的字典，继续递归
+                else:
+                    return str(error)  # 直接返回第一个错误信息
+        else:
+            return str(error_list)
+
+
 
 
 def api_response(success, code=0, message='', data=None, status_code=status.HTTP_200_OK):
@@ -95,11 +101,27 @@ class UserProfileView(APIView):
     # permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
 
-    @csrf_exempt
     def get(self, request):
 
         if not request.user.is_authenticated:
             return api_response(False, code=401, message='用户未登录', status_code=status.HTTP_401_UNAUTHORIZED)
 
-        serializer = UserProfileSerializer(request.user)
+        serializer = ProfileSerializer(request.user)
         return api_response(True, data=serializer.data)
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+
+        if not request.user.is_authenticated:
+            return api_response(False, code=401, message='用户未登录', status_code=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = serializer.update_password()
+            login(request, user)
+            return api_response(True, code=0)
+        else:
+            return api_response(False, code=403, message=get_error_message(serializer.errors), data=serializer.errors, status_code=status.HTTP_403_FORBIDDEN)

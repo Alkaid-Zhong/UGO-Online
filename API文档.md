@@ -97,6 +97,20 @@
   - `email` 用户邮箱（作为用户唯一标识）
   - `role` 用户类别（可取值为买家`CUSTOMER`、卖家`SELLER`）
 
+### 修改密码
+
+- 请求路径`/user/change-password`
+- 请求方法`POST`
+- 请求数据格式：
+```json
+{
+    "old_password": "旧密码",
+    "new_password": "新密码",
+    "confirm_new_password": "确认新密码"
+}
+```
+- 保证了更改密码后用户仍然在登陆状态
+
 ## 商店相关
 
 ### 创建商铺
@@ -120,5 +134,25 @@
 {
     "success": true,
     "code": 0
+}
+```
+
+### 商铺信息
+
+- 请求路径：`/shop/profile
+- 请求方法：`GET`
+- 权限要求：需要登录，且用户角色为商家（`SELLER`）
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": {
+        "name": "李四的商铺",
+        "address": "上海市浦东新区",
+        "description": "主营服装鞋帽",
+        "create_date": "2024-11-06T11:39:56.620678Z"
+    }
 }
 ```
