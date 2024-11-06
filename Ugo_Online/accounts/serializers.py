@@ -34,7 +34,7 @@ class MerchantRegistrationSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
@@ -45,13 +45,13 @@ class LoginSerializer(serializers.Serializer):
             try:
                 user = User.objects.get(email=email)
             except User.DoesNotExist:
-                raise serializers.ValidationError('用户不存在')
+                raise serializers.ValidationError({'error': '用户不存在'})
             if not user.check_password(password):
-                raise serializers.ValidationError('密码错误')
+                raise serializers.ValidationError({'error': '密码错误'})
             data['user'] = user
             return data
         else:
-            raise serializers.ValidationError('必须提供邮箱和密码')
+            raise serializers.ValidationError({'error': '必须提供邮箱和密码'})
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

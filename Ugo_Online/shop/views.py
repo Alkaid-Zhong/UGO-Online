@@ -15,7 +15,7 @@ class ShopCreateView(APIView):
 
         if not request.user.is_authenticated:
             return api_response(False, code=401, message='用户未登录', status_code=status.HTTP_401_UNAUTHORIZED)
-        if not request.user.role != 'SELLER':
+        if request.user.role != 'SELLER':
             return api_response(False, code=400, message='用户不是卖家', status_code=status.HTTP_403_FORBIDDEN)
 
         # TODO：判断用户是否没有商店。（一个用户只能管理一个商店，一个商店可以由多个用户管理）

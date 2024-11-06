@@ -13,12 +13,12 @@ class Shop(models.Model):
 
 
 class SellerShop(models.Model):
-    merchant = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='merchant_shops')
-    shop = models.ForeignKey('shop.Shop', on_delete=models.CASCADE, related_name='shop_merchants')
+    seller = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='seller_shops')
+    shop = models.ForeignKey('shop.Shop', on_delete=models.CASCADE, related_name='shop_seller')
 
     class Meta:
-        unique_together = ('merchant', 'shop')
+        unique_together = ('seller', 'shop')
 
     def __str__(self):
-        return f'{self.merchant.email} - {self.shop.name}'
+        return f'{self.seller.email} - {self.shop.name}'
 

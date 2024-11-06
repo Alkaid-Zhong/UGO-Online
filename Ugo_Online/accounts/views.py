@@ -61,7 +61,8 @@ class LoginView(APIView):
             login(request, user)
             return api_response(True, message='登录成功')
         else:
-            return api_response(False, code=403, message='登录失败', data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+            error = serializer.errors
+            return api_response(False, code=403, message=error['error'][0], data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
