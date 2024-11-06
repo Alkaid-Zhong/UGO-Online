@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-sheet
-      class="pa-4 rounded-lg"
+      class="pa-6 rounded-lg"
     >
       <h2 class="headline mb-4">{{ register? `注册成为${registerRole === 'CUSTOMER' ? '顾客' : '商家'}` : '登录' }}</h2>
       <v-form>
