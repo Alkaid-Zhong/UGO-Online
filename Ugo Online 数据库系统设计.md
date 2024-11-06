@@ -21,7 +21,6 @@
 | 商铺ID   | shop_id      | INT AUTO_INCREMENT | 商铺的唯一标识 | PRIMARY KEY               |
 | 商铺名称 | name         | VARCHAR(255)       | 商铺的名称     | NOT NULL                  |
 | 地址     | address      | VARCHAR(255)       | 商铺的地址     |                           |
-| 联系方式 | contact_info | VARCHAR(255)       | 商铺的联系方式 |                           |
 | 商铺描述 | description  | TEXT               | 商铺的详细描述 |                           |
 | 创建日期 | create_date  | DATETIME           | 商铺的创建时间 | DEFAULT CURRENT_TIMESTAMP |
 
@@ -185,7 +184,7 @@
 
 ## 功能与数据流
 
-**1. 商家注册和登录**
+**1. 商家注册和登录** [√]
 
 - **功能描述**：商家可以注册账户并登录系统。
 - **发起实体**：商家

@@ -48,8 +48,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     'accounts',  # 用户和商家的注册和登录
+    'shop',  # 商家和商品
     'corsheaders',
 ]
+
+# CSRF_COOKIE_SECURE = False  # 关闭 CSRF 安全性检查
+# CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']  # 确保你的本地开发环境被信任
+
 
 CORS_ALLOW_ALL_ORIGINS = True
 
