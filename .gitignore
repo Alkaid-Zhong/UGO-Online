@@ -1,2 +1,3 @@
 /venv/
 /Ugo_Online/db.sqlite3
+__pycache__/
