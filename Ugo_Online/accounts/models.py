@@ -31,7 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     email = models.EmailField(unique=True, null=False)
     name = models.CharField(max_length=255, null=False)  # 用户名
-    phone = models.CharField(max_length=50, blank=True, null=True)
+    phone = models.CharField(unique=True, max_length=50, blank=True, null=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='CUSTOMER')
     is_staff = models.BooleanField(default=False)
     registration_date = models.DateTimeField(auto_now_add=True)

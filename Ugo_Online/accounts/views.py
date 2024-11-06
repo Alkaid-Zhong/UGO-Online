@@ -15,6 +15,18 @@ from .serializers import (
 from .models import User
 
 
+def get_error_message(errors):
+    """
+    从 serializer.errors 中提取错误信息，返回一个中文字符串
+    """
+    messages = []
+    for field, error_list in errors.items():
+        for error in error_list:
+            return str(error)
+            # messages.append(str(error))
+    return "，".join(messages)
+
+
 def api_response(success, code=0, message='', data=None, status_code=status.HTTP_200_OK):
     return Response({
         'success': success,
@@ -34,7 +46,7 @@ class CustomerRegistrationView(APIView):
             serializer.save()
             return api_response(True, message='注册成功')
         else:
-            return api_response(False, code=402, message='注册失败', data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+            return api_response(False, code=402, message=get_error_message(serializer.errors), data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
 
 class SellerRegistrationView(APIView):
@@ -47,7 +59,7 @@ class SellerRegistrationView(APIView):
             serializer.save()
             return api_response(True, message='注册成功')
         else:
-            return api_response(False, code=402, message='注册失败', data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+            return api_response(False, code=402, message=get_error_message(serializer.errors), data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
@@ -62,7 +74,7 @@ class LoginView(APIView):
             return api_response(True, message='登录成功')
         else:
             error = serializer.errors
-            return api_response(False, code=403, message=error['error'][0], data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+            return api_response(False, code=403, message=get_error_message(serializer.errors), data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
