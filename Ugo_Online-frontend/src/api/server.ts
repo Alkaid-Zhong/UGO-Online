@@ -29,11 +29,15 @@ const get = async (url: string, params?: any): Promise<Response> => {
 };
 
 const post = async (url: string, data?: any): Promise<Response> => {
+	let headers = {};
+	if (document.cookie.includes('csrftoken=')) {
+		headers = { 'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0] }
+	}
 	try {
 		const res = await server.post(
 			url, 
 			data, 
-			{ headers: { 'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0] } }
+			{ headers }
 		)
 		if (!res.data.success) {
 			throw new Error(res.data.message);
