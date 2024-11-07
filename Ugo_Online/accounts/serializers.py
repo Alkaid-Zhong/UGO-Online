@@ -1,5 +1,8 @@
 from rest_framework import serializers
 from .models import User
+from shop.models import SellerShop
+
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, error_messages={
@@ -102,9 +105,11 @@ class LoginSerializer(serializers.Serializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
         fields = ['name', 'email', 'role']
+
 
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
