@@ -13,7 +13,7 @@ class Shop(models.Model):
 
 
 class SellerShop(models.Model):
-    seller = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='seller_shops')
+    seller = models.OneToOneField('accounts.User', on_delete=models.CASCADE, related_name='seller_shops')
     shop = models.ForeignKey('shop.Shop', on_delete=models.CASCADE, related_name='shop_seller')
 
     class Meta:
