@@ -124,13 +124,34 @@ class JoinShopByCodeView(APIView):
             return api_response(False, code=302, message='邀请码不存在')
 
 
-class AllShopView(APIView):
+class ShopListView(ListAPIView):
     permission_classes = [AllowAny]
+    serializer_class = ShopProfileSerializer
 
-    def get(self, request):
-        shops = Shop.objects.all()
-        serializer = ShopProfileSerializer(shops, many=True)
-        return api_response(True, message='查询所有商铺成功', data=serializer.data)
+    def get_queryset(self):
+        return Shop.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            paginated_response = self.get_paginated_response(serializer.data).data
+            return api_response(
+                True,
+                code=0,
+                message="查询返回成功",
+                data={
+                    "count": paginated_response["count"],
+                    "next": paginated_response["next"],
+                    "previous": paginated_response["previous"],
+                    "shops": paginated_response["results"],
+                }
+            )
+        else:
+            serializer = self.get_serializer(queryset, many=True)
+            return api_response(True, code=0, data={'shops': serializer.data})
+
 
 
 class AddProductView(APIView):

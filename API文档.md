@@ -126,37 +126,47 @@
 {
     "success": true,
     "code": 0,
-    "message": "查询所有商铺成功",
-    "data": [
-        {
-            "id": 1,
-            "name": "李四的商铺",
-            "address": "上海市浦东新区",
-            "description": "主营服装鞋帽",
-            "create_date": "2024-11-06T11:39:56.620678Z",
-            "sellers": [
-                {
-                    "name": "测试商家0",
-                    "email": "seller1@buaa.edu.cn",
-                    "role": "SELLER"
-                }
-            ]
-        },
-        {
-            "id": 2,
-            "name": "张三的商铺",
-            "address": "北京市朝阳区",
-            "description": "主营电子产品",
-            "create_date": "2024-11-07T10:11:29.139915Z",
-            "sellers": [
-                {
-                    "name": "seller2",
-                    "email": "seller2@buaa.edu.cn",
-                    "role": "SELLER"
-                }
-            ]
-        }
-    ]
+    "message": "查询返回成功",
+    "data": {
+        "count": 2,
+        "next": null,
+        "previous": null,
+        "shops": [
+            {
+                "id": 1,
+                "name": "李四的商铺",
+                "address": "上海市浦东新区",
+                "description": "主营服装鞋帽",
+                "create_date": "2024-11-06T11:39:56.620678Z",
+                "sellers": [
+                    {
+                        "name": "测试商家0",
+                        "email": "seller1@buaa.edu.cn",
+                        "role": "SELLER"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "name": "张三的商铺",
+                "address": "北京市朝阳区",
+                "description": "主营电子产品",
+                "create_date": "2024-11-07T10:11:29.139915Z",
+                "sellers": [
+                    {
+                        "name": "seller2",
+                        "email": "seller2@buaa.edu.cn",
+                        "role": "SELLER"
+                    },
+                    {
+                        "name": "seller3",
+                        "email": "seller3@buaa.edu.cn",
+                        "role": "SELLER"
+                    }
+                ]
+            }
+        ]
+    }
 }
 ```
 
