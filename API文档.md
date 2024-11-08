@@ -33,9 +33,11 @@
 - `402` 表示注册失败
 - `403` 表示用户名或密码错误（登陆失败）
 
-# 用户API文档
+# API文档
 
-## 用户注册（买家）
+## 用户注册登录
+
+### 用户注册（买家）
 
 请求路径`/user/register/customer`
 
@@ -52,7 +54,7 @@
 
 `null`
 
-## 用户注册（商家）
+### 用户注册（商家）
 
 请求路径`/user/register/seller`
 
@@ -68,8 +70,6 @@
 返回数据格式
 
 - `null`
-
-## 登录登出
 
 ### 用户登录
 
@@ -121,6 +121,8 @@
 - 请求路径：`/shop`
 - 请求方法：`GET`
 - 权限要求：无
+- 查询参数
+  - page 整数，请求的页码
 - 返回结果格式
 ```json
 {
@@ -165,7 +167,10 @@
                     }
                 ]
             }
-        ]
+        ],
+        "total_count": 2,
+        "total_page": 1,
+        "cur_page": 1
     }
 }
 ```
@@ -306,6 +311,12 @@
 - 请求路径：`/shop/<int:shop_id>/products`
 - 请求方法：`GET`
 - 权限要求：无
+- 查询参数
+  - page 整数，请求的页码
+  - **以下后端 TODO**
+  - category 字符串，类别筛选
+  - min_price, max_price 浮点数，最高最低价格筛选
+  - ordering 字符串，排序字段
 - 返回结果格式
 ```json
 {
@@ -313,10 +324,21 @@
     "code": 0,
     "message": "查询返回成功",
     "data": {
-        "count": 22,
-        "next": "http://127.0.0.1:8000/shop/1/products?page=2",
+        "count": 23,
+        "next": "http://127.0.0.1:8000/shop/products?page=2",
         "previous": null,
-        "products": [
+        "shops": [
+            {
+                "id": 1,
+                "shop": 2,
+                "name": "苹果手机",
+                "description": "Iphone 16",
+                "price": "9999.98",
+                "stock_quantity": 999,
+                "status": "Available",
+                "create_date": "2024-11-08T07:49:58.707722Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216.png"
+            },
             {
                 "id": 2,
                 "shop": 1,
@@ -328,106 +350,11 @@
                 "create_date": "2024-11-08T07:50:08.812633Z",
                 "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_duckoBC.png"
             },
-            {
-                "id": 3,
-                "shop": 1,
-                "name": "苹果手机",
-                "description": "Iphone 17",
-                "price": "99999.98",
-                "stock_quantity": 999,
-                "status": "Available",
-                "create_date": "2024-11-08T07:51:46.622904Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_revjsGx.png"
-            },
-            {
-                "id": 4,
-                "shop": 1,
-                "name": "苹果手机",
-                "description": "Iphone 19",
-                "price": "99999.98",
-                "stock_quantity": 2,
-                "status": "Available",
-                "create_date": "2024-11-08T07:51:58.375138Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_gcfx5Wr.png"
-            },
-            {
-                "id": 5,
-                "shop": 1,
-                "name": "苹果手机",
-                "description": "Iphone 1",
-                "price": "99999.98",
-                "stock_quantity": 2,
-                "status": "Available",
-                "create_date": "2024-11-08T07:58:38.213936Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_ccPqlss.png"
-            },
-            {
-                "id": 6,
-                "shop": 1,
-                "name": "苹果手机",
-                "description": "Iphone 2",
-                "price": "99999.98",
-                "stock_quantity": 2,
-                "status": "Available",
-                "create_date": "2024-11-08T07:58:44.121058Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_ilTYWcG.png"
-            },
-            {
-                "id": 7,
-                "shop": 1,
-                "name": "苹果手机",
-                "description": "Iphone 3",
-                "price": "99999.98",
-                "stock_quantity": 2,
-                "status": "Available",
-                "create_date": "2024-11-08T07:58:46.855643Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_W3GX29i.png"
-            },
-            {
-                "id": 8,
-                "shop": 1,
-                "name": "苹果手机",
-                "description": "Iphone 4",
-                "price": "99999.98",
-                "stock_quantity": 2,
-                "status": "Available",
-                "create_date": "2024-11-08T07:58:49.671959Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_7tJgPDF.png"
-            },
-            {
-                "id": 9,
-                "shop": 1,
-                "name": "苹果手机",
-                "description": "Iphone 5",
-                "price": "99999.98",
-                "stock_quantity": 2,
-                "status": "Available",
-                "create_date": "2024-11-08T08:01:32.476365Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_1umvd1q.png"
-            },
-            {
-                "id": 10,
-                "shop": 1,
-                "name": "苹果手机",
-                "description": "Iphone 6",
-                "price": "99999.98",
-                "stock_quantity": 2,
-                "status": "Available",
-                "create_date": "2024-11-08T08:01:36.489290Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_7NYYJ6b.png"
-            },
-            {
-                "id": 11,
-                "shop": 1,
-                "name": "苹果手机",
-                "description": "Iphone 7",
-                "price": "99999.98",
-                "stock_quantity": 2,
-                "status": "Available",
-                "create_date": "2024-11-08T08:01:39.735627Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_8X8qJgv.png"
-            }
-        ]
+           // ...
+        ],
+        "total_count": 23,
+        "total_page": 3,
+        "cur_page": 1
     }
 }
 ```

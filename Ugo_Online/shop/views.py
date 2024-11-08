@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 
 from utils import get_error_message
-from Ugo_Online.utils import api_response
+from Ugo_Online.utils import api_response, list_response
 from shop.models import SellerShop, Shop, InvitationCode, Product
 from shop.serializers import ShopSerializer, ShopProfileSerializer, InvitationCodeSerializer, ProductSerializer
 
@@ -137,17 +137,8 @@ class ShopListView(ListAPIView):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             paginated_response = self.get_paginated_response(serializer.data).data
-            return api_response(
-                True,
-                code=0,
-                message="查询返回成功",
-                data={
-                    "count": paginated_response["count"],
-                    "next": paginated_response["next"],
-                    "previous": paginated_response["previous"],
-                    "shops": paginated_response["results"],
-                }
-            )
+
+            return list_response(paginated_response, self.paginator)
         else:
             serializer = self.get_serializer(queryset, many=True)
             return api_response(True, code=0, data={'shops': serializer.data})
@@ -201,17 +192,7 @@ class ProductListView(ListAPIView):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             paginated_response = self.get_paginated_response(serializer.data).data
-            return api_response(
-                True,
-                code=0,
-                message="查询返回成功",
-                data={
-                    "count": paginated_response["count"],
-                    "next": paginated_response["next"],
-                    "previous": paginated_response["previous"],
-                    "products": paginated_response["results"],
-                }
-            )
+            return list_response(paginated_response, self.paginator)
         else:
             serializer = self.get_serializer(queryset, many=True)
             return api_response(True, code=0, data={'products': serializer.data})
