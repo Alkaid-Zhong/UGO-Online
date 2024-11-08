@@ -2,13 +2,15 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework import status
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from accounts.permissions import IsSeller
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 
 from utils import get_error_message
 from Ugo_Online.utils import api_response
-from shop.models import SellerShop, Shop, InvitationCode
+from shop.models import SellerShop, Shop, InvitationCode, Product
 from shop.serializers import ShopSerializer, ShopProfileSerializer, InvitationCodeSerializer, ProductSerializer
 
 
@@ -31,7 +33,8 @@ class ShopCreateView(APIView):
             SellerShop.objects.create(shop=shop, seller=request.user)
             return api_response(True, code=0)
         else:
-            return api_response(False, code=1, message='商铺创建失败', data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+            return api_response(False, code=1, message='商铺创建失败', data=serializer.errors,
+                                status_code=status.HTTP_400_BAD_REQUEST)
 
 
 class ShopInfoView(APIView):
@@ -68,7 +71,8 @@ class CreateInvitationCodeView(APIView):
                 serializer.save()
                 return api_response(True, code=0, message='邀请码生成成功', data=serializer.data)
             else:
-                return api_response(False, code=300, message=get_error_message(serializer.errors), data=serializer.errors)
+                return api_response(False, code=300, message=get_error_message(serializer.errors),
+                                    data=serializer.errors)
         except Shop.DoesNotExist:
             return api_response(False, code=300, message='商铺不存在')
 
@@ -134,18 +138,12 @@ class AddProductView(APIView):
 
     def post(self, request, id):
         user = request.user
-        # if not user.is_authenticated:
-        #     return api_response(False, code=401, message='用户未登录')
-        #
-        # if user.role != 'SELLER':
-        #     return api_response(False, code=400, message='用户不是卖家')
-
         try:
             shop = Shop.objects.get(id=id)
         except Shop.DoesNotExist:
             return api_response(False, code=300, message='商铺不存在')
 
-        if not SellerShop.objects.filter(seller=user, shop=shop).exists:
+        if not SellerShop.objects.filter(seller=user, shop=shop).exists():
             return api_response(False, code=301, message='您不是该商铺的管理者')
 
         serializer = ProductSerializer(data=request.data, context={'shop': shop})
@@ -156,3 +154,43 @@ class AddProductView(APIView):
         else:
             return api_response(False, code=300, message=get_error_message(serializer.errors), data=serializer.errors)
 
+
+class ProductListView(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ProductSerializer
+    pagination_class = PageNumberPagination
+
+    shop = None
+
+    def get_queryset(self):
+        if self.shop is not None:
+            return Product.objects.filter(shop=self.shop, status='Available')
+        else:
+            return Product.objects.filter(status='Available')
+
+    def list(self, request, *args, **kwargs):
+        shop_id = self.kwargs.get('shop_id')
+        if shop_id is not None:
+            try:
+                self.shop = Shop.objects.get(id=shop_id)
+            except Shop.DoesNotExist:
+                return api_response(False, code=300, message='商铺不存在')
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            paginated_response = self.get_paginated_response(serializer.data).data
+            return api_response(
+                True,
+                code=0,
+                message="查询返回成功",
+                data={
+                    "count": paginated_response["count"],
+                    "next": paginated_response["next"],
+                    "previous": paginated_response["previous"],
+                    "products": paginated_response["results"],
+                }
+            )
+        else:
+            serializer = self.get_serializer(queryset, many=True)
+            return api_response(True, code=0, data={'products': serializer.data})

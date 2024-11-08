@@ -254,3 +254,175 @@
   }
   ```
 
+## 商品相关
+
+### 创建商品
+
+- 请求路径：`/shop/<int:id>/product/add`
+- 请求方法：`POST`
+- 权限要求：需要认证，且用户角色为商家，并且是商铺的现有管理者
+- 请求数据格式
+```json
+{
+  "name": ,
+  "description":, 
+  "price":  ,
+  "stock_quantity":,
+  "image": ,
+}
+```
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "商品创建成功",
+    "data": {
+        "id": 23,
+        "shop": 1,
+        "name": "oppo A11 pro max",
+        "description": "安卓手机",
+        "price": "19.90",
+        "stock_quantity": 2,
+        "status": "Available",
+        "create_date": "2024-11-08T08:02:53.330448Z",
+        "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_nXqr0kW.png"
+    }
+}
+```
+
+### 获取店内所有商品
+
+- 请求路径：`/shop/<int:shop_id>/products`
+- 请求方法：`GET`
+- 权限要求：无
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "查询返回成功",
+    "data": {
+        "count": 22,
+        "next": "http://127.0.0.1:8000/shop/1/products?page=2",
+        "previous": null,
+        "products": [
+            {
+                "id": 2,
+                "shop": 1,
+                "name": "苹果手机",
+                "description": "Iphone 16",
+                "price": "9999.98",
+                "stock_quantity": 999,
+                "status": "Available",
+                "create_date": "2024-11-08T07:50:08.812633Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_duckoBC.png"
+            },
+            {
+                "id": 3,
+                "shop": 1,
+                "name": "苹果手机",
+                "description": "Iphone 17",
+                "price": "99999.98",
+                "stock_quantity": 999,
+                "status": "Available",
+                "create_date": "2024-11-08T07:51:46.622904Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_revjsGx.png"
+            },
+            {
+                "id": 4,
+                "shop": 1,
+                "name": "苹果手机",
+                "description": "Iphone 19",
+                "price": "99999.98",
+                "stock_quantity": 2,
+                "status": "Available",
+                "create_date": "2024-11-08T07:51:58.375138Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_gcfx5Wr.png"
+            },
+            {
+                "id": 5,
+                "shop": 1,
+                "name": "苹果手机",
+                "description": "Iphone 1",
+                "price": "99999.98",
+                "stock_quantity": 2,
+                "status": "Available",
+                "create_date": "2024-11-08T07:58:38.213936Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_ccPqlss.png"
+            },
+            {
+                "id": 6,
+                "shop": 1,
+                "name": "苹果手机",
+                "description": "Iphone 2",
+                "price": "99999.98",
+                "stock_quantity": 2,
+                "status": "Available",
+                "create_date": "2024-11-08T07:58:44.121058Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_ilTYWcG.png"
+            },
+            {
+                "id": 7,
+                "shop": 1,
+                "name": "苹果手机",
+                "description": "Iphone 3",
+                "price": "99999.98",
+                "stock_quantity": 2,
+                "status": "Available",
+                "create_date": "2024-11-08T07:58:46.855643Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_W3GX29i.png"
+            },
+            {
+                "id": 8,
+                "shop": 1,
+                "name": "苹果手机",
+                "description": "Iphone 4",
+                "price": "99999.98",
+                "stock_quantity": 2,
+                "status": "Available",
+                "create_date": "2024-11-08T07:58:49.671959Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_7tJgPDF.png"
+            },
+            {
+                "id": 9,
+                "shop": 1,
+                "name": "苹果手机",
+                "description": "Iphone 5",
+                "price": "99999.98",
+                "stock_quantity": 2,
+                "status": "Available",
+                "create_date": "2024-11-08T08:01:32.476365Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_1umvd1q.png"
+            },
+            {
+                "id": 10,
+                "shop": 1,
+                "name": "苹果手机",
+                "description": "Iphone 6",
+                "price": "99999.98",
+                "stock_quantity": 2,
+                "status": "Available",
+                "create_date": "2024-11-08T08:01:36.489290Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_7NYYJ6b.png"
+            },
+            {
+                "id": 11,
+                "shop": 1,
+                "name": "苹果手机",
+                "description": "Iphone 7",
+                "price": "99999.98",
+                "stock_quantity": 2,
+                "status": "Available",
+                "create_date": "2024-11-08T08:01:39.735627Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_8X8qJgv.png"
+            }
+        ]
+    }
+}
+```
+
+### 获取所有商品
+
+- 请求路径：`/shop/products`
+- 其余和上面一样
