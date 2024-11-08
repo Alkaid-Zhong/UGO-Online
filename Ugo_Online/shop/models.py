@@ -37,3 +37,23 @@ class InvitationCode(models.Model):
 
     def __str__(self):
         return f"{self.code} for {self.shop.name}"
+
+
+class Product(models.Model):
+    STATUS_CHOICES = (
+        ('Available', 'Available'),
+        ('Unavailable', 'Unavailable'),
+    )
+
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products')
+    name = models.CharField(max_length=255, null=False)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
+    stock_quantity = models.IntegerField(default=0, null=False)
+    # category = models.CharField(max_length=255, blank=True, null=True) # todo:这个分类以后怎么做完善一点，最好是能搞几个选项卡然后选，还能以这个为标准筛
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Available')
+    create_date = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+
+    def __str__(self):
+        return self.name

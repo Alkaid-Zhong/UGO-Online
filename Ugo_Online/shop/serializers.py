@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework import serializers
-from .models import Shop, SellerShop, InvitationCode
+from .models import Shop, SellerShop, InvitationCode, Product
 
 from accounts.models import User
 
@@ -29,6 +29,7 @@ class ShopProfileSerializer(serializers.ModelSerializer):
         sellers = [seller_shop.seller for seller_shop in seller_shops]
         return ProfileSerializer(sellers, many=True).data
 
+
 class InvitationCodeSerializer(serializers.ModelSerializer):
 
     expires_in_days = serializers.IntegerField(required=False, write_only=True)
@@ -52,3 +53,26 @@ class InvitationCodeSerializer(serializers.ModelSerializer):
             code = get_random_string(length=16)
             if not InvitationCode.objects.filter(code=code).exists():
                 return code
+
+
+class ProductSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = [
+            'id',
+            'shop',
+            'name',
+            'description',
+            'price',
+            'stock_quantity',
+            # 'category',
+            'status',
+            'create_date',
+            'image',
+        ]
+        read_only_fields = ['id', 'shop', 'create_date']
+        
+    def create(self, validated_data):
+        validated_data['shop'] = self.context['shop']
+        return super().create(validated_data)
