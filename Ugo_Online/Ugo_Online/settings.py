@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounts',  # 用户和商家的注册和登录
     'shop',  # 商家和商品
+    'cart',  # 购物车
     'corsheaders',
 ]
 

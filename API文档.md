@@ -25,6 +25,7 @@
 
 错误码约定：
 - `0`表示操作成功
+- `200` 商品错误
 - `300` 商店错误
 - `301` 商店权限错误
 - `302` 邀请码错误
@@ -316,7 +317,7 @@
 - 权限要求：无
 - 查询参数
   - page 整数，请求的页码
-  - category 字符串，类别筛选（放id） 后端todo：实现“或”的逻辑，如category=1,2,3返回类别为1,2,3的商品
+  - category 字符串，类别筛选（放id）
   - **以下后端 TODO**
   - min_price, max_price 浮点数，最高最低价格筛选
   - ordering 字符串，排序字段
@@ -413,3 +414,196 @@
 - 请求路径：`/shop/<int:shop_id>/category_list`
 - 其余同上
 
+
+
+## 购物车相关
+
+### 向购物车里添加商品
+
+- 在商店浏览商品的时候，点击加入购物车，调用这个，前端限制一下quantity不能为0或者负数
+- 请求路径：`/cart/add`
+- 请求方法：`POST`
+- 权限要求：登录用户，是买家
+- 请求参数：
+    - product_id：商品id. *注意区分product_id和item_id*
+    - quantity：数量
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "加入购物车成功",
+    "data": {
+        "id": 2,
+        "product": {
+            "id": 1,
+            "shop": 2,
+            "name": "苹果手机",
+            "description": "Iphone 16",
+            "price": "9999.98",
+            "stock_quantity": 999,
+            "category": null,
+            "status": "Available",
+            "create_date": "2024-11-08T07:49:58.707722Z",
+            "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216.png"
+        },
+        "product_id": 1,
+        "quantity": 0,
+        "updated_time": "2024-11-11T09:50:34.854501Z"
+    }
+}
+```
+
+### 修改购物车里的商品数量
+
+- 请求路径：`/cart/update`
+- 请求方法：`PUT`
+- 权限要求：登录用户，是买家
+- 请求参数：
+    - item_id：购物车里的商品id
+    - quantity：修改为的数量
+- 返回结果格式
+  - 如果quantity非0
+  ```json
+  {
+      "success": true,
+      "code": 0,
+      "message": "购物车已更新",
+      "data": {
+          "id": 2,
+          "product": {
+              "id": 1,
+              "shop": 2,
+              "name": "苹果手机",
+              "description": "Iphone 16",
+              "price": "9999.98",
+              "stock_quantity": 999,
+              "category": null,
+              "status": "Available",
+              "create_date": "2024-11-08T07:49:58.707722Z",
+              "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216.png"
+          },
+          "product_id": 1,
+          "quantity": 1,
+          "updated_time": "2024-11-11T09:56:18.116843Z"
+      }
+  }
+  ```
+  - 如果quantity为0，则删除该商品
+  ```json
+  {
+    "success": true,
+    "code": 0,
+    "message": "商品已成功从购物车移除",
+    "data": {
+        "id": null,
+        "product": {
+            "id": 1,
+            "shop": 2,
+            "name": "苹果手机",
+            "description": "Iphone 16",
+            "price": "9999.98",
+            "stock_quantity": 999,
+            "category": null,
+            "status": "Available",
+            "create_date": "2024-11-08T07:49:58.707722Z",
+            "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216.png"
+        },
+        "product_id": 1,
+        "quantity": 1,
+        "updated_time": "2024-11-11T09:56:18.116843Z"
+    }
+  }
+  ```
+  
+### 从购物车中移除商品
+
+- 请求路径：`/cart/delete`
+- 请求方法：`DELETE`
+- 权限要求：登录用户，是买家
+- 请求参数：
+    - item_id：购物车里的商品id
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "商品已成功从购物车移除",
+    "data": null
+}
+```
+
+### 获取购物车详情
+
+- 请求路径：`/cart`
+- 请求方法：`GET`
+- 权限要求：登录用户，是买家
+- 返回结果格式：按商店分的列表
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": {
+        "shops": [
+            {
+                "shop_id": 1,
+                "shop_name": "李四的商铺",
+                "items": [
+                    {
+                        "item_id": 5,
+                        "product_id": 4,
+                        "product_name": "苹果手机",
+                        "quantity": 1,
+                        "price": "99999.98",
+                        "total_price": "99999.98",
+                        "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_gcfx5Wr.png"
+                    },
+                    {
+                        "item_id": 6,
+                        "product_id": 5,
+                        "product_name": "苹果手机",
+                        "quantity": 2,
+                        "price": "99999.98",
+                        "total_price": "199999.96",
+                        "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_ccPqlss.png"
+                    },
+                    {
+                        "item_id": 8,
+                        "product_id": 2,
+                        "product_name": "苹果手机",
+                        "quantity": 2,
+                        "price": "9999.98",
+                        "total_price": "19999.96",
+                        "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_duckoBC.png"
+                    },
+                    {
+                        "item_id": 9,
+                        "product_id": 3,
+                        "product_name": "苹果手机",
+                        "quantity": 2,
+                        "price": "99999.98",
+                        "total_price": "199999.96",
+                        "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_revjsGx.png"
+                    }
+                ]
+            },
+            {
+                "shop_id": 2,
+                "shop_name": "张三的商铺",
+                "items": [
+                    {
+                        "item_id": 7,
+                        "product_id": 1,
+                        "product_name": "苹果手机",
+                        "quantity": 2,
+                        "price": "9999.98",
+                        "total_price": "19999.96",
+                        "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216.png"
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
