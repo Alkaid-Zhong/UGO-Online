@@ -1,5 +1,8 @@
 from django.urls import path
-from .views import ShopCreateView, ShopInfoView, ShopListView, CreateInvitationCodeView, JoinShopByCodeView, AddProductView, ProductListView
+from .views import (ShopCreateView, ShopInfoView,
+                    ShopListView, CreateInvitationCodeView,
+                    JoinShopByCodeView, AddProductView,
+                    ProductListView, CategoryListView)
 
 urlpatterns = [
     path('', ShopListView.as_view(), name='get_all_shop'),
@@ -9,5 +12,7 @@ urlpatterns = [
     path('join_by_code', JoinShopByCodeView.as_view(), name='join_by_code'),
     path('<int:id>/product/add', AddProductView.as_view(), name='add_product'),
     path('<int:shop_id>/products', ProductListView.as_view(), name='get_shop_products'),
-    path('products', ProductListView.as_view(), name='get_products')
+    path('products', ProductListView.as_view(), name='get_products'),
+    path('category_list', CategoryListView.as_view(), name='category_list'),
+    path('<int:shop_id>/category_list', CategoryListView.as_view(), name='shop_category_list'),
 ]

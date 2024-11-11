@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework import serializers
-from .models import Shop, SellerShop, InvitationCode, Product
+from .models import Shop, SellerShop, InvitationCode, Product, Category
 
 from accounts.models import User
 
@@ -57,6 +57,9 @@ class InvitationCodeSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), allow_null=True, required=False)
+    # 前端传分类的id
+    category_name = serializers.CharField(source='category.name', read_only=True)
 
     class Meta:
         model = Product
@@ -67,13 +70,21 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'price',
             'stock_quantity',
-            # 'category',
+            'category',
             'status',
             'create_date',
             'image',
+            'category_name'
         ]
         read_only_fields = ['id', 'shop', 'create_date']
         
     def create(self, validated_data):
         validated_data['shop'] = self.context['shop']
         return super().create(validated_data)
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name']
+

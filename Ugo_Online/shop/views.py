@@ -7,11 +7,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from accounts.permissions import IsSeller
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend
 
 from utils import get_error_message
 from Ugo_Online.utils import api_response, list_response
-from shop.models import SellerShop, Shop, InvitationCode, Product
-from shop.serializers import ShopSerializer, ShopProfileSerializer, InvitationCodeSerializer, ProductSerializer
+from shop.models import SellerShop, Shop, InvitationCode, Product, Category
+from shop.serializers import ShopSerializer, ShopProfileSerializer, InvitationCodeSerializer, ProductSerializer, CategorySerializer
 
 
 class ShopCreateView(APIView):
@@ -171,6 +172,8 @@ class ProductListView(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProductSerializer
     pagination_class = PageNumberPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['category']
 
     shop = None
 
@@ -196,3 +199,29 @@ class ProductListView(ListAPIView):
         else:
             serializer = self.get_serializer(queryset, many=True)
             return api_response(True, code=0, data={'products': serializer.data})
+
+
+class CategoryListView(ListAPIView):
+    queryset = Category.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = CategorySerializer
+
+    shop = None
+
+    def get_queryset(self):
+        if self.shop is not None:
+            return Category.objects.filter(products__shop=self.shop).distinct()
+        else:
+            return super().get_queryset()
+
+    def list(self, request, *args, **kwargs):
+        shop_id = self.kwargs.get('shop_id')
+        if shop_id is not None:
+            try:
+                self.shop = Shop.objects.get(id=shop_id)
+            except Shop.DoesNotExists:
+                api_response(False, code=300, message='商铺不存在')
+
+        query_set = self.get_queryset()
+        serializer = self.get_serializer(query_set, many=True)
+        return api_response(True, code=0, data={'categories': serializer.data})

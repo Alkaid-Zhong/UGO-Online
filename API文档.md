@@ -279,11 +279,12 @@
 - 请求数据格式
 ```json
 {
-  "name": ,
-  "description":, 
-  "price":  ,
-  "stock_quantity":,
-  "image": ,
+  "name": "Iphone 6s",
+  "description": "最新款苹果手机", 
+  "price":  "1888.99",
+  "category": "这里传入对应category的id！",
+  "stock_quantity": "999",
+  "image": "?"
 }
 ```
 - 返回结果格式
@@ -293,15 +294,17 @@
     "code": 0,
     "message": "商品创建成功",
     "data": {
-        "id": 23,
+        "id": 25,
         "shop": 1,
-        "name": "oppo A11 pro max",
-        "description": "安卓手机",
-        "price": "19.90",
-        "stock_quantity": 2,
+        "name": "Iphone 6669",
+        "description": "最牛逼的苹果手机！",
+        "price": "99999.99",
+        "stock_quantity": 3,
+        "category": 1,
         "status": "Available",
-        "create_date": "2024-11-08T08:02:53.330448Z",
-        "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_nXqr0kW.png"
+        "create_date": "2024-11-11T03:36:25.446511Z",
+        "image": "/media/product_images/%E4%B8%8A%E6%B5%B7%E4%B8%9C%E4%BA%9A%E5%B7%B2%E5%A4%84%E7%90%86_te3siEu.png",
+        "category_name": "电子产品"
     }
 }
 ```
@@ -325,36 +328,50 @@
     "message": "查询返回成功",
     "data": {
         "count": 23,
-        "next": "http://127.0.0.1:8000/shop/products?page=2",
-        "previous": null,
+        "next": null,
+        "previous": "http://127.0.0.1:8000/shop/1/products?page=2",
         "shops": [
             {
-                "id": 1,
-                "shop": 2,
-                "name": "苹果手机",
-                "description": "Iphone 16",
-                "price": "9999.98",
-                "stock_quantity": 999,
+                "id": 22,
+                "shop": 1,
+                "name": "oppo A11",
+                "description": "安卓手机",
+                "price": "9.90",
+                "stock_quantity": 2,
+                "category": null,
                 "status": "Available",
-                "create_date": "2024-11-08T07:49:58.707722Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216.png"
+                "create_date": "2024-11-08T08:02:45.534134Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_2OLYpvf.png"
             },
             {
-                "id": 2,
+                "id": 23,
                 "shop": 1,
-                "name": "苹果手机",
-                "description": "Iphone 16",
-                "price": "9999.98",
-                "stock_quantity": 999,
+                "name": "oppo A11 pro max",
+                "description": "安卓手机",
+                "price": "19.90",
+                "stock_quantity": 2,
+                "category": null,
                 "status": "Available",
-                "create_date": "2024-11-08T07:50:08.812633Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_duckoBC.png"
+                "create_date": "2024-11-08T08:02:53.330448Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_nXqr0kW.png"
             },
-           // ...
+            {
+                "id": 24,
+                "shop": 1,
+                "name": "Iphone 666",
+                "description": "最牛逼的苹果手机！",
+                "price": "99999.99",
+                "stock_quantity": 3,
+                "category": 1,
+                "status": "Available",
+                "create_date": "2024-11-11T03:30:05.174259Z",
+                "image": "http://127.0.0.1:8000/media/product_images/%E4%B8%8A%E6%B5%B7%E4%B8%9C%E4%BA%9A%E5%B7%B2%E5%A4%84%E7%90%86.png",
+                "category_name": "电子产品"
+            }
         ],
         "total_count": 23,
         "total_page": 3,
-        "cur_page": 1
+        "cur_page": 3
     }
 }
 ```
@@ -363,3 +380,36 @@
 
 - 请求路径：`/shop/products`
 - 其余和上面一样
+
+
+### 获取所有的商品类别
+
+- 请求路径：`/shop/category_list`
+- 请求方法：`GET`
+- 权限要求：无
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": {
+        "categories": [
+            {
+                "id": 1,
+                "name": "电子产品"
+            },
+            {
+                "id": 2,
+                "name": "服装"
+            }
+        ]
+    }
+}
+```
+
+### 获取指定商店的所有类别
+
+- 请求路径：`/shop/<int:shop_id>/category_list`
+- 其余同上
+
