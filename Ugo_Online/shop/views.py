@@ -190,7 +190,7 @@ class ProductListView(ListAPIView):
                 self.shop = Shop.objects.get(id=shop_id)
             except Shop.DoesNotExist:
                 return api_response(False, code=300, message='商铺不存在')
-        queryset = self.get_queryset()
+        queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

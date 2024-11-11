@@ -316,8 +316,8 @@
 - 权限要求：无
 - 查询参数
   - page 整数，请求的页码
+  - category 字符串，类别筛选（放id） 后端todo：实现“或”的逻辑，如category=1,2,3返回类别为1,2,3的商品
   - **以下后端 TODO**
-  - category 字符串，类别筛选
   - min_price, max_price 浮点数，最高最低价格筛选
   - ordering 字符串，排序字段
 - 返回结果格式
