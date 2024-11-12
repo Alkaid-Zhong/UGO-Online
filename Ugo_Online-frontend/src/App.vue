@@ -44,10 +44,13 @@ import router from './router';
 import { user } from './store/user'
 import { snackbar } from './store/app';
 import { profile, logout } from './api/user';
+import { useRoute } from 'vue-router';
 
 
 onMounted(async () => {
-  await profile();
+  const route = useRoute();
+  const showSnackbar = route.path !== '/user/login';
+  await profile(showSnackbar);
 });
 
 watch(user, async (newVal) => {
