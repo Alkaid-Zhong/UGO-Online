@@ -14,12 +14,12 @@ const server = axios.create({
   withCredentials: true,
 });
 
-const get = async (url: string, params?: any): Promise<Response> => {
+const get = async ({ url, params, showSnackbar = true }: { url: string, params?: any, showSnackbar?: boolean }): Promise<Response> => {
 	try {
   	const res = await server.get(url, { params })
 		return res.data
 	} catch (error) {
-		errorHandler(error);
+		errorHandler(error, showSnackbar);
 		console.error(error);
 		return {
 			success: false,
@@ -28,7 +28,7 @@ const get = async (url: string, params?: any): Promise<Response> => {
 	}
 };
 
-const post = async (url: string, data?: any): Promise<Response> => {
+const post = async ({url, data , showSnackbar = true}:{url: string, data?: any, showSnackbar?: boolean}): Promise<Response> => {
 	let headers = {};
 	if (document.cookie.includes('csrftoken=')) {
 		headers = { 'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0] }
@@ -44,7 +44,7 @@ const post = async (url: string, data?: any): Promise<Response> => {
 		}
 		return res.data
 	} catch (error) {
-		errorHandler(error);
+		errorHandler(error, showSnackbar);
 		console.error(error);
 		return {
 			success: false,
@@ -53,10 +53,12 @@ const post = async (url: string, data?: any): Promise<Response> => {
 	}
 };
 
-const errorHandler = (error: any) => {
+const errorHandler = (error: any, showSnackbar = true) => {
 	if (error.response) {
 		const { code, message } = error.response.data;
-		snackbar.error(message);
+		if (showSnackbar) {
+			snackbar.error(message);
+		}
 		if (code === 401) {
 			router.push("/user/login");
 		}
