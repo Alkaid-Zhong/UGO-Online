@@ -56,7 +56,7 @@ class InvitationCodeSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(use_url=True)
+    image = serializers.ImageField(use_url=True, required=False)
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), allow_null=True, required=False)
     # 前端传分类的id
     category_name = serializers.CharField(source='category.name', read_only=True)

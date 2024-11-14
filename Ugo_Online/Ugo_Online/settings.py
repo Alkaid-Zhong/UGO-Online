@@ -40,6 +40,8 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_HEADERS = ('*')
 
+# APPEND_SLASH = True
+
 # Application definition
 
 INSTALLED_APPS = [
