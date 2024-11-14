@@ -105,10 +105,18 @@ class LoginSerializer(serializers.Serializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    shop = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['name', 'email', 'role']
+        fields = ['name', 'email', 'role', 'shop']
+
+    def get_shop(self, obj):
+        try:
+            seller_shop = SellerShop.objects.get(seller=obj)
+            return seller_shop.shop.id  # 返回商店的 ID
+        except SellerShop.DoesNotExist:
+            return None
 
 
 
