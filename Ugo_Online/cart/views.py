@@ -74,6 +74,8 @@ class CartDetailView(APIView):
                 'item_id': item.id,
                 'product_id': item.product.id,
                 'product_name': item.product.name,
+                'product_stock_quantity': item.product.stock_quantity,
+                'product_status': item.product.status,
                 'quantity': item.quantity,
                 'price': str(item.product.price),
                 'total_price': str(item.product.price * item.quantity),
@@ -81,4 +83,4 @@ class CartDetailView(APIView):
             })
 
         data = list(shop_dict.values())
-        return api_response(True, data={'shops': data})
+        return api_response(True, code=0, data={'shops': data})
