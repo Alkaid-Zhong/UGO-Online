@@ -100,6 +100,7 @@
   - `name` 用户名
   - `email` 用户邮箱（作为用户唯一标识）
   - `role` 用户类别（可取值为买家`CUSTOMER`、卖家`SELLER`）
+  - 'shop' 管理的商铺的id，没有则为null
 
 ### 修改密码
 
@@ -554,6 +555,8 @@
                         "item_id": 5,
                         "product_id": 4,
                         "product_name": "苹果手机",
+                        "product_stock_quantity": 2,
+                        "product_status": "Available",
                         "quantity": 1,
                         "price": "99999.98",
                         "total_price": "99999.98",
@@ -563,6 +566,8 @@
                         "item_id": 6,
                         "product_id": 5,
                         "product_name": "苹果手机",
+                        "product_stock_quantity": 2,
+                        "product_status": "Available",
                         "quantity": 2,
                         "price": "99999.98",
                         "total_price": "199999.96",
@@ -572,6 +577,8 @@
                         "item_id": 8,
                         "product_id": 2,
                         "product_name": "苹果手机",
+                        "product_stock_quantity": 999,
+                        "product_status": "Available",
                         "quantity": 2,
                         "price": "9999.98",
                         "total_price": "19999.96",
@@ -581,6 +588,8 @@
                         "item_id": 9,
                         "product_id": 3,
                         "product_name": "苹果手机",
+                        "product_stock_quantity": 999,
+                        "product_status": "Available",
                         "quantity": 2,
                         "price": "99999.98",
                         "total_price": "199999.96",
@@ -596,6 +605,8 @@
                         "item_id": 7,
                         "product_id": 1,
                         "product_name": "苹果手机",
+                        "product_stock_quantity": 999,
+                        "product_status": "Available",
                         "quantity": 2,
                         "price": "9999.98",
                         "total_price": "19999.96",
