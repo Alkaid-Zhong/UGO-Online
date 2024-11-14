@@ -11,6 +11,11 @@
         <span>主页</span>
       </v-btn>
 
+      <v-btn to="/user/cart" v-if="user.login">
+        <v-icon>mdi-cart</v-icon>
+        <span>购物车</span>
+      </v-btn>
+
       <v-btn to="/user/login" v-if="!user.login">
         <v-icon>mdi-login</v-icon>
         <span>登录</span>
@@ -46,16 +51,18 @@ import { snackbar } from './store/app';
 import { profile, logout } from './api/user';
 import { useRoute } from 'vue-router';
 
+const route = useRoute();
 
 onMounted(async () => {
-  const route = useRoute();
   const showSnackbar = route.path !== '/user/login';
   await profile(showSnackbar);
 });
 
 watch(user, async (newVal) => {
   if (newVal.login) {
-    router.replace('/user/profile');
+    if (route.path === '/user/login') {
+      router.replace('/user/profile');
+    }
   } else {
     router.replace('/user/login');
   }
