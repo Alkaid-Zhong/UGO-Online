@@ -11,7 +11,7 @@
         <span>主页</span>
       </v-btn>
 
-      <v-btn to="/user/cart" v-if="user.login">
+      <v-btn to="/user/cart" v-if="user.login && user.role === 'CUSTOMER'">
         <v-icon>mdi-cart</v-icon>
         <span>购物车</span>
       </v-btn>

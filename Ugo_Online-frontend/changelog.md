@@ -6,6 +6,7 @@
 | ----------- | ------------------------------------------------------------ | ------ |
 | 11.12 14:15 | server.ts get、post的参数传递方式，errorHandler新增选项是否显示snackbar | UUQ    |
 | 11.12 19:00 | 增加cart一系列内容，但是UI丑陋，也因为没有商品还未完成测试              |    UUQ    |
+| 11.15 00:20 | 完善了cart，初步UI设计 **TODO: 全选逻辑（半选）；库存判断；下架失效；批量删除等待接口** | UUQ |
 
 
 
@@ -28,4 +29,10 @@ const get = async ({ url, params, showSnackbar = true }: { url: string, params?:
 ```
 
 调用时需要传入一个对象，如：`get({url: '/user/profile', data: {something}})`，好处是传参时更加灵活，但其实是不知道怎么处理比较好，于是出此下策。
+
+
+
+### 11.15 00: 15
+
+server.ts中增加了PUT和DELETE方法，但是DELETE是关键字所以改成了_delete。
 

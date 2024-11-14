@@ -1,48 +1,155 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12">
+      <v-col cols="8">
+        <v-list v-if="!loading">
+          <v-list-item>
+            <template v-slot:prepend>
+              <v-icon icon="mdi-cart" size="x-large"></v-icon>
+            </template>
+            <v-list-item-title class="text-h4 headline">购物车</v-list-item-title>
+          </v-list-item>
+
+          <v-list-item>
+            <template #prepend>
+              <v-list-item-action start>
+                <v-checkbox v-model="selectAll" class="d-flex align-items-center" ></v-checkbox>
+              </v-list-item-action>
+            </template>
+            <span>全部商品 ({{ cartCount }})</span>
+            <template v-slot:append>
+              <v-btn> 删除所选 </v-btn>
+            </template>
+          </v-list-item>
+
+          <v-divider></v-divider>
+          <v-list-item v-if="shopLists.length === 0">
+            <v-list-item-title>购物车空空如也，快去逛逛吧</v-list-item-title>
+          </v-list-item>
+
+          <v-list-item class="pa-0" v-for="shop in shopLists" v-else>
+            <v-card elevation="0">
+              <v-card-title>
+                
+                <span class="headline">{{ shop.shop_name }}</span>
+              </v-card-title>
+              <v-card-text class="px-0">
+                <v-list lines="2">
+                  <v-list-item class="pl-0 pt-2 pb-3 pr-0" v-for="item in shop.items" :key="item.item_id">
+                    <!-- <template #default="{ active }"> -->
+                      <v-list-item-action class="d-inline-flex" style="width:100%">
+                        <v-checkbox v-model="itemSelected" :value="item" class="d-flex"></v-checkbox>
+                      
+                        <v-img :src="item.image" height="96" width="96"></v-img>
+                        <v-container width="100%" style="margin-left: auto;">
+                          <v-row>
+                            <v-col cols="4" class="pt-0">
+                              <strong>{{ item.product_name }}</strong>
+                            </v-col>
+                            <v-col cols="4" style="color:orangered;" class="text-h6 pt-0">
+                              {{ currency(item.price) }}
+                            </v-col>
+                            <v-col cols="4" class="d-flex">
+                              <v-row >
+                                <v-col cols="3" class="pa-0">
+                                  <v-responsive aspect-ratio="1" width="100%">
+                                    <v-btn @click="decreaseQuantity(item)" class="w-100 h-100" block tile 
+                                    style=" border: 1px solid #d6d6d6">
+                                    <v-icon size="midium">mdi-minus</v-icon>
+                                  </v-btn>
+                                  </v-responsive>
+                                  
+                                </v-col>
+                                <v-col cols="6" class="pa-0">
+                                <v-responsive aspect-ratio="2" width="100%">
+                                  <input type="number" v-model="item.quantity" @change="updateQuantity(item.item_id, item.quantity)" class="w-100 h-100" 
+                                  style="text-align: center; border-top: 1px solid #d6d6d6;
+                                  border-bottom: 1px solid #d6d6d6;
+                                  border-left: 0;
+                                  border-right: 0;"></input>
+                            </v-responsive>
+                                </v-col>
+                                <v-col cols="3" class="pa-0">
+                                <v-responsive aspect-ratio="1" width="100%">
+                                  <v-btn @click="increaseQuantity(item)" block class="w-100 h-100" tile
+                                  style=" border: 1px solid #d6d6d6">
+                                <v-icon>mdi-plus</v-icon>
+                              </v-btn>
+                            </v-responsive>
+                                </v-col>
+                              </v-row>
+                              <!-- <v-btn @click="decreaseQuantity(item)" style="width: 40px; height: 40px;">
+                                <v-icon size="small">mdi-minus</v-icon>
+                              </v-btn> -->
+
+                            </v-col>
+                          </v-row>
+                          
+                        </v-container>
+                      </v-list-item-action>
+                      
+                    <!-- </template> -->
+                  </v-list-item>
+                </v-list>
+              </v-card-text>
+
+            </v-card>
+
+            
+          </v-list-item>
+        </v-list>
+
+        <v-divider></v-divider>
+
+        
+      </v-col>
+      <v-col cols="4">
         <v-card>
           <v-card-title>
-            <span class="headline">购物车</span>
+            <span class="font-weight-bold">明细</span>
           </v-card-title>
-          <v-card-text v-if="!loading">
-
-            <v-list-item v-if="shopLists.length === 0">
-                <v-list-item-title>购物车空空如也，快去逛逛吧</v-list-item-title>
-            </v-list-item>
-
-            <v-list v-else>
-                
-                <v-list-item v-for="item in shopLists" :key="item.shop_id">
-                  
-                    <v-list-item-title>{{ item.shop_name }}</v-list-item-title>
-                    <v-list-item-subtitle>{{ currency(item.shop_id) }}</v-list-item-subtitle>
-                  
+          <v-container v-if="selectedNotEmpty">
+            <v-row>
+              <v-col cols="3" v-for="item in itemSelected.slice(0,4)">
+                <v-img :src="item.image" aspect-ratio="1"></v-img>
+              </v-col>
+            </v-row>
+          </v-container>
+          <v-container v-else>
+            <v-row>
+              <v-col>
+                <v-list-item>
+                  <v-list-item-title>请在左侧选中商品后查看价格明细</v-list-item-title>
                 </v-list-item>
-            </v-list>
+              </v-col>
+            </v-row>
+          </v-container>
+
+          <v-card-text v-if="selectedNotEmpty" class="text-right" style="color:orangered;">
+            合计：￥{{ totalSum }}<br/>
+            优惠：{{ discount }}<br/>
+            <span class="text-h5">实付：￥{{ actualSum }}</span>
           </v-card-text>
+
           <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" @click="checkout">结算</v-btn>
+            <v-btn block border color="red-lighten-1" @click="checkout">结算</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
+
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
-import {getCart} from '@/api/cart';
-import {cart} from '@/store/cart';
-import {user} from '@/store/user';
+import { ref, onMounted, computed, watch } from 'vue';
+import { getCart, updateCart } from '@/api/cart';
+import snackbar from '@/api/snackbar';
 
 const loading = ref(true);
 
 const fetchCartItems = async () => {
   const response = await getCart();
   shopLists.value = response.data.shops;
-  //console.log("shopLists:", shopLists.value);
   loading.value = false;
 };
 
@@ -50,32 +157,108 @@ onMounted(() => {
   fetchCartItems();
 });
 
+
+
 const shopLists = ref([{ 
   shop_id: 0,
   shop_name: 'test',
   items: [],
 }]);
 
-// const removeItem = (id) => {
-//   cartItems.value = cartItems.value.filter(item => item.id !== id);
-// };
+
+const increaseQuantity = async(item) => {
+  const success = await updateQuantity(item.item_id, item.quantity+1);
+  if (success){
+      item.quantity++;
+    } else {
+      snackbar.error("网络不佳，请稍后再试");
+    }
+}
+
+const decreaseQuantity = async(item) => {
+  if (item.quantity > 1) {
+    const success = await updateQuantity(item.item_id, item.quantity-1);
+    if (success){
+      item.quantity--;
+    } else {
+      snackbar.error("网络不佳，请稍后再试");
+    }
+  } else {
+    // TODO: delete item
+  }
+}
+
+const updateQuantity = async (id, newQuantity) => {
+  console.log(id);
+  const response = await updateCart(id, newQuantity);
+  if (response.success) {
+    return true;
+  }
+  return false;
+}
+
+const deleteItem = async() => {
+  itemSelected.forEach(item => {
+    
+  });
+}
+
+const cartCount = computed(() => {
+  return shopLists.value.reduce((acc, shop) => acc + shop.items.length, 0);
+});
+const totalSum = computed(() => {
+  return itemSelected.value.reduce((acc, item) => acc + item.price * item.quantity, 0);
+});
+
+const discount = ref(0);
+const actualSum = computed(() => totalSum.value - discount.value);
+const itemSelected = ref([]);
+const selectedNotEmpty = computed(() => itemSelected.value.length > 0);
+const selectAll = ref(false);
+
+watch(selectAll, (value) => {
+  if (value) {
+    itemSelected.value = shopLists.value.reduce((acc, shop) => acc.concat(shop.items), []);
+  } else {
+    itemSelected.value = [];
+  }
+});
+
+// const allSelected = computed(() => {
+//   return itemSelected.value.length === cartCount.value;
+// });
+
+// watch(allSelected, (value) => {
+//   selectAll.value = value;
+// });
 
 const checkout = () => {
   alert('还没写！');
 };
 
 const currency = (value) => {
-  if (!value) {
-    console.log("error!");
-    return `undefined`;
+  let val = parseFloat(value);
+  if (val > 10000) {
+    return `￥${(val / 10000).toFixed(2)} 万`;
+  } else {
+    return `￥${parseFloat(value).toFixed(2)}`;
   }
-  return `${value.toFixed(2)}元`;
 };
-
 </script>
 
 <style scoped>
 .headline {
   font-weight: bold;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 隐藏 Firefox 中的上下增减按钮 */
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 </style>

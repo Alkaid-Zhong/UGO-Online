@@ -10,13 +10,13 @@ interface Response {
 }
 
 const server = axios.create({
-  baseURL: "/api",
-  withCredentials: true,
+	baseURL: "/api",
+	withCredentials: true,
 });
 
 const get = async ({ url, params, showSnackbar = true }: { url: string, params?: any, showSnackbar?: boolean }): Promise<Response> => {
 	try {
-  	const res = await server.get(url, { params })
+		const res = await server.get(url, { params })
 		return res.data
 	} catch (error) {
 		errorHandler(error, showSnackbar);
@@ -28,15 +28,15 @@ const get = async ({ url, params, showSnackbar = true }: { url: string, params?:
 	}
 };
 
-const post = async ({url, data , showSnackbar = true}:{url: string, data?: any, showSnackbar?: boolean}): Promise<Response> => {
+const post = async ({ url, data, showSnackbar = true }: { url: string, data?: any, showSnackbar?: boolean }): Promise<Response> => {
 	let headers = {};
 	if (document.cookie.includes('csrftoken=')) {
 		headers = { 'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0] }
 	}
 	try {
 		const res = await server.post(
-			url, 
-			data, 
+			url,
+			data,
 			{ headers }
 		)
 		if (!res.data.success) {
@@ -52,6 +52,51 @@ const post = async ({url, data , showSnackbar = true}:{url: string, data?: any, 
 		};
 	}
 };
+
+const put = async ({ url, data, showSnackbar = true }: { url: string, data?: any, showSnackbar?: boolean }): Promise<Response> => {
+	let headers = {};
+	if (document.cookie.includes('csrftoken=')) {
+		headers = { 'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0] }
+	}
+	try {
+		const res = await server.put(
+			url,
+			data,
+			{ headers }
+		)
+		if (!res.data.success) {
+			throw new Error(res.data.message);
+		}
+		return res.data
+	} catch (error) {
+		errorHandler(error, showSnackbar);
+		console.error(error);
+		return {
+			success: false,
+			...error
+		};
+	}
+}
+
+const _delete = async ({ url, data, showSnackbar = true }: { url: string, data?: any, showSnackbar?: boolean }): Promise<Response> => {
+	try {
+		const res = await server.delete(
+			url,
+			data,
+		)
+		if (!res.data.success) {
+			throw new Error(res.data.message);
+		}
+		return res.data
+	} catch (error) {
+		errorHandler(error, showSnackbar);
+		console.error(error);
+		return {
+			success: false,
+			...error
+		};
+	}
+}
 
 const errorHandler = (error: any, showSnackbar = true) => {
 	if (error.response) {
@@ -70,4 +115,6 @@ const errorHandler = (error: any, showSnackbar = true) => {
 export default {
 	get,
 	post,
+	put,
+	_delete,
 };

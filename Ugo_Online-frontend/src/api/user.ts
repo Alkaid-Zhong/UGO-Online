@@ -3,7 +3,7 @@ import { user } from "@/store/user";
 import snackbar from "./snackbar";
 
 export const login = async (email: string, password: string) => {
-	const response = await server.post({ url: "/user/login", data: { email, password } });
+	const response = await server.post({ url: "/user/login/", data: { email, password } });
 	if (response.success) {
 		const res = await profile();
 		if (res.success) {
@@ -15,7 +15,7 @@ export const login = async (email: string, password: string) => {
 };
 
 export const logout = async () => {
-	if (await server.post({ url: "/user/logout" })) {
+	if (await server.post({ url: "/user/logout/" })) {
 		snackbar.success("退出成功");
 		user.login = false;
 		user.name = "";
@@ -28,21 +28,21 @@ export const logout = async () => {
 
 export const registerCustomer = async (name: string, phone: string, email: string, password: string) => {
 	return server.post({
-		url: "/user/register/customer",
+		url: "/user/register/customer/",
 		data: { name, phone, email, password },
 	});
 };
 
 export const registerSeller = async (name: string, phone: string, email: string, password: string, businessName: string, businessAddress: string) => {
 	return server.post({
-		url: "/user/register/seller",
+		url: "/user/register/seller/",
 		data: { name, phone, email, password, businessName, businessAddress }
 	});
 };
 
 export const profile = async (showSnackbar = true) => {
 
-	const response = await server.get({ url: "/user/profile", showSnackbar: showSnackbar });
+	const response = await server.get({ url: "/user/profile/", showSnackbar: showSnackbar });
 	if (response.success) {
 		user.login = true;
 		user.name = response.data.name;
