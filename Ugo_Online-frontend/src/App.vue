@@ -1,6 +1,12 @@
 <template>
-  <v-app>
+  <v-app :theme="theme">
     <v-app-bar title="UGO Online">
+      <template v-slot:append>
+        <v-btn 
+          :icon="theme ==='light' ? 'mdi-weather-sunny' :'mdi-weather-night'" 
+          @click="toggleTheme"
+        ></v-btn>
+      </template>
     </v-app-bar>
     <v-main>
       <router-view />
@@ -44,7 +50,7 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import router from './router';
 import { user } from './store/user'
 import { snackbar } from './store/app';
@@ -52,6 +58,21 @@ import { profile, logout } from './api/user';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
+const theme = ref('dark')
+// 检测系统是否处于深色模式
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)')
+// 根据系统深色模式设置主题
+const setSystemTheme = () => {
+  theme.value = prefersDark.matches ? 'dark' : 'light'
+  localStorage.setItem('oo_theme', theme.value)
+}
+// 监听系统主题的变化
+prefersDark.addEventListener('change', setSystemTheme)
+const toggleTheme = () => {
+  theme.value = theme.value === 'light' ? 'dark' : 'light'
+  localStorage.setItem('oo_theme', theme.value)
+}
+
 
 onMounted(async () => {
   const showSnackbar = route.path !== '/user/login';
