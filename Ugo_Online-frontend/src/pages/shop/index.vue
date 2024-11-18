@@ -1,0 +1,41 @@
+<template>
+	<v-container>
+		<v-alert type="info" variant="tonal" class="mb-4">
+			<template #text>
+				作为卖家，您可以创建自己的店铺，为顾客提供优质的服务。但是您只能同时管理一个店铺。
+			</template>
+			<template #append>
+				<v-btn to="/shop/create" color="primary">创建店铺</v-btn>
+			</template>
+		</v-alert>
+		<v-row v-if="shops" lines="three">
+			<v-col cols="12" md="4" class="text-center"  v-for="shop in shops.shops">
+				<v-card
+					:to="`/shop/${shop.id}`"
+				>
+					<template #title>
+						<h2 class="headline mb-1">{{ shop.name }}</h2>
+					</template>
+					<template #subtitle>
+						<p class="mb-2 font-weight-bold">{{ `地址：${shop.address}` }}</p>
+						<p>{{ shop.description }}</p>
+					</template>
+					<template #append>
+					</template>
+				</v-card>
+			</v-col>
+		</v-row>
+	</v-container>
+</template>
+<script setup>
+import { onMounted, ref } from 'vue'
+import { getShops } from '@/api/shop';
+
+const shops = ref()
+
+onMounted(async () => {
+	const res = await getShops()
+	shops.value = res
+})
+
+</script>

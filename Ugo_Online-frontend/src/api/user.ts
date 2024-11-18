@@ -48,6 +48,7 @@ export const profile = async (showSnackbar = true) => {
 		user.name = response.data.name;
 		user.email = response.data.email;
 		user.role = response.data.role;
+		user.shopId = response.data.shop;
 	} else {
 		user.login = false;
 	}

@@ -22,6 +22,11 @@
         <span>购物车</span>
       </v-btn>
 
+      <v-btn to="/shop">
+        <v-icon>mdi-store</v-icon>
+        <span>所有商铺</span>
+      </v-btn>
+
       <v-btn to="/user/login" v-if="!user.login">
         <v-icon>mdi-login</v-icon>
         <span>登录</span>

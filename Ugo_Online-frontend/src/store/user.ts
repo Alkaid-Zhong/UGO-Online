@@ -5,11 +5,13 @@ interface User {
     name: string;
     email: string;
     role: 'CUSTOMER' | 'SELLER'
+    shopId: number
 }
 
 export const user = reactive<User>({
     login: false,
     name: '',
     email: '',
-    role: 'CUSTOMER'
+    role: 'CUSTOMER',
+    shopId: null,
 })

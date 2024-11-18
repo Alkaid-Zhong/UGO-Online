@@ -100,7 +100,7 @@
   - `name` 用户名
   - `email` 用户邮箱（作为用户唯一标识）
   - `role` 用户类别（可取值为买家`CUSTOMER`、卖家`SELLER`）
-  - 'shop' 管理的商铺的id，没有则为null
+  - `shop` 管理的商铺的id，没有则为null
 
 ### 修改密码
 
