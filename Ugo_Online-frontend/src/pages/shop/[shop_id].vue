@@ -2,23 +2,25 @@
 	<v-container>
 		<v-skeleton-loader v-if="!shopInfo" type="image, article" />
 		<div v-else>
-				<v-card>
-					<template #title>
-						<h2 class="headline mb-1">{{ shopInfo.name }}</h2>
-					</template>
-					<template #subtitle>
-						<p class="mb-2 font-weight-bold">{{ `地址：${shopInfo.address}` }}</p>
-						<p>{{ shopInfo.description }}</p>
-					</template>
-					<template #append>
-					</template>
-				</v-card>
+			<v-card>
+				<template #title>
+					<h2 class="headline mb-1">{{ shopInfo.name }}</h2>
+				</template>
+				<template #subtitle>
+					<p class="mb-2 font-weight-bold">{{ `地址：${shopInfo.address}` }}</p>
+					<p>{{ shopInfo.description }}</p>
+				</template>
+				<template #append>
+					<v-chip v-if="shop_id == user.shopId" color="green" prepend-icon="mdi-store">我的商铺</v-chip>
+				</template>
+			</v-card>
 		</div>
 	</v-container>
 </template>
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { user } from '@/store/user';
 import { getShopInfo } from '@/api/shop';
 
 const route = useRoute()
