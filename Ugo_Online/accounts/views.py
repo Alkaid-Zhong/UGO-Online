@@ -15,7 +15,7 @@ from .serializers import (
     UserRegistrationSerializer,
     MerchantRegistrationSerializer,
     LoginSerializer,
-    ProfileSerializer, ChangePasswordSerializer, AddressSerializer
+    ProfileSerializer, ChangePasswordSerializer, AddressSerializer, AddMoneySerializer
 )
 
 from rest_framework import generics
@@ -183,3 +183,12 @@ class AddressUpdateView(APIView):
         except Address.DoesNotExist:
             return api_response(False, code=404, message='地址不存在')
 
+
+class AddMoneyView(APIView):
+    permission_classes = [IsAuthenticated, IsCustomer]
+
+    def post(self, request):
+        serializer = AddMoneySerializer(instance=request.user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return api_response(True, message='充值成功', data=serializer.data)
