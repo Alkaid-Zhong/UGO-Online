@@ -7,7 +7,18 @@
 | 11.12 14:15 | server.ts get、post的参数传递方式，errorHandler新增选项是否显示snackbar | UUQ    |
 | 11.12 19:00 | 增加cart一系列内容，但是UI丑陋，也因为没有商品还未完成测试              |    UUQ    |
 | 11.15 00:20 | 完善了cart，初步UI设计 **TODO: 全选逻辑（半选）；库存判断；下架失效；批量删除等待接口** | UUQ |
+| 11.18 23:00 | 完善cart，删除、库存判断 | 
 
+
+## TODO
+
+### Cart页
+1. Cart页面更合理的布局和移动端简单适配。
+2. 结算时快捷取消选中商品。
+3. -quantity到0时二次确认
+4. 一键删除无效商品
+
+### Checkout页
 
 
 ## 具体说明
@@ -35,4 +46,3 @@ const get = async ({ url, params, showSnackbar = true }: { url: string, params?:
 ### 11.15 00: 15
 
 server.ts中增加了PUT和DELETE方法，但是DELETE是关键字所以改成了_delete。
-

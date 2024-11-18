@@ -26,9 +26,9 @@ export const addToCart = async (productId: string, quantity: number) => {
     return response;
 }
 
-export const updateCart = async (itemId: string, quantity: number) => {
+export const updateCart = async (item_id: string, quantity: number) => {
 
-    const response = await server.put({ showSnackbar: false, url: "/cart/update/", data: { itemId, quantity } });
+    const response = await server.put({ showSnackbar: false, url: "/cart/update/", data: { item_id, quantity } });
     if (response.success) {
         //console.log("更新购物车成功");
     } else {
@@ -37,8 +37,8 @@ export const updateCart = async (itemId: string, quantity: number) => {
     return response;
 }
 
-export const deleteItem = async (itemId: string) => {
-    const response = await server._delete({ showSnackbar: false, url: "/cart/delete/", data: { itemId } });
+export const deleteItem = async (item_id: string) => {
+    const response = await server._delete({ showSnackbar: false, url: "/cart/delete/", data: { item_id } });
     if (response.success) {
         //console.log("删除商品成功");
     } else {

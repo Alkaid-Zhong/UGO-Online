@@ -33,9 +33,9 @@ const post = async (
 	{ url, data, showSnackbar = true, headers = {} }: { url: string, data?: any, showSnackbar?: boolean, headers?: any }
 ): Promise<Response> => {
 	if (document.cookie.includes('csrftoken=')) {
-		headers = { 
-			...headers, 
-			'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0] 
+		headers = {
+			...headers,
+			'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0]
 		}
 	}
 	try {
@@ -84,10 +84,14 @@ const put = async ({ url, data, showSnackbar = true }: { url: string, data?: any
 }
 
 const _delete = async ({ url, data, showSnackbar = true }: { url: string, data?: any, showSnackbar?: boolean }): Promise<Response> => {
+	let headers = {};
+	if (document.cookie.includes('csrftoken=')) {
+		headers = { 'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0] }
+	}
 	try {
 		const res = await server.delete(
 			url,
-			data,
+			{ headers, data }
 		)
 		if (!res.data.success) {
 			throw new Error(res.data.message);
