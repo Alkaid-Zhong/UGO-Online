@@ -7,11 +7,13 @@ from django.contrib.auth import login, logout
 
 from Ugo_Online.utils import api_response
 from utils import get_error_message
+from .permissions import IsCustomer
+from .models import Address
 from .serializers import (
     UserRegistrationSerializer,
     MerchantRegistrationSerializer,
     LoginSerializer,
-    ProfileSerializer, ChangePasswordSerializer
+    ProfileSerializer, ChangePasswordSerializer, AddressSerializer
 )
 
 
@@ -98,3 +100,78 @@ class ChangePasswordView(APIView):
             return api_response(True, code=0)
         else:
             return api_response(False, code=403, message=get_error_message(serializer.errors), data=serializer.errors, status_code=status.HTTP_403_FORBIDDEN)
+
+
+class AddressCreateView(APIView):
+    permission_classes = [IsAuthenticated, IsCustomer]
+
+    def post(self, request):
+        serializer = AddressSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return api_response(True, message='地址创建成功', data=serializer.data)
+        else:
+            return api_response(False, code=500, message=get_error_message(serializer.errors), data=serializer.errors)
+
+
+class AddressListView(APIView):
+    permission_classes = [IsAuthenticated, IsCustomer]
+
+    def get(self, request):
+        # 让默认地址在list的第一个
+        addresses = Address.objects.filter(user=request.user)
+        addresses = sorted(addresses, key=lambda x: x.is_default, reverse=True)
+        serializer = AddressSerializer(addresses, many=True)
+        return api_response(True, data=serializer.data)
+
+
+class DefaultAddressView(APIView):
+    permission_classes = [IsAuthenticated, IsCustomer]
+
+    def get(self, request):
+        try:
+            address = Address.objects.get(user=request.user, is_default=True)
+            serializer = AddressSerializer(address)
+            return api_response(True, data=serializer.data)
+        except Address.DoesNotExist:
+            return api_response(True, data=None)
+
+
+class AddressDeleteView(APIView):
+    permission_classes = [IsAuthenticated, IsCustomer]
+
+    def delete(self, request, address_id):
+        try:
+            address = Address.objects.get(user=request.user, id=address_id)
+            address.delete()
+            return api_response(True, message='地址删除成功')
+        except Address.DoesNotExist:
+            return api_response(False, code=404, message='地址不存在')
+
+
+class AddressDetailView(APIView):
+    permission_classes = [IsAuthenticated, IsCustomer]
+
+    def get(self, request, address_id):
+        try:
+            address = Address.objects.get(user=request.user, id=address_id)
+            serializer = AddressSerializer(address)
+            return api_response(True, data=serializer.data)
+        except Address.DoesNotExist:
+            return api_response(False, code=404, message='地址不存在')
+
+
+class AddressUpdateView(APIView):
+    permission_classes = [IsAuthenticated, IsCustomer]
+
+    def put(self, request, address_id):
+        try:
+            address = Address.objects.get(user=request.user, id=address_id)
+            serializer = AddressSerializer(address, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return api_response(True, message='地址更新成功', data=serializer.data)
+            else:
+                return api_response(False, code=500, message=get_error_message(serializer.errors), data=serializer.errors)
+        except Address.DoesNotExist:
+            return api_response(False, code=404, message='地址不存在')

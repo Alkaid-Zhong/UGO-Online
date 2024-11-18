@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
@@ -43,4 +44,23 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class Address(models.Model):
+    user = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='addresses')
+    recipient_name = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    province = models.CharField(max_length=255, blank=True, null=True)
+    phone = models.CharField(max_length=50)
+    is_default = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.is_default:
+            # 将该用户的其他地址设为非默认
+            Address.objects.filter(user=self.user, is_default=True).update(is_default=False)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.recipient_name} - {self.province}, {self.city}, {self.address}"
 

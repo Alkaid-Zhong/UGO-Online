@@ -1,5 +1,7 @@
 # 基本数据格式
 
+**所有url末尾都需要带'/'**
+
 后端的接口格式一般情况下遵循相对统一的标准，采用JSON格式。数据结构大致如下：
 
 - **success** `Boolean`格式，表示是否操作成功。
@@ -33,6 +35,7 @@
 - `401` 表示用户未登录
 - `402` 表示注册失败
 - `403` 表示用户名或密码错误（登陆失败）
+- `500` 地址相关错误
 
 # API文档
 
@@ -100,7 +103,7 @@
   - `name` 用户名
   - `email` 用户邮箱（作为用户唯一标识）
   - `role` 用户类别（可取值为买家`CUSTOMER`、卖家`SELLER`）
-  - 'shop' 管理的商铺的id，没有则为null
+  - `shop` 管理的商铺的id，没有则为null
 
 ### 修改密码
 
@@ -115,6 +118,146 @@
 }
 ```
 - 保证了更改密码后用户仍然在登陆状态
+
+## 地址管理
+
+### 新建地址
+
+- 请求路径`/user/address/create/`
+- 请求方法`POST`
+- 请求数据格式
+```json
+{
+    "recipient_name": "默认地址check",
+    "province": "北京市",
+    "city": "海淀区",
+    "address": "学院路37号北航111",
+    "phone": "17770793406",
+    "is_default": "true/false, 默认为false"
+}
+```
+
+### 获取地址列表
+
+- 请求路径`/user/address/list/`
+- 请求方法`GET`
+- 返回结果格式
+默认地址（如果有）一定在第一个
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": [
+        {
+            "id": 8,
+            "recipient_name": "默认地址check",
+            "address": "学院路37号北航111",
+            "city": "海淀区",
+            "province": "北京市",
+            "phone": "17770793406",
+            "is_default": true,
+            "user": 5
+        },
+        {
+            "id": 1,
+            "recipient_name": "czx",
+            "address": "学院路37号北航",
+            "city": "海淀区",
+            "province": "北京市",
+            "phone": "17770793406",
+            "is_default": false,
+            "user": 5
+        },
+        {
+            "id": 2,
+            "recipient_name": "czx",
+            "address": "学院路37号北航",
+            "city": "海淀区",
+            "province": "北京市",
+            "phone": "17770793406",
+            "is_default": false,
+            "user": 5
+        },
+        {
+            "id": 3,
+            "recipient_name": "czx",
+            "address": "学院路37号北航",
+            "city": "海淀区",
+            "province": "北京市",
+            "phone": "17770793406",
+            "is_default": false,
+            "user": 5
+        }
+    ]
+}
+```
+
+### 获取默认地址
+
+- 请求路径`/user/address/default/`
+- 请求方法`GET`
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": {
+        "id": 8,
+        "recipient_name": "默认地址check",
+        "address": "学院路37号北航111",
+        "city": "海淀区",
+        "province": "北京市",
+        "phone": "17770793406",
+        "is_default": true,
+        "user": 5
+    }
+}
+```
+- 如果没有默认地址，返回`null`
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": null
+}
+```
+
+### 删除地址
+
+- 请求路径`/user/address/<int:address_id>/delete/`
+- 请求方法`DELETE`
+
+### 获取地址详情
+
+- 请求路径`/user/address/<int:address_id>/`
+- 请求方法`GET`
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": {
+        "id": 2,
+        "recipient_name": "czx",
+        "address": "学院路37号北航",
+        "city": "海淀区",
+        "province": "北京市",
+        "phone": "17770793406",
+        "is_default": false,
+        "user": 5
+    }
+}
+```
+
+### 修改地址
+- 请求路径`/user/address/<int:address_id>/update/`
+- 请求方法`PUT`
+- 请求参数
+  和新建地址一样，可以传部分，则部分修改。
 
 ## 商店相关
 
@@ -383,7 +526,6 @@
 - 请求路径：`/shop/products`
 - 其余和上面一样
 
-
 ### 获取所有的商品类别
 
 - 请求路径：`/shop/category_list`
@@ -414,8 +556,6 @@
 
 - 请求路径：`/shop/<int:shop_id>/category_list`
 - 其余同上
-
-
 
 ## 购物车相关
 
@@ -618,3 +758,4 @@
     }
 }
 ```
+

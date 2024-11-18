@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Address
 from shop.models import SellerShop
 
 
@@ -119,7 +119,6 @@ class ProfileSerializer(serializers.ModelSerializer):
             return None
 
 
-
 class ChangePasswordSerializer(serializers.ModelSerializer):
     old_password = serializers.CharField(
         write_only=True,
@@ -159,4 +158,11 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         user.set_password(new_password)
         user.save()
         return user
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = '__all__'
+        read_only_fields = ['id', 'user']
 
