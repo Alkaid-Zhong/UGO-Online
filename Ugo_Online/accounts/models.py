@@ -36,6 +36,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='CUSTOMER')
     is_staff = models.BooleanField(default=False)
     registration_date = models.DateTimeField(auto_now_add=True)
+    money = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     objects = UserManager()
 

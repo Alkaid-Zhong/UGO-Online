@@ -69,6 +69,7 @@ class OrderSerializer(serializers.Serializer):
                 user=user,
                 shop_id=shop_id,
                 recipient_name=address.recipient_name,
+                total_price=0,
                 address=address.address,
                 city=address.city,
                 province=address.province,
@@ -84,9 +85,6 @@ class OrderSerializer(serializers.Serializer):
                 total_price = unit_price * quantity
                 total_amount += total_price
 
-                # if product.stock_quantity == quantity:
-                #     product.is_available = False
-                #     print(f'商品 {product} 已售罄!')
                 product.stock_quantity -= quantity
 
                 product.save()
@@ -99,10 +97,10 @@ class OrderSerializer(serializers.Serializer):
                     total_price=total_price
                 )
 
-            # order.total_amount = total_amount
+            order.total_price = total_amount
             order.save()
             created_orders.append(order)
-        print('return!')
+        # print('return!')
         return created_orders
 
     def to_representation(self, instance):
@@ -119,7 +117,7 @@ class OrderSerializer(serializers.Serializer):
                 'order_id': order.id,
                 'user': order.user.id,
                 'shop_id': order.shop.id,
-                # 'total_amount': str(order.total_amount),
+                'total_price': str(order.total_price),
                 'order_date': order.order_date.isoformat(),
                 'status': order.status,
                 'address': {
@@ -133,7 +131,7 @@ class OrderSerializer(serializers.Serializer):
             }
             # 获取订单项
             order_items = order.items.all()
-            order_total_price = 0
+            # order_total_price = 0
             for item in order_items:
                 order_data['items'].append({
                     'id': item.id,
@@ -143,8 +141,8 @@ class OrderSerializer(serializers.Serializer):
                     'total_price': str(item.total_price),
                     'is_cancelled': item.is_cancelled,
                 })
-                if not item.is_cancelled:
-                    order_total_price += item.total_price
-            order_data['total_price'] = order_total_price
+                # if not item.is_cancelled:
+                #     order_total_price += item.total_price
+            # order_data['total_price'] = order_total_price
             data.append(order_data)
         return {'orders': data} if not single_object else data[0]

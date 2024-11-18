@@ -14,21 +14,32 @@
 					<v-chip v-if="shop_id == user.shopId" color="green" prepend-icon="mdi-store">我的商铺</v-chip>
 				</template>
 				<v-card-actions v-if="shop_id == user.shopId">
-					<v-btn color="primary" @click="showAddProductDialog" prepend-icon="mdi-plus">添加商品</v-btn>
+					<v-btn color="primary" @click="showAddProduct = true" prepend-icon="mdi-plus">添加商品</v-btn>
 				</v-card-actions>
 			</v-card>
 			<v-row v-if="products">
 				<v-col cols="12" md="4" v-for="product in products.products">
-					<v-card>
-						<v-img :src="product.image" aspect-ratio="1" class="mb-2" />
-						<v-card-title>{{ product.name }}</v-card-title>
-						<v-card-text>{{ product.description }}</v-card-text>
+					<v-card height="100%">
+						<v-img :src="product.image" aspect-ratio="1" />
+						<v-divider></v-divider>
+						<v-card-item class="px-2 pb-0">
+							<span style="font-size: 16px; color: red; font-weight: bold">￥</span>
+							<span class="font-weight-bold text-h5" style="color: red;">
+								{{ product.price }}
+							</span>
+						</v-card-item>
+						<v-card-title class="py-0">
+							{{ product.name }}
+							<v-chip size="x-small" color="primary" class="mb-1">{{ product.category_name }}</v-chip>
+						</v-card-title>
+						<v-card-subtitle class="py-0">库存：{{ product.stock_quantity }}</v-card-subtitle>
+						<v-card-text class="pt-2">{{ product.description }}</v-card-text>
 					</v-card>
 				</v-col>
 			</v-row>
 		</div>
 	</v-container>
-	<v-dialog v-model="showAddProduct" fullscreen transition="dialog-bottom-transition">
+	<v-dialog v-model="showAddProduct" transition="dialog-bottom-transition">
 		<v-card>
 			<v-toolbar>
 				<v-btn
@@ -116,17 +127,8 @@ const products = ref(null)
 onMounted(async () => {
 	shopInfo.value = await getShopInfo(shop_id)
 	products.value = await getProductList(shop_id)
+	categoryList.value = (await getCategories()).data.categories
 })
-
-const showAddProductDialog = async () => {
-	const res = await getCategories()
-	if (res.success) {
-		categoryList.value = res.data.categories
-	} else {
-		snackbar.error(res.message)
-	}
-	showAddProduct.value = true
-}
 
 const onclickAddProduct = async () => {
 	if (!productName.value || productName.value.trim() === '') {
@@ -163,6 +165,7 @@ const onclickAddProduct = async () => {
 	})
 	if (res.success) {
 		snackbar.success('添加成功')
+		products.value = await getProductList(shop_id)
 		showAddProduct.value = false
 		productName.value = ''
 		productDescription.value = ''

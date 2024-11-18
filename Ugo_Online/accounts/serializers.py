@@ -109,7 +109,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['name', 'email', 'role', 'shop']
+        fields = ['name', 'email', 'role', 'shop', 'money', 'phone']
 
     def get_shop(self, obj):
         try:
@@ -166,3 +166,16 @@ class AddressSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['id', 'user']
 
+
+class AddMoneySerializer(serializers.ModelSerializer):
+    add_money = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['add_money', 'money']
+        read_only_fields = ['id', 'user']
+
+    def update(self, instance, validated_data):
+        instance.money += validated_data.get('add_money', 0)
+        instance.save()
+        return instance

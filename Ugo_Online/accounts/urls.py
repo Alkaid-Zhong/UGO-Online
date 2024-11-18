@@ -5,7 +5,7 @@ from .views import (
     UserProfileView, ChangePasswordView,
     AddressCreateView, AddressListView,
     DefaultAddressView, AddressDeleteView,
-    AddressDetailView, AddressUpdateView
+    AddressDetailView, AddressUpdateView, AddMoneyView
 )
 
 urlpatterns = [
@@ -21,4 +21,5 @@ urlpatterns = [
     path('address/<int:address_id>/delete/', AddressDeleteView.as_view(), name='address_delete'),
     path('address/<int:address_id>/', AddressDetailView.as_view(), name='address_detail'),
     path('address/<int:address_id>/update/', AddressUpdateView.as_view(), name='address_update'),
+    path('add-money/', AddMoneyView.as_view(), name='add_money'),
 ]
