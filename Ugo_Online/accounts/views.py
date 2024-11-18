@@ -6,6 +6,8 @@ from accounts.permissions import IsSeller
 from django.contrib.auth import login, logout
 
 from Ugo_Online.utils import api_response
+from order.models import Order
+from order.serializers import OrderSerializer
 from utils import get_error_message
 from .permissions import IsCustomer
 from .models import Address
@@ -15,6 +17,9 @@ from .serializers import (
     LoginSerializer,
     ProfileSerializer, ChangePasswordSerializer, AddressSerializer
 )
+
+from rest_framework import generics
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class CustomerRegistrationView(APIView):
@@ -143,7 +148,9 @@ class AddressDeleteView(APIView):
     def delete(self, request, address_id):
         try:
             address = Address.objects.get(user=request.user, id=address_id)
-            address.delete()
+            # address.delete()
+            # 软删除
+            address.user = None
             return api_response(True, message='地址删除成功')
         except Address.DoesNotExist:
             return api_response(False, code=404, message='地址不存在')
@@ -175,3 +182,4 @@ class AddressUpdateView(APIView):
                 return api_response(False, code=500, message=get_error_message(serializer.errors), data=serializer.errors)
         except Address.DoesNotExist:
             return api_response(False, code=404, message='地址不存在')
+

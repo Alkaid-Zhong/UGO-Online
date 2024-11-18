@@ -13,7 +13,7 @@ def api_response(success, code=0, message='', data=None, status_code=status.HTTP
     }, status=status_code)
 
 
-def list_response(paginated_response, paginator):
+def list_response(paginated_response, paginator, list_name):
 
     return api_response(
         True,
@@ -23,7 +23,7 @@ def list_response(paginated_response, paginator):
             "count": paginated_response["count"],
             "next": paginated_response["next"],
             "previous": paginated_response["previous"],
-            "shops": paginated_response["results"],
+            f"{list_name}": paginated_response["results"],
             "total_count": paginator.page.paginator.count,
             "total_page": paginator.page.paginator.num_pages,
             "cur_page": paginator.page.number

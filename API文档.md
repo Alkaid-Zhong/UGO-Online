@@ -28,6 +28,7 @@
 错误码约定：
 - `0`表示操作成功
 - `200` 商品错误
+- `201` 订单错误
 - `300` 商店错误
 - `301` 商店权限错误
 - `302` 邀请码错误
@@ -475,7 +476,7 @@
         "count": 23,
         "next": null,
         "previous": "http://127.0.0.1:8000/shop/1/products?page=2",
-        "shops": [
+        "products": [
             {
                 "id": 22,
                 "shop": 1,
@@ -759,3 +760,229 @@
 }
 ```
 
+## 订单相关
+
+后端todo: 预览页面需要获取的信息。传入和创建订单传入的数据一样，传出一个按shop分类的列表（和购物车一样）
+
+传进来的是list，返回的是一个order的list。可以根据这个order的list，去搞一个支付的页面（虽然可能有多个订单，但是是一起支付的）。支付就可以传一个order_id的list过来获取支付的逻辑。
+
+### 创建订单
+
+- 请求路径：`/order/create/`
+- 请求方式：POST
+- 请求参数：
+```json
+{
+    "address_id": 2,
+    "items": [
+        {
+            "product_id": 23,
+            "quantity": 1
+        },
+        {
+            "product_id": 22,
+            "quantity": 2
+        }
+    ]
+}
+```
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "订单创建成功",
+    "data": {
+        "orders": [
+            {
+                "order_id": 19,
+                "user": 5,
+                "shop_id": 2,
+                "order_date": "2024-11-18T11:00:28.531487+00:00",
+                "status": "Pending Payment",
+                "address": {
+                    "recipient_name": "czx",
+                    "address": "学院路37号北航",
+                    "city": "海淀区",
+                    "province": "北京市",
+                    "phone": "17770793406"
+                },
+                "items": [
+                    {
+                        "id": 20,
+                        "product": {
+                            "id": 1,
+                            "shop": 2,
+                            "name": "苹果手机",
+                            "description": "Iphone 16",
+                            "price": "9999.98",
+                            "stock_quantity": 990,
+                            "category": null,
+                            "status": "Available",
+                            "create_date": "2024-11-08T07:49:58.707722Z",
+                            "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216.png"
+                        },
+                        "quantity": 1,
+                        "unit_price": "9999.98",
+                        "total_price": "9999.98",
+                        "is_cancelled": false
+                    }
+                ],
+                "total_price": 9999.98
+            },
+            {
+                "order_id": 20,
+                "user": 5,
+                "shop_id": 1,
+                "order_date": "2024-11-18T11:00:28.533491+00:00",
+                "status": "Pending Payment",
+                "address": {
+                    "recipient_name": "czx",
+                    "address": "学院路37号北航",
+                    "city": "海淀区",
+                    "province": "北京市",
+                    "phone": "17770793406"
+                },
+                "items": [
+                    {
+                        "id": 21,
+                        "product": {
+                            "id": 25,
+                            "shop": 1,
+                            "name": "Iphone 6669",
+                            "description": "最牛逼的苹果手机！",
+                            "price": "99999.99",
+                            "stock_quantity": 3,
+                            "category": 1,
+                            "status": "Available",
+                            "create_date": "2024-11-11T03:36:25.446511Z",
+                            "image": "/media/product_images/%E4%B8%8A%E6%B5%B7%E4%B8%9C%E4%BA%9A%E5%B7%B2%E5%A4%84%E7%90%86_te3siEu.png",
+                            "category_name": "电子产品"
+                        },
+                        "quantity": 3,
+                        "unit_price": "99999.99",
+                        "total_price": "299999.97",
+                        "is_cancelled": false
+                    }
+                ],
+                "total_price": 299999.97
+            }
+        ]
+    }
+}
+```
+
+### 用户获取订单列表
+
+- 请求路径：`/order/user_orders/`
+- 请求方式：GET
+- 请求参数：无
+- 响应数据：
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "查询返回成功",
+    "data": {
+        "count": 18,
+        "next": "http://127.0.0.1:8000/order/user_orders/?page=2",
+        "previous": null,
+        "orders": [
+            {
+                "order_id": 1,
+                "user": 5,
+                "shop_id": 1,
+                "order_date": "2024-11-18T10:02:27.162033+00:00",
+                "status": "Pending Payment",
+                "address": {
+                    "recipient_name": "czx",
+                    "address": "学院路37号北航",
+                    "city": "海淀区",
+                    "province": "北京市",
+                    "phone": "17770793406"
+                },
+                "items": [
+                    {
+                        "id": 1,
+                        "product": {
+                            "id": 23,
+                            "shop": 1,
+                            "name": "oppo A11 pro max",
+                            "description": "安卓手机",
+                            "price": "19.90",
+                            "stock_quantity": 1,
+                            "category": null,
+                            "status": "Available",
+                            "create_date": "2024-11-08T08:02:53.330448Z",
+                            "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_nXqr0kW.png"
+                        },
+                        "quantity": 1,
+                        "unit_price": "19.90",
+                        "total_price": "19.90",
+                        "is_cancelled": false
+                    },
+                    {
+                        "id": 2,
+                        "product": {
+                            "id": 22,
+                            "shop": 1,
+                            "name": "oppo A11",
+                            "description": "安卓手机",
+                            "price": "9.90",
+                            "stock_quantity": 0,
+                            "category": null,
+                            "status": "Unavailable",
+                            "create_date": "2024-11-08T08:02:45.534134Z",
+                            "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_2OLYpvf.png"
+                        },
+                        "quantity": 2,
+                        "unit_price": "9.90",
+                        "total_price": "19.80",
+                        "is_cancelled": false
+                    }
+                ],
+                "total_price": 39.7
+            },
+            {
+                "order_id": 2,
+                "user": 5,
+                "shop_id": 2,
+                "order_date": "2024-11-18T10:26:35.223853+00:00",
+                "status": "Pending Payment",
+                "address": {
+                    "recipient_name": "czx",
+                    "address": "学院路37号北航",
+                    "city": "海淀区",
+                    "province": "北京市",
+                    "phone": "17770793406"
+                },
+                "items": [
+                    {
+                        "id": 3,
+                        "product": {
+                            "id": 1,
+                            "shop": 2,
+                            "name": "苹果手机",
+                            "description": "Iphone 16",
+                            "price": "9999.98",
+                            "stock_quantity": 991,
+                            "category": null,
+                            "status": "Available",
+                            "create_date": "2024-11-08T07:49:58.707722Z",
+                            "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216.png"
+                        },
+                        "quantity": 1,
+                        "unit_price": "9999.98",
+                        "total_price": "9999.98",
+                        "is_cancelled": false
+                    }
+                ],
+                "total_price": 9999.98
+            }
+        ],
+        "total_count": 18,
+        "total_page": 2,
+        "cur_page": 1
+    }
+}
+```
