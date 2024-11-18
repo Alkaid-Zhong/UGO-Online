@@ -58,6 +58,12 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        # 如果库存为 0，状态自动设置为 Unavailable
+        if self.stock_quantity == 0:
+            self.status = 'Unavailable'
+        super().save(*args, **kwargs)
+
 
 class Category(models.Model):
     name = models.CharField(max_length=63, unique=True)

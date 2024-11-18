@@ -16,7 +16,7 @@ def custom_exception_handler(exc, context):
             detail = exc.detail if hasattr(exc, 'detail') else '用户没有权限'
             return api_response(False, code=403, message=detail, data=response.data)
         else:
-            return api_response(False, code=400, message=response.data.get('detail', '发生错误'), data=response.data)
+            return api_response(False, code=400, message=response.data.get('detail', response.data.get('error', '发生错误')), data=response.data)
     else:
         error_detail = str(exc) if exc else '未知错误'
         return api_response(False, code=500, message='服务器内部错误', data={'error': error_detail})

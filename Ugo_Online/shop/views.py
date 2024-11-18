@@ -139,7 +139,7 @@ class ShopListView(ListAPIView):
             serializer = self.get_serializer(page, many=True)
             paginated_response = self.get_paginated_response(serializer.data).data
 
-            return list_response(paginated_response, self.paginator)
+            return list_response(paginated_response, self.paginator, 'shops')
         else:
             serializer = self.get_serializer(queryset, many=True)
             return api_response(True, code=0, data={'shops': serializer.data})
@@ -195,7 +195,7 @@ class ProductListView(ListAPIView):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             paginated_response = self.get_paginated_response(serializer.data).data
-            return list_response(paginated_response, self.paginator)
+            return list_response(paginated_response, self.paginator, 'products')
         else:
             serializer = self.get_serializer(queryset, many=True)
             return api_response(True, code=0, data={'products': serializer.data})
