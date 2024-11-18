@@ -29,7 +29,6 @@ class CreateOrderView(APIView):
             return api_response(False, code=201, message=get_error_message(serializer.errors), data=serializer.errors)
 
 
-
 class UserOrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated, IsCustomer]
@@ -86,3 +85,15 @@ class SellerOrderListView(generics.ListAPIView):
             return api_response(True, code=0, data={'orders': serializer.data})
 
 
+class OrderDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return api_response(False, code=201, message='订单不存在')
+        if order.user != request.user and SellerShop.objects.filter(shop=order.shop, seller=request.user).count() == 0:
+            return api_response(False, code=201, message='您无权查看该订单')
+        serializer = OrderSerializer(order)
+        return api_response(True, code=0, data=serializer.data)
