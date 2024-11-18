@@ -876,7 +876,17 @@
 
 - 请求路径：`/order/user_orders/`
 - 请求方式：GET
-- 请求参数：无
+- 请求参数
+  - page：页码，默认为1
+  - status：订单状态，可选参数，默认为所有状态
+    STATUS_CHOICES = (
+        ('Pending Payment', '待支付'),
+        ('Payment Received', '已支付待收货'),
+        ('Completed', '已完成'),
+        ('Refund Requested', '申请退款中'),
+        ('Refund Successful', '退款成功'),
+        ('Cancelled', '已取消'),
+    )
 - 响应数据：
 ```json
 {
