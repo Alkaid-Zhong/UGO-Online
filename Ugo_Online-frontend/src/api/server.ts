@@ -1,6 +1,7 @@
 import axios from "axios";
 import snackbar from "./snackbar";
 import router from "@/router";
+import { head } from "node_modules/axios/index.cjs";
 
 interface Response {
 	success: boolean;
@@ -28,10 +29,14 @@ const get = async ({ url, params, showSnackbar = true }: { url: string, params?:
 	}
 };
 
-const post = async ({ url, data, showSnackbar = true }: { url: string, data?: any, showSnackbar?: boolean }): Promise<Response> => {
-	let headers = {};
+const post = async (
+	{ url, data, showSnackbar = true, headers = {} }: { url: string, data?: any, showSnackbar?: boolean, headers?: any }
+): Promise<Response> => {
 	if (document.cookie.includes('csrftoken=')) {
-		headers = { 'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0] }
+		headers = { 
+			...headers, 
+			'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0] 
+		}
 	}
 	try {
 		const res = await server.post(
