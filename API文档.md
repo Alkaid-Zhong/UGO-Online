@@ -334,7 +334,6 @@
 }
 ```
 
-
 ### 创建商铺
 
 - 请求路径：`/shop/create`
@@ -371,18 +370,76 @@
     "code": 0,
     "message": "",
     "data": {
-        "id": 1,
-        "name": "李四的商铺",
-        "address": "上海市浦东新区",
-        "description": "主营服装鞋帽",
-        "create_date": "2024-11-06T11:39:56.620678Z",
+        "id": 2,
+        "name": "张三的商铺",
+        "address": "北京市朝阳区",
+        "description": "主营电子产品",
+        "create_date": "2024-11-07T10:11:29.139915Z",
         "sellers": [
             {
-                "name": "测试商家0",
-                "email": "seller1@buaa.edu.cn",
-                "role": "SELLER"
+                "name": "seller2",
+                "email": "seller2@buaa.edu.cn",
+                "role": "SELLER",
+                "shop": 2,
+                "money": "0.00",
+                "phone": "1111111111"
+            },
+            {
+                "name": "seller3",
+                "email": "seller3@buaa.edu.cn",
+                "role": "SELLER",
+                "shop": 2,
+                "money": "0.00",
+                "phone": "0000000000"
             }
-        ]
+        ],
+        "total_income": "65.00"
+    }
+}
+```
+
+### 查看商店所有流水
+
+- 请求路径：`/shop/<int:id>/transactions`
+- 请求方法：`GET`
+- 权限要求：需要认证，且用户角色为商家，并且是商铺的现有管理者
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "查询返回成功",
+    "data": {
+        "count": 2,
+        "next": null,
+        "previous": null,
+        "transactions": [
+            {
+                "id": 3,
+                "shop": 2,
+                "shop_name": "张三的商铺",
+                "order": 23,
+                "order_id": 23,
+                "amount": "-10.00",
+                "transaction_type": "Refund",
+                "date": "2024-11-19T07:37:50.232500Z",
+                "description": "Refund for Order 订单 23 - 用户 customer1@buaa.edu.cn, Items: 26"
+            },
+            {
+                "id": 1,
+                "shop": 2,
+                "shop_name": "张三的商铺",
+                "order": 23,
+                "order_id": 23,
+                "amount": "25.00",
+                "transaction_type": "Income",
+                "date": "2024-11-19T07:32:10.199759Z",
+                "description": "Payment for 订单 23 - 用户 customer1@buaa.edu.cn"
+            }
+        ],
+        "total_count": 2,
+        "total_page": 1,
+        "cur_page": 1
     }
 }
 ```
@@ -909,71 +966,17 @@
     "code": 0,
     "message": "查询返回成功",
     "data": {
-        "count": 18,
-        "next": "http://127.0.0.1:8000/order/user_orders/?page=2",
+        "count": 3,
+        "next": null,
         "previous": null,
         "orders": [
             {
-                "order_id": 1,
-                "user": 5,
-                "shop_id": 1,
-                "order_date": "2024-11-18T10:02:27.162033+00:00",
-                "status": "Pending Payment",
-                "address": {
-                    "recipient_name": "czx",
-                    "address": "学院路37号北航",
-                    "city": "海淀区",
-                    "province": "北京市",
-                    "phone": "17770793406"
-                },
-                "items": [
-                    {
-                        "id": 1,
-                        "product": {
-                            "id": 23,
-                            "shop": 1,
-                            "name": "oppo A11 pro max",
-                            "description": "安卓手机",
-                            "price": "19.90",
-                            "stock_quantity": 1,
-                            "category": null,
-                            "status": "Available",
-                            "create_date": "2024-11-08T08:02:53.330448Z",
-                            "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_nXqr0kW.png"
-                        },
-                        "quantity": 1,
-                        "unit_price": "19.90",
-                        "total_price": "19.90",
-                        "is_cancelled": false
-                    },
-                    {
-                        "id": 2,
-                        "product": {
-                            "id": 22,
-                            "shop": 1,
-                            "name": "oppo A11",
-                            "description": "安卓手机",
-                            "price": "9.90",
-                            "stock_quantity": 0,
-                            "category": null,
-                            "status": "Unavailable",
-                            "create_date": "2024-11-08T08:02:45.534134Z",
-                            "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_2OLYpvf.png"
-                        },
-                        "quantity": 2,
-                        "unit_price": "9.90",
-                        "total_price": "19.80",
-                        "is_cancelled": false
-                    }
-                ],
-                "total_price": 39.7
-            },
-            {
-                "order_id": 2,
+                "order_id": 23,
                 "user": 5,
                 "shop_id": 2,
-                "order_date": "2024-11-18T10:26:35.223853+00:00",
-                "status": "Pending Payment",
+                "total_price": "15.00",
+                "order_date": "2024-11-19T07:18:12.156984+00:00",
+                "status": "Payment Received",
                 "address": {
                     "recipient_name": "czx",
                     "address": "学院路37号北航",
@@ -983,30 +986,122 @@
                 },
                 "items": [
                     {
-                        "id": 3,
+                        "id": 26,
                         "product": {
-                            "id": 1,
+                            "id": 27,
                             "shop": 2,
-                            "name": "苹果手机",
-                            "description": "Iphone 16",
-                            "price": "9999.98",
-                            "stock_quantity": 991,
-                            "category": null,
+                            "name": "测试物品1",
+                            "description": "测试物品1",
+                            "price": "10.00",
+                            "stock_quantity": 10,
+                            "category": 6,
                             "status": "Available",
-                            "create_date": "2024-11-08T07:49:58.707722Z",
-                            "image": "/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216.png"
+                            "create_date": "2024-11-19T07:04:53.473233Z",
+                            "image": null,
+                            "category_name": "玩具"
                         },
                         "quantity": 1,
-                        "unit_price": "9999.98",
-                        "total_price": "9999.98",
+                        "unit_price": "10.00",
+                        "total_price": "10.00",
+                        "is_cancelled": true
+                    },
+                    {
+                        "id": 27,
+                        "product": {
+                            "id": 29,
+                            "shop": 2,
+                            "name": "测试物品3",
+                            "description": "",
+                            "price": "5.00",
+                            "stock_quantity": 7,
+                            "category": null,
+                            "status": "Available",
+                            "create_date": "2024-11-19T07:05:59.221573Z",
+                            "image": null
+                        },
+                        "quantity": 3,
+                        "unit_price": "5.00",
+                        "total_price": "15.00",
                         "is_cancelled": false
                     }
-                ],
-                "total_price": 9999.98
+                ]
+            },
+            {
+                "order_id": 24,
+                "user": 5,
+                "shop_id": 1,
+                "total_price": "30.00",
+                "order_date": "2024-11-19T07:18:12.161156+00:00",
+                "status": "Shipped",
+                "address": {
+                    "recipient_name": "czx",
+                    "address": "学院路37号北航",
+                    "city": "海淀区",
+                    "province": "北京市",
+                    "phone": "17770793406"
+                },
+                "items": [
+                    {
+                        "id": 28,
+                        "product": {
+                            "id": 28,
+                            "shop": 1,
+                            "name": "测试物品2",
+                            "description": "",
+                            "price": "15.00",
+                            "stock_quantity": 8,
+                            "category": null,
+                            "status": "Available",
+                            "create_date": "2024-11-19T07:05:13.828545Z",
+                            "image": null
+                        },
+                        "quantity": 2,
+                        "unit_price": "15.00",
+                        "total_price": "30.00",
+                        "is_cancelled": false
+                    }
+                ]
+            },
+            {
+                "order_id": 25,
+                "user": 5,
+                "shop_id": 2,
+                "total_price": "20.00",
+                "order_date": "2024-11-19T07:40:46.680367+00:00",
+                "status": "Cancelled",
+                "address": {
+                    "recipient_name": "czx",
+                    "address": "学院路37号北航",
+                    "city": "海淀区",
+                    "province": "北京市",
+                    "phone": "17770793406"
+                },
+                "items": [
+                    {
+                        "id": 29,
+                        "product": {
+                            "id": 27,
+                            "shop": 2,
+                            "name": "测试物品1",
+                            "description": "测试物品1",
+                            "price": "10.00",
+                            "stock_quantity": 10,
+                            "category": 6,
+                            "status": "Available",
+                            "create_date": "2024-11-19T07:04:53.473233Z",
+                            "image": null,
+                            "category_name": "玩具"
+                        },
+                        "quantity": 2,
+                        "unit_price": "10.00",
+                        "total_price": "20.00",
+                        "is_cancelled": false
+                    }
+                ]
             }
         ],
-        "total_count": 18,
-        "total_page": 2,
+        "total_count": 3,
+        "total_page": 1,
         "cur_page": 1
     }
 }
@@ -1014,16 +1109,120 @@
 
 ### 商家获取订单列表
 
-- 请求路径：`orders/seller_orders/<int:shop_id>/`
+- 请求路径：`order/seller_orders/`
 - 请求方法：GET
 - 其余和上面用户那个一样
 
 ### 用户支付订单
 
-刚下单的时候是多个order杂糅在一起的，如果刚下单的时候没有支付，那么之后就只能在订单界面浏览订单列表，一个一个支付。
+刚下单的时候是多个order杂糅在一起的（此时是传列表），如果刚下单的时候没有支付，那么之后就只能在订单界面浏览订单列表，一个一个支付（传列表大小为1即可）。
 
+- **请求路径**：`/order/pay/`
+- **请求方法**：`POST`
+- **权限要求**：需要认证，且用户角色为 **买家**
+- **请求数据格式**：
 
+```json
+{
+  "order_ids": [1, 2, 3]
+}
+```
+
+- **请求参数说明**：
+  - `order_ids`：整数数组，表示需要支付的订单 ID 列表。这些订单必须属于当前用户，且状态为“待支付”。
+- **响应**：
+```json
+{
+  "success": true,
+  "code": 0,
+  "message": "支付成功",
+  "data": null
+}
+```
 
 ### 用户取消订单
 
+用户未支付时，可以一整个订单一起取消掉
 
+- **请求路径**：`/order/<int:order_id>/cancel/`
+- **请求方法**：`POST`
+- **权限要求**：需要认证，且用户角色为 **买家**
+- **请求数据格式**：
+
+无需额外数据，`order_id` 在请求路径中提供。
+
+- **响应**：
+```json
+{
+  "success": true,
+  "code": 0,
+  "message": "订单已取消",
+  "data": null
+}
+```
+
+### 部分商品退款
+
+对于一个已经支付但商家未发货的订单，用户可以申请部分商品退款，不需要商家审核，秒退。
+
+- **请求路径**：`/order/<int:order_id>/refund/`
+- **请求方法**：`POST`
+- **权限要求**：需要认证，且用户角色为 **买家**
+- **请求数据格式**：
+
+```json
+{
+  "item_ids": [101, 102]
+}
+```
+
+- **请求参数说明**：
+  - `item_ids`：整数数组，表示需要退款的订单项（商品）ID 列表。这些订单项必须属于指定的订单，且订单状态为“已支付待发货”。
+
+- **响应**：
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "退款成功",
+    "data": null
+}
+```
+
+### 商家发货
+
+- **请求路径**：`/orders/<int:order_id>/ship/`
+- **请求方法**：`POST`
+- **权限要求**：需要认证，且用户角色为 **卖家**，并且是订单所属商店的管理者
+- **请求数据格式**：
+
+无需额外数据，`order_id` 在请求路径中提供。
+
+- **响应**：
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "订单状态已更新为已发货",
+    "data": null
+}
+```
+
+
+
+### 用户确认收货
+
+- **请求路径**：`/order/<int:order_id>/complete/`
+- **请求方法**：`POST`
+- **权限要求**：需要认证，且用户角色为对应订单的 **买家**
+- **请求数据格式**：
+  无需额外数据，`order_id` 在请求路径中提供。
+- **响应**：
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "订单状态已更新为已完成",
+    "data": null
+}
+```

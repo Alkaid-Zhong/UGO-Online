@@ -8,10 +8,9 @@ from shop.models import Product, Shop
 class Order(models.Model):
     STATUS_CHOICES = (
         ('Pending Payment', '待支付'),
-        ('Payment Received', '已支付待收货'),
+        ('Payment Received', '已支付待发货'),
+        ('Shipped', '已发货'),
         ('Completed', '已完成'),
-        ('Refund Requested', '申请退款中'),
-        ('Refund Successful', '退款成功'),
         ('Cancelled', '已取消'),
     )
 
@@ -27,10 +26,11 @@ class Order(models.Model):
     phone = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"订单 {self.order_id} - 用户 {self.user.email}"
+        return f"订单 {self.id} - 用户 {self.user.email}"
 
 
 class OrderItem(models.Model):
+
     order = models.ForeignKey('order.Order', on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey('shop.Product', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()

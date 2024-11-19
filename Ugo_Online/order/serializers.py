@@ -146,3 +146,17 @@ class OrderSerializer(serializers.Serializer):
             # order_data['total_price'] = order_total_price
             data.append(order_data)
         return {'orders': data} if not single_object else data[0]
+
+
+class PaymentSerializer(serializers.Serializer):
+    order_ids = serializers.ListField(
+        child=serializers.IntegerField(), write_only=True
+    )
+
+    def validate_order_ids(self, value):
+        if not value:
+            raise serializers.ValidationError("订单ID列表不能为空")
+        return value
+
+
+

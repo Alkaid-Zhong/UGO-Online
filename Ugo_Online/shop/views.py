@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework import status
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from accounts.permissions import IsSeller
@@ -11,8 +12,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from utils import get_error_message
 from Ugo_Online.utils import api_response, list_response
-from shop.models import SellerShop, Shop, InvitationCode, Product, Category
-from shop.serializers import ShopSerializer, ShopProfileSerializer, InvitationCodeSerializer, ProductSerializer, CategorySerializer
+from shop.models import SellerShop, Shop, InvitationCode, Product, Category, ShopTransaction
+from shop.serializers import ShopSerializer, ShopProfileSerializer, InvitationCodeSerializer, ProductSerializer, \
+    CategorySerializer, ShopTransactionSerializer
 
 
 class ShopCreateView(APIView):
@@ -205,6 +207,7 @@ class CategoryListView(ListAPIView):
     queryset = Category.objects.all()
     permission_classes = [AllowAny]
     serializer_class = CategorySerializer
+    pagination_class = PageNumberPagination
 
     shop = None
 
@@ -225,3 +228,37 @@ class CategoryListView(ListAPIView):
         query_set = self.get_queryset()
         serializer = self.get_serializer(query_set, many=True)
         return api_response(True, code=0, data={'categories': serializer.data})
+
+
+class ShopTransactionListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsSeller]
+    serializer_class = ShopTransactionSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['transaction_type', 'date']
+    ordering_fields = ['date', 'amount']
+    ordering = ['-date']
+
+    shop = None
+
+    def get_queryset(self):
+
+        return ShopTransaction.objects.filter(shop=self.shop)
+
+    def list(self, request, *args, **kwargs):
+        user = self.request.user
+        shop_id = self.kwargs.get('shop_id')
+
+        try:
+            self.shop = SellerShop.objects.get(shop__id=shop_id, seller=user).shop
+        except SellerShop.DoesNotExist:
+            return api_response(False, code=300, message='商铺不存在或者您不是该商铺的管理者')
+
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            paginated_response = self.get_paginated_response(serializer.data).data
+            return list_response(paginated_response, self.paginator, 'transactions')
+        else:
+            serializer = self.get_serializer(queryset, many=True)
+            return api_response(True, code=0, data={'transactions': serializer.data})

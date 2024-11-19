@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework import serializers
-from .models import Shop, SellerShop, InvitationCode, Product, Category
+from .models import Shop, SellerShop, InvitationCode, Product, Category, ShopTransaction
 
 from accounts.models import User
 
@@ -20,8 +20,8 @@ class ShopProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Shop
-        fields = ['id', 'name', 'address', 'description', 'create_date', 'sellers']
-        read_only_fields = ['id', 'create_date', 'sellers']
+        fields = ['id', 'name', 'address', 'description', 'create_date', 'sellers', 'total_income']
+        read_only_fields = ['id', 'create_date', 'sellers', 'total_income']
 
     def get_sellers(self, obj):
         from accounts.serializers import ProfileSerializer
@@ -88,3 +88,22 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['id', 'name']
 
+
+class ShopTransactionSerializer(serializers.ModelSerializer):
+    shop_name = serializers.CharField(source='shop.name', read_only=True)
+    order_id = serializers.IntegerField(source='order.id', read_only=True)
+
+    class Meta:
+        model = ShopTransaction
+        fields = [
+            'id',
+            'shop',
+            'shop_name',
+            'order',
+            'order_id',
+            'amount',
+            'transaction_type',
+            'date',
+            'description',
+        ]
+        read_only_fields = ['id', 'shop', 'shop_name', 'order', 'order_id', 'date']
