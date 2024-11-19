@@ -5,16 +5,16 @@ from rest_framework import status
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from accounts.permissions import IsSeller
+from accounts.permissions import IsSeller, IsCustomer
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
 from utils import get_error_message
 from Ugo_Online.utils import api_response, list_response
-from shop.models import SellerShop, Shop, InvitationCode, Product, Category, ShopTransaction
+from shop.models import SellerShop, Shop, InvitationCode, Product, Category, ShopTransaction, Review
 from shop.serializers import ShopSerializer, ShopProfileSerializer, InvitationCodeSerializer, ProductSerializer, \
-    CategorySerializer, ShopTransactionSerializer
+    CategorySerializer, ShopTransactionSerializer, ReviewReplySerializer, ReviewSerializer
 
 
 class ShopCreateView(APIView):
@@ -262,3 +262,44 @@ class ShopTransactionListView(ListAPIView):
         else:
             serializer = self.get_serializer(queryset, many=True)
             return api_response(True, code=0, data={'transactions': serializer.data})
+
+
+class ReviewCreateView(APIView):
+    permission_classes = [IsAuthenticated, IsCustomer]
+
+    def post(self, request):
+        serializer = ReviewSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return api_response(True, message='评价提交成功', data=serializer.data)
+        else:
+            return api_response(False, code=400, message=get_error_message(serializer.errors), data=serializer.errors)
+
+
+class ReviewReplyView(APIView):
+    permission_classes = [IsAuthenticated, IsSeller]
+
+    def put(self, request, review_id):
+        try:
+            review = Review.objects.get(id=review_id)
+        except Review.DoesNotExist:
+            return api_response(False, code=404, message='评价不存在')
+
+        serializer = ReviewReplySerializer(review, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return api_response(True, message='回复成功')
+        else:
+            return api_response(False, code=400, message=get_error_message(serializer.errors), data=serializer.errors)
+
+
+class ProductDetailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, product_id):
+        try:
+            product = Product.objects.get(id=product_id)
+            serializer = ProductSerializer(product, context={'request': request})
+            return api_response(True, data=serializer.data)
+        except Product.DoesNotExist:
+            return api_response(False, code=404, message='商品不存在')

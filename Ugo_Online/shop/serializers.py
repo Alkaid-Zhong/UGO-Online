@@ -1,9 +1,12 @@
 from datetime import timedelta
 
+from django.db.models import Avg
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework import serializers
-from .models import Shop, SellerShop, InvitationCode, Product, Category, ShopTransaction
+
+from order.models import OrderItem
+from .models import Shop, SellerShop, InvitationCode, Product, Category, ShopTransaction, Review
 
 from accounts.models import User
 
@@ -17,11 +20,16 @@ class ShopSerializer(serializers.ModelSerializer):
 
 class ShopProfileSerializer(serializers.ModelSerializer):
     sellers = serializers.SerializerMethodField()
+    average_rating = serializers.SerializerMethodField()
+
+    def get_average_rating(self, obj):
+        avg = Review.objects.filter(product__shop=obj).aggregate(Avg('rating'))['rating__avg']
+        return round(avg, 2) if avg else None
 
     class Meta:
         model = Shop
-        fields = ['id', 'name', 'address', 'description', 'create_date', 'sellers', 'total_income']
-        read_only_fields = ['id', 'create_date', 'sellers', 'total_income']
+        fields = ['id', 'name', 'address', 'description', 'create_date', 'sellers', 'total_income', 'average_rating']
+        read_only_fields = ['id', 'create_date', 'sellers', 'total_income', 'average_rating']
 
     def get_sellers(self, obj):
         from accounts.serializers import ProfileSerializer
@@ -60,6 +68,11 @@ class ProductSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), allow_null=True, required=False)
     # 前端传分类的id
     category_name = serializers.CharField(source='category.name', read_only=True)
+    average_rating = serializers.SerializerMethodField()
+
+    def get_average_rating(self, obj):
+        avg = obj.reviews.aggregate(Avg('rating'))['rating__avg']
+        return round(avg, 2) if avg else None
 
     class Meta:
         model = Product
@@ -74,9 +87,10 @@ class ProductSerializer(serializers.ModelSerializer):
             'status',
             'create_date',
             'image',
-            'category_name'
+            'category_name',
+            'average_rating'
         ]
-        read_only_fields = ['id', 'shop', 'create_date']
+        read_only_fields = ['id', 'shop', 'create_date', 'average_rating']
         
     def create(self, validated_data):
         validated_data['shop'] = self.context['shop']
@@ -107,3 +121,70 @@ class ShopTransactionSerializer(serializers.ModelSerializer):
             'description',
         ]
         read_only_fields = ['id', 'shop', 'shop_name', 'order', 'order_id', 'date']
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.id')
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+
+    class Meta:
+        model = Review
+        fields = ['id', 'user', 'product', 'rating', 'comment', 'create_date', 'merchant_reply', 'reply_date']
+        read_only_fields = ['id', 'user', 'create_date', 'merchant_reply', 'reply_date']
+
+    def validate_rating(self, value):
+        if value < 1 or value > 5:
+            raise serializers.ValidationError({"error": "评分必须在1到5之间"})
+        return value
+
+    def validate(self, data):
+        user = self.context['request'].user
+        product = data['product']
+
+        # 检查用户是否购买过该商品
+        purchased_items = OrderItem.objects.filter(
+            order__user=user,
+            product=product,
+            order__status='Completed',
+            is_cancelled=False
+        )
+        if not purchased_items.exists():
+            raise serializers.ValidationError("您尚未购买该商品，无法评价")
+
+        if Review.objects.filter(user=user, product=product).exists():
+            raise serializers.ValidationError("您已评价过该商品，无法重复评价")
+
+        return data
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
+
+
+class ReviewReplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['merchant_reply']
+        read_only_fields = []
+
+    def validate(self, data):
+        request = self.context['request']
+        user = request.user
+        review = self.instance
+
+        if not SellerShop.objects.filter(seller=user, shop=review.product.shop).exists():
+            raise serializers.ValidationError("您无权回复该评价")
+
+        if review.merchant_reply:
+            raise serializers.ValidationError("该评价已回复，无法重复回复")
+
+        return data
+
+    def update(self, instance, validated_data):
+        instance.merchant_reply = validated_data.get('merchant_reply')
+        instance.reply_date = timezone.now()
+        instance.save()
+        return instance
+
+
+

@@ -303,9 +303,14 @@
                     {
                         "name": "测试商家0",
                         "email": "seller1@buaa.edu.cn",
-                        "role": "SELLER"
+                        "role": "SELLER",
+                        "shop": 1,
+                        "money": "0.00",
+                        "phone": "1234567891"
                     }
-                ]
+                ],
+                "total_income": "30.00",
+                "average_rating": 4.0
             },
             {
                 "id": 2,
@@ -317,14 +322,22 @@
                     {
                         "name": "seller2",
                         "email": "seller2@buaa.edu.cn",
-                        "role": "SELLER"
+                        "role": "SELLER",
+                        "shop": 2,
+                        "money": "0.00",
+                        "phone": "1111111111"
                     },
                     {
                         "name": "seller3",
                         "email": "seller3@buaa.edu.cn",
-                        "role": "SELLER"
+                        "role": "SELLER",
+                        "shop": 2,
+                        "money": "0.00",
+                        "phone": "0000000000"
                     }
-                ]
+                ],
+                "total_income": "65.00",
+                "average_rating": null
             }
         ],
         "total_count": 2,
@@ -370,30 +383,23 @@
     "code": 0,
     "message": "",
     "data": {
-        "id": 2,
-        "name": "张三的商铺",
-        "address": "北京市朝阳区",
-        "description": "主营电子产品",
-        "create_date": "2024-11-07T10:11:29.139915Z",
+        "id": 1,
+        "name": "李四的商铺",
+        "address": "上海市浦东新区",
+        "description": "主营服装鞋帽",
+        "create_date": "2024-11-06T11:39:56.620678Z",
         "sellers": [
             {
-                "name": "seller2",
-                "email": "seller2@buaa.edu.cn",
+                "name": "测试商家0",
+                "email": "seller1@buaa.edu.cn",
                 "role": "SELLER",
-                "shop": 2,
+                "shop": 1,
                 "money": "0.00",
-                "phone": "1111111111"
-            },
-            {
-                "name": "seller3",
-                "email": "seller3@buaa.edu.cn",
-                "role": "SELLER",
-                "shop": 2,
-                "money": "0.00",
-                "phone": "0000000000"
+                "phone": "1234567891"
             }
         ],
-        "total_income": "65.00"
+        "total_income": "30.00",
+        "average_rating": 4.0
     }
 }
 ```
@@ -557,7 +563,8 @@
                 "category": null,
                 "status": "Available",
                 "create_date": "2024-11-08T08:02:45.534134Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_2OLYpvf.png"
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_2OLYpvf.png",
+                "average_rating": 4.0
             },
             {
                 "id": 23,
@@ -569,20 +576,8 @@
                 "category": null,
                 "status": "Available",
                 "create_date": "2024-11-08T08:02:53.330448Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_nXqr0kW.png"
-            },
-            {
-                "id": 24,
-                "shop": 1,
-                "name": "Iphone 666",
-                "description": "最牛逼的苹果手机！",
-                "price": "99999.99",
-                "stock_quantity": 3,
-                "category": 1,
-                "status": "Available",
-                "create_date": "2024-11-11T03:30:05.174259Z",
-                "image": "http://127.0.0.1:8000/media/product_images/%E4%B8%8A%E6%B5%B7%E4%B8%9C%E4%BA%9A%E5%B7%B2%E5%A4%84%E7%90%86.png",
-                "category_name": "电子产品"
+                "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_nXqr0kW.png",
+                "average_rating": null
             }
         ],
         "total_count": 23,
@@ -627,6 +622,33 @@
 
 - 请求路径：`/shop/<int:shop_id>/category_list`
 - 其余同上
+
+### 获取指定商品的详细信息
+
+- 请求路径：`/shop/product/<int:product_id>`
+- 请求方法：`GET`
+- 权限要求：无
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": {
+        "id": 28,
+        "shop": 1,
+        "name": "测试物品2",
+        "description": "",
+        "price": "15.00",
+        "stock_quantity": 8,
+        "category": null,
+        "status": "Available",
+        "create_date": "2024-11-19T07:05:13.828545Z",
+        "image": null,
+        "average_rating": 4.0
+    }
+}
+```
 
 ## 购物车相关
 
@@ -1238,3 +1260,59 @@
 }
 ```
 
+
+
+## 评价相关
+
+### 用户评价商品
+
+- **请求路径**：`/shop/review/create/`
+- **请求方法**：`POST`
+- **权限要求**：需要认证，且用户角色为 **买家**，且该用户购买了该商品
+- **请求数据格式**：
+```json
+{
+    "product": 28,
+    "rating": 4,
+    "comment": "非常好的商品！"
+}
+```
+- **响应**：
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "评价提交成功",
+    "data": {
+        "id": 1,
+        "user": 5,
+        "product": 28,
+        "rating": 4,
+        "comment": "非常好的商品！",
+        "create_date": "2024-11-19T14:54:35.926455Z",
+        "merchant_reply": null,
+        "reply_date": null
+    }
+}
+```
+
+### 商家回复评价
+
+- **请求路径**：`/shop/review/<int:review_id>/reply/`
+- **请求方法**：`PUT`
+- **权限要求**：需要认证，且用户角色为 **卖家**，且该用户是该商品的商家
+- **请求数据格式**：
+```json
+{
+    "merchant_reply": "感谢您的支持！"
+}
+```
+- **响应**：
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "回复成功",
+    "data": null
+}
+```

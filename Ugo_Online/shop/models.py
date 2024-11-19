@@ -92,3 +92,19 @@ class ShopTransaction(models.Model):
 
     def __str__(self):
         return f"{self.transaction_type} of {self.amount} for {self.shop.name} on {self.date}"
+
+
+class Review(models.Model):
+    user = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='reviews')
+    product = models.ForeignKey('shop.Product', on_delete=models.CASCADE, related_name='reviews')
+    rating = models.PositiveIntegerField()
+    comment = models.TextField(blank=True, null=True)
+    create_date = models.DateTimeField(auto_now_add=True)
+    merchant_reply = models.TextField(blank=True, null=True)
+    reply_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('user', 'product')
+
+    def __str__(self):
+        return f"Review of {self.product.name} by {self.user.name}"
