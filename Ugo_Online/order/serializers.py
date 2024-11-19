@@ -159,4 +159,14 @@ class PaymentSerializer(serializers.Serializer):
         return value
 
 
+class UpdateOrderAddressSerializer(serializers.Serializer):
+    address_id = serializers.IntegerField()
+
+    def validate_address_id(self, value):
+        request = self.context['request']
+        try:
+            address = Address.objects.get(id=value, user=request.user)
+        except Address.DoesNotExist:
+            raise serializers.ValidationError({'error': "地址不存在或不属于当前用户"})
+        return value
 

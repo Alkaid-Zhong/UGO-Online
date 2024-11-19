@@ -9,10 +9,11 @@ from rest_framework import permissions, generics
 from django.db import transaction
 
 from Ugo_Online.utils import list_response
+from accounts.models import Address
 from shop.models import Shop, SellerShop, ShopTransaction
 from utils import get_error_message
 from .models import Order
-from .serializers import OrderSerializer, PaymentSerializer
+from .serializers import OrderSerializer, PaymentSerializer, UpdateOrderAddressSerializer
 from accounts.views import api_response
 from accounts.permissions import IsSeller, IsCustomer
 
@@ -268,4 +269,33 @@ class UpdateOrderStatus2CompletedView(APIView):
         order.save()
         return api_response(True, message='订单状态已更新为已完成')
 
+
+class UpdateOrderAddressView(APIView):
+    permission_classes = [IsAuthenticated, IsCustomer]
+
+    def post(self, request, order_id):
+        # 获取订单
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+        except Order.DoesNotExist:
+            return api_response(False, code=404, message='订单不存在或不属于当前用户')
+
+        if order.status not in ['Pending Payment', 'Payment Received']:
+            return api_response(False, code=400, message=f'订单{order.get_status_display()}，不允许修改地址')
+
+        serializer = UpdateOrderAddressSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            address_id = serializer.validated_data['address_id']
+            address = Address.objects.get(id=address_id)
+
+            order.recipient_name = address.recipient_name
+            order.address = address.address
+            order.city = address.city
+            order.province = address.province
+            order.phone = address.phone
+            order.save()
+
+            return api_response(True, message='订单地址修改成功')
+        else:
+            return api_response(False, code=400, message=get_error_message(serializer.errors), data=serializer.errors)
 
