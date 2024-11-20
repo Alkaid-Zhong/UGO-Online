@@ -17,14 +17,14 @@
         <span>主页</span>
       </v-btn>
 
-      <v-btn to="/user/cart" v-if="user.login && user.role === 'CUSTOMER'">
-        <v-icon>mdi-cart</v-icon>
-        <span>购物车</span>
-      </v-btn>
-
       <v-btn to="/shop">
         <v-icon>mdi-store</v-icon>
         <span>所有商铺</span>
+      </v-btn>
+
+      <v-btn to="/user/cart" v-if="user.login && user.role === 'CUSTOMER'">
+        <v-icon>mdi-cart</v-icon>
+        <span>购物车</span>
       </v-btn>
 
       <v-btn to="/user/login" v-if="!user.login">

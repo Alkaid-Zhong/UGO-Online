@@ -31,22 +31,7 @@
 			</v-card>
 			<v-row v-if="products">
 				<v-col cols="12" md="4" v-for="product in products.products">
-					<v-card height="100%">
-						<v-img :src="product.image" aspect-ratio="1" />
-						<v-divider></v-divider>
-						<v-card-item class="px-2 pb-0">
-							<span style="font-size: 16px; color: red; font-weight: bold">￥</span>
-							<span class="font-weight-bold text-h5" style="color: red;">
-								{{ product.price }}
-							</span>
-						</v-card-item>
-						<v-card-title class="py-0">
-							{{ product.name }}
-							<v-chip size="x-small" color="primary" class="mb-1">{{ product.category_name }}</v-chip>
-						</v-card-title>
-						<v-card-subtitle class="py-0">库存：{{ product.stock_quantity }}</v-card-subtitle>
-						<v-card-text class="pt-2">{{ product.description }}</v-card-text>
-					</v-card>
+					<product-card :product="product" />
 				</v-col>
 			</v-row>
 		</div>
@@ -186,6 +171,7 @@ import { user } from '@/store/user';
 import { getInviteCode, getShopInfo } from '@/api/shop';
 import { addProduct, getCategories, getProductList } from '@/api/product';
 import snackbar from '@/api/snackbar';
+import productCard from '@/components/productCard.vue';
 
 const route = useRoute()
 const { shop_id } = route.params

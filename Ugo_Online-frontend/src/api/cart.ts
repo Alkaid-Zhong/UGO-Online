@@ -16,8 +16,8 @@ export const getCart = async () => {
     return response;
 }
 
-export const addToCart = async (productId: string, quantity: number) => {
-    const response = await server.post({ url: "/cart/add/", data: { productId, quantity } });
+export const addToCart = async (product_id: string, quantity: number) => {
+    const response = await server.post({ url: "/cart/add/", data: { product_id, quantity } });
     if (response.success) {
         //console.log("添加购物车成功");
     } else {
