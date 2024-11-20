@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { reactive, ref, Ref } from "vue";
 
 
 interface CartItem {
@@ -9,12 +9,16 @@ interface CartItem {
 
 interface Cart {
     items: CartItem[];
-    totalQuantity: number;
-    totalPrice: number;
+    selectedItems: CartItem[];
+    totalSum: number;
+    discount: number;
+    actualSum: number;
 }
 
 export const cart = reactive<Cart>({
     items: [],
-    totalQuantity: 0,
-    totalPrice: 0
+    selectedItems: [],
+    totalSum: 0,
+    discount: 0,
+    actualSum: 0
 });
