@@ -23,6 +23,30 @@
 			<template #subtitle>
 				{{  user.email }}
 			</template>
+			<v-divider></v-divider>
+			<v-card-item class="text-center">
+				<v-row>
+					<v-col cols="12" md="6">
+						<v-icon>mdi-phone</v-icon>
+						<p class="mt-2">{{ user.phone }}</p>
+					</v-col>
+					<v-divider vertical></v-divider>
+					<v-col cols="12" md="6">
+						<v-icon>mdi-wallet</v-icon>
+						<div class="mt-2">
+							<span style="font-size: 12px;">￥</span>
+							<span>{{ user.money }}</span>
+						</div>
+						<v-btn 
+								class="font-weight-bold ml-1 mb-1" 
+								color="primary"
+								@click="showRecharge = true"
+								variant="text"
+								size="small"
+							>充值</v-btn>
+					</v-col>
+				</v-row>
+			</v-card-item>
 		</v-card>
 		
 		<v-card v-if="shopInfo" class="mt-4" :to="`/shop/${shopInfo.id}`">
@@ -38,21 +62,45 @@
 			</template>
 		</v-card>
 	</v-container>
+	<v-dialog v-model="showRecharge" max-width="500px">
+		<v-card>
+			<v-toolbar>
+				<v-btn icon="mdi-close" @click="showRecharge = false"></v-btn>
+				<v-toolbar-title>充值</v-toolbar-title>
+			</v-toolbar>
+			<v-card-item>
+				<v-text-field
+					label="充值金额（元）"
+					type="number"
+					v-model="rechargeMoney"
+				></v-text-field>
+				<v-btn color="primary" @click="recharge" variant="contained" :loading="loading">充值</v-btn>
+			</v-card-item>
+		</v-card>
+	</v-dialog>
 </template>
 <script setup>
 import { onMounted, ref } from 'vue';
 import { user } from '@/store/user';
-import { logout } from '@/api/user';
+import { addMoney, logout } from '@/api/user';
 import { getShopInfo } from '@/api/shop';
 
 const shopInfo = ref(null)
 const loading = ref(false);
+const showRecharge = ref(false);
+const rechargeMoney = ref(0);
 
 const submitLogout = async () => {
 	loading.value = true;
 	await logout();
 	loading.value = false;
 };
+
+const recharge = async () => {
+	loading.value = true;
+	const res = await addMoney(rechargeMoney.value);
+	loading.value = false;
+}
 
 onMounted(async () => {
 	if (user.shopId) {

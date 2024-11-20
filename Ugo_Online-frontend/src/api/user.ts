@@ -21,6 +21,9 @@ export const logout = async () => {
 		user.name = "";
 		user.email = "";
 		user.role = "CUSTOMER";
+		user.shopId = null;
+		user.money = 0;
+		user.phone = "";
 	} else {
 		snackbar.error("退出失败了...");
 	}
@@ -49,8 +52,21 @@ export const profile = async (showSnackbar = true) => {
 		user.email = response.data.email;
 		user.role = response.data.role;
 		user.shopId = response.data.shop;
+		user.money = response.data.money;
+		user.phone = response.data.phone;
 	} else {
 		user.login = false;
+	}
+	return response;
+};
+
+export const addMoney = async (money: number) => {
+	const response = await server.post({ url: "/user/add-money/", data: { add_money: money } });
+	if (response.success) {
+		user.money = response.data.money;
+		snackbar.success(`充值成功，余额${response.data.money}元`);
+	} else {
+		snackbar.error("充值失败了...");
 	}
 	return response;
 };

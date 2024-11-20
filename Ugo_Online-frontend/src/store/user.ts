@@ -6,6 +6,8 @@ interface User {
     email: string;
     role: 'CUSTOMER' | 'SELLER'
     shopId: number
+    money: number
+    phone: string
 }
 
 export const user = reactive<User>({
@@ -14,4 +16,6 @@ export const user = reactive<User>({
     email: '',
     role: 'CUSTOMER',
     shopId: null,
+    money: 0,
+    phone: ''
 })
