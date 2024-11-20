@@ -2,21 +2,24 @@
   <v-container>
     <v-row>
       <v-col cols="12" md="8">
-        <v-list v-if="!loading">
+        <v-list v-if="!loading" class="pt-4 rounded-lg">
           <v-list-item>
             <template v-slot:prepend>
               <v-icon icon="mdi-cart" size="x-large"></v-icon>
             </template>
-            <v-list-item-title class="text-h4 headline">购物车</v-list-item-title>
+            <v-list-item-title class="text-h4 font-weight-bold">购物车</v-list-item-title>
           </v-list-item>
 
-          <v-list-item>
+          <v-list-item class="mb-2">
             <template #prepend>
               <v-list-item-action start>
-                <v-checkbox v-model="selectAll" class="d-flex align-items-center" ></v-checkbox>
+                <v-checkbox 
+                  v-model="selectAll" 
+                  class="d-flex align-items-center" 
+                  :label="`全部商品 (${cartCount})`"
+                ></v-checkbox>
               </v-list-item-action>
             </template>
-            <span>全部商品 ({{ cartCount }})</span>
             <template v-slot:append>
                 <v-btn @click="deleteSelectedItem()" class="mr-2"> 删除所选 </v-btn>
                 <v-btn @click="deleteDisabeldItem()"> 一键删除无货/失效商品 </v-btn>
@@ -24,22 +27,28 @@
           </v-list-item>
 
           <v-divider></v-divider>
-          <transition-group name="list">
-          <v-list-item v-if="shopLists.length === 0">
-            <v-list-item-title>购物车空空如也，快去逛逛吧</v-list-item-title>
-          </v-list-item>
           
-          <v-list-item class="pa-0" v-for="shop in shopLists" v-else>
-            <v-card elevation="0">
-              <v-card-title>
-                
-                <span class="headline"><a :href="'/shop/'+ shop.shop_id" style="text-decoration: none;" class="text-primary">{{ shop.shop_name }} </a></span>
-              </v-card-title>
-              <v-card-text class="px-0">
-                
-                <v-list lines="2">
-                <transition-group name="list">
+          <transition-group name="list">
+            <v-list-item v-if="shopLists.length === 0">
+              <v-list-item-title>购物车空空如也，快去逛逛吧</v-list-item-title>
+            </v-list-item>
+          
+            <v-list-item v-for="shop in shopLists" v-else>
+              <v-card elevation="0">
+                <v-card-title class="mt-2 pa-2">
+                  <v-btn
+                    class="text-h5 font-weight-bold"
+                    variant="text"
+                    prepend-icon="mdi-store"
+                    append-icon="mdi-chevron-right"
+                    @click="router.push(`/shop/${shop.shop_id}`)"
+                  >{{ shop.shop_name }}</v-btn>
+                </v-card-title>
+                <v-card-text class="px-0">
                   
+                  <v-list lines="2">
+                  <transition-group name="list">
+                    
                     <v-list-item class="pl-0 pt-2 pb-3 pr-0" v-for="item in shop.items" :key="item.item_id">
 
                       <!-- <template #default="{ active }"> -->
@@ -96,7 +105,7 @@
                         
                       <!-- </template> -->
                     </v-list-item>
-                </transition-group>
+                  </transition-group>
                 </v-list>
               </v-card-text>
 
@@ -163,6 +172,7 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { deleteItem, getCart, updateCart } from '@/api/cart';
 import snackbar from '@/api/snackbar';
+import router from '@/router';
 
 const loading = ref(true);
 
