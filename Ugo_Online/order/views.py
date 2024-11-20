@@ -160,6 +160,7 @@ class CancelOrderView(APIView):
         for item in order.items.all():
             product = item.product
             product.stock_quantity += item.quantity
+            product.sales_volume -= item.quantity
             product.save()
 
         order.status = 'Cancelled'
@@ -205,6 +206,7 @@ class RefundOrderItemsView(APIView):
             # 恢复商品库存
             product = item.product
             product.stock_quantity += item.quantity
+            product.sales_volume -= item.quantity
             product.save()
 
             total_refund += item.total_price

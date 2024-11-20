@@ -575,7 +575,8 @@
                 "status": "Available",
                 "create_date": "2024-11-08T08:02:45.534134Z",
                 "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_2OLYpvf.png",
-                "average_rating": 4.0
+                "average_rating": 4.0,
+                "sales_volume": 0
             },
             {
                 "id": 23,
@@ -588,7 +589,8 @@
                 "status": "Available",
                 "create_date": "2024-11-08T08:02:53.330448Z",
                 "image": "http://127.0.0.1:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-02-05_101216_nXqr0kW.png",
-                "average_rating": null
+                "average_rating": null,
+                "sales_volume": 0
             }
         ],
         "total_count": 23,
@@ -656,7 +658,8 @@
         "status": "Available",
         "create_date": "2024-11-19T07:05:13.828545Z",
         "image": null,
-        "average_rating": 4.0
+        "average_rating": 4.0,
+        "sales_volume": 0
     }
 }
 ```

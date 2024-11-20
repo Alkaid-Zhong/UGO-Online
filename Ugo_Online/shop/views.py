@@ -24,11 +24,6 @@ class ShopCreateView(APIView):
 
     def post(self, request):
 
-        # if not request.user.is_authenticated:
-        #     return api_response(False, code=401, message='用户未登录', status_code=status.HTTP_401_UNAUTHORIZED)
-        # if request.user.role != 'SELLER':
-        #     return api_response(False, code=400, message='用户不是卖家', status_code=status.HTTP_403_FORBIDDEN)
-
         if SellerShop.objects.filter(seller=request.user).exists():
             return api_response(False, code=300, message='用户已经拥有商店', status_code=status.HTTP_403_FORBIDDEN)
 
@@ -46,8 +41,6 @@ class ShopInfoView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, id):
-        # if not request.user.is_authenticated:
-        #     return api_response(False, code=401, message='用户未登录', status_code=status.HTTP_401_UNAUTHORIZED)
 
         try:
             shop = Shop.objects.get(id=id)
@@ -63,8 +56,6 @@ class CreateInvitationCodeView(APIView):
 
     def post(self, request, id):
         user = request.user
-        # if not user.is_authenticated:
-        #     return api_response(False, code=401, message='用户未登录')
         try:
             shop = Shop.objects.get(id=id)
             # 检查用户是否是该商铺的管理者
@@ -182,7 +173,7 @@ class ProductListView(ListAPIView):
         'price': ['gte', 'lte'],
     }
     search_fields = ['name', 'description', 'shop__name']
-    ordering_fields = ['average_rating', 'name', 'create_date', 'price']
+    ordering_fields = ['average_rating', 'name', 'create_date', 'price', 'sales_volume']
     ordering = ['-average_rating']  # 默认按照平均评分降序排列
 
     shop = None

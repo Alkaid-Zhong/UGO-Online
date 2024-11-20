@@ -86,6 +86,7 @@ class OrderSerializer(serializers.Serializer):
                 total_amount += total_price
 
                 product.stock_quantity -= quantity
+                product.sales_volume += quantity
 
                 product.save()
 

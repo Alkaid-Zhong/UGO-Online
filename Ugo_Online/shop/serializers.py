@@ -89,9 +89,10 @@ class ProductSerializer(serializers.ModelSerializer):
             'create_date',
             'image',
             'category_name',
-            'average_rating'
+            'average_rating',
+            'sales_volume'
         ]
-        read_only_fields = ['id', 'shop', 'create_date', 'average_rating']
+        read_only_fields = ['id', 'shop', 'create_date', 'average_rating', 'sales_volume']
         
     def create(self, validated_data):
         validated_data['shop'] = self.context['shop']

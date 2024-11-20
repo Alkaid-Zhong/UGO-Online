@@ -55,6 +55,8 @@ class Product(models.Model):
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Available')
     create_date = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    # 销量
+    sales_volume = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
