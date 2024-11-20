@@ -16,15 +16,22 @@
 		<v-card-text class="pt-2 pb-0">{{ product.description }}</v-card-text>
 		<v-card-actions>
 			<v-btn
+				v-if="user.role === 'CUSTOMER'"
 				color="primary"
 				@click="onclickAdd2Card"
+				prepend-icon="mdi-cart"
 			>加入购物车</v-btn>
+			<v-btn
+				v-if="user.role === 'SELLER'"
+				color="primary"
+			>编辑商品</v-btn>
 		</v-card-actions>
 	</v-card>
 </template>
 <script setup>
 import { addToCart } from '@/api/cart';
 import snackbar from '@/api/snackbar';
+import { user } from '@/store/user';
 
 const props = defineProps({
 	product: {
