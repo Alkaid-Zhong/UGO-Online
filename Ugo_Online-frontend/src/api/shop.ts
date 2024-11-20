@@ -72,3 +72,10 @@ export const getInviteCode = async (
         data: res.data as IInviteInfo
     }
 }
+
+export const joinShop = async (code: string) => {
+    return await server.post({
+        url: `/shop/join_by_code/`,
+        data: { invitation_code: code }
+    });
+}
