@@ -111,7 +111,7 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn @click="router.push('/user/cart/')">返回修改</v-btn>
-                    <v-btn color="red-lighten-1" @click="createOrder" class="font-weight-bold">立即下单</v-btn>
+                    <v-btn color="red-lighten-1" @click="checkout" class="font-weight-bold">立即下单</v-btn>
                 </v-card-actions>
                 </v-card>
             </v-col>
@@ -127,6 +127,7 @@ import { useRouter } from 'vue-router';
 import snackbar from '@/api/snackbar';
 import { getShopInfo } from '@/api/shop';
 import { getProductDetail } from '@/api/product';
+import { createOrder } from '@/api/order';
 
 const loading = ref(true);
 const addresses = ref([]);
@@ -212,18 +213,30 @@ onMounted(() => {
   fetchOrderItems();
 });
 
-const createOrder = async () => {
+const checkout = async () => {
   if (!selectedAddress.value) {
     snackbar.error("请选择地址");
     return;
   }
-  // const response = await create;
-  // if (response.status === 201) {
-  //   snackbar.success("下单成功");
-  //   router.push('/user/order/');
-  // } else {
-  //   snackbar.error("下单失败");
-  // }
+  const addressId = selectedAddress.value.id;
+  const items = cart.selectedItems.map(item => {
+    return {
+      "product_id": item.product_id,
+      "quantity": item.quantity
+    };
+  });
+  let data = {
+    address_id: addressId,
+    items: items
+  };
+  console.log(data);
+  const response = await createOrder(data);
+  if (response.success) {
+    snackbar.success("下单成功");
+    // router.push('/user/order/');
+  } else {
+    snackbar.error("下单失败");
+  }
 };
 
 </script>

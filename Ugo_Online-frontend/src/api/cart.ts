@@ -1,6 +1,4 @@
 import server from "./server";
-import { user } from "@/store/user";
-import { cart } from "@/store/cart";
 import snackbar from "./snackbar";
 
 export const getCart = async () => {
