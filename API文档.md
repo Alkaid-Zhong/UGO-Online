@@ -1,6 +1,6 @@
 # 基本数据格式
 
-**所有url末尾都需要带'/'**
+**除了GET，所有url末尾都需要带'/'**
 
 后端的接口格式一般情况下遵循相对统一的标准，采用JSON格式。数据结构大致如下：
 
@@ -282,6 +282,8 @@
 - 权限要求：无
 - 查询参数
   - page 整数，请求的页码
+  - search 字符串，搜索关键词
+  - ordering：['average_rating', 'name', 'create_date']
 - 返回结果格式
 ```json
 {
@@ -409,6 +411,12 @@
 - 请求路径：`/shop/<int:id>/transactions`
 - 请求方法：`GET`
 - 权限要求：需要认证，且用户角色为商家，并且是商铺的现有管理者
+- 查询参数
+  - page 整数，请求的页码
+  - transaction_type 交易类型，Income/Refund
+  - date 日期，格式为YYYY-MM-DD
+  - ordering 排序字段，可选：'date', 'amount'，在前面加‘-’表示降序
+  - 默认按照最近到最远排序
 - 返回结果格式
 ```json
 {
@@ -537,11 +545,14 @@
 - 请求方法：`GET`
 - 权限要求：无
 - 查询参数
-  - page 整数，请求的页码
-  - category 字符串，类别筛选（放id）
-  - **以下后端 TODO**
-  - min_price, max_price 浮点数，最高最低价格筛选
-  - ordering 字符串，排序字段
+| 参数名           | 类型   | 是否必填 | 默认值       | 描述                                                                                   | 示例                                            |
+|------------------|--------|----------|--------------|----------------------------------------------------------------------------------------|------------------------------------------------|
+| `category`       | int    | 否       | 无           | 按商品分类筛选，传入分类的ID。                                                        | `/products/?category=3`                   |
+| `price__gte`     | float  | 否       | 无           | 筛选价格大于等于指定值的商品。                                                        | `/products/?price__gte=100`               |
+| `price__lte`     | float  | 否       | 无           | 筛选价格小于等于指定值的商品。                                                        | `/products/?price__lte=500`               |
+| `search`         | string | 否       | 无           | 搜索关键字，支持按商品名称、描述或商铺名称模糊匹配。                                    | `/products/?search=手机`                  |
+| `ordering`       | string | 否       | `-average_rating` | 排序字段，支持多种字段排序。字段前加`-`表示降序，不加`-`表示升序。支持的排序字段包括：`price`（价格）、`name`（名称）、`create_date`（创建时间）、`average_rating`（平均评价得分）。 | `/products/?ordering=price`               |
+| `shop_id`        | int    | 否       | 无           | 筛选某个商铺下的商品。传入商铺的ID。                                                  | `/products/?shop_id=1`                    |
 - 返回结果格式
 ```json
 {

@@ -1,8 +1,9 @@
+from django.db.models import Avg
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework import status
-from rest_framework.filters import OrderingFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from accounts.permissions import IsSeller, IsCustomer
@@ -10,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
+from shop.filters import ShopTransactionFilter
 from utils import get_error_message
 from Ugo_Online.utils import api_response, list_response
 from shop.models import SellerShop, Shop, InvitationCode, Product, Category, ShopTransaction, Review
@@ -124,9 +126,16 @@ class JoinShopByCodeView(APIView):
 class ShopListView(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ShopProfileSerializer
+    filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
+
+    search_fields = ['name', 'description', 'address']
+    ordering_fields = ['average_rating', 'name', 'create_date']
+    ordering = ['-average_rating']  # 默认按照平均评分降序排列
 
     def get_queryset(self):
-        return Shop.objects.all()
+        return Shop.objects.all().annotate(
+            average_rating=Avg('products__reviews__rating')
+        )
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -167,16 +176,25 @@ class ProductListView(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProductSerializer
     pagination_class = PageNumberPagination
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['category']
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = {
+        'category': ['exact'],
+        'price': ['gte', 'lte'],
+    }
+    search_fields = ['name', 'description', 'shop__name']
+    ordering_fields = ['average_rating', 'name', 'create_date', 'price']
+    ordering = ['-average_rating']  # 默认按照平均评分降序排列
 
     shop = None
 
     def get_queryset(self):
         if self.shop is not None:
-            return Product.objects.filter(shop=self.shop, status='Available')
+            queryset = Product.objects.filter(shop=self.shop, status='Available')
         else:
-            return Product.objects.filter(status='Available')
+            queryset = Product.objects.filter(status='Available')
+        return queryset.annotate(
+            average_rating=Avg('reviews__rating')
+        )
 
     def list(self, request, *args, **kwargs):
         shop_id = self.kwargs.get('shop_id')
@@ -226,6 +244,7 @@ class CategoryListView(ListAPIView):
 class ShopTransactionListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsSeller]
     serializer_class = ShopTransactionSerializer
+    filterset_class = ShopTransactionFilter
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['transaction_type', 'date']
     ordering_fields = ['date', 'amount']

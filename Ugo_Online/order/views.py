@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -34,8 +35,10 @@ class UserOrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated, IsCustomer]
     pagination_class = PageNumberPagination
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['status']
+    ordering_fields = ['order_date']
+    ordering = ['-order_date']
 
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
@@ -56,8 +59,10 @@ class SellerOrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated, IsSeller]
     pagination_class = PageNumberPagination
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['status']
+    ordering_fields = ['order_date']
+    ordering = ['-order_date']
 
     shop = None
 
