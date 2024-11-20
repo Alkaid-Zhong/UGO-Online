@@ -1,12 +1,12 @@
 <template>
 	<v-container>
-		<v-alert type="info" variant="tonal" class="mb-4">
+		<v-alert type="info" variant="tonal" class="mb-4" v-if="user.role === 'SELLER'">
 			<template #text>
-				{{ user.shopId === null ? "作为卖家，您可以创建自己的店铺，为顾客提供优质的服务。但是您只能同时管理一个店铺。"
+				{{ user.shopId == null ? "作为卖家，您可以创建自己的店铺，为顾客提供优质的服务。但是您只能同时管理一个店铺。"
 					:"您已经创建了店铺，请前往店铺管理页面进行管理。" }}
 			</template>
 			<template #append>
-				<v-btn v-if="user.shopId === null" to="/shop/create" color="primary">创建店铺</v-btn>
+				<v-btn v-if="user.shopId == null" to="/shop/create" color="primary">创建店铺</v-btn>
 				<v-btn v-else :to="`/shop/${user.shopId}`" color="primary">店铺管理</v-btn>
 			</template>
 		</v-alert>
