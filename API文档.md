@@ -1260,8 +1260,6 @@
 }
 ```
 
-
-
 ## 评价相关
 
 ### 用户评价商品
@@ -1314,5 +1312,45 @@
     "code": 0,
     "message": "回复成功",
     "data": null
+}
+```
+
+### 获取商品的评价
+- **请求路径**：`/shop/product/<int:product_id>/reviews/`
+- **请求方法**：GET
+- **权限要求**：无需认证
+- **返回数据格式**：
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "查询返回成功",
+    "data": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "reviews": [
+            {
+                "id": 1,
+                "user": {
+                    "name": "customer1",
+                    "email": "customer1@buaa.edu.cn",
+                    "role": "CUSTOMER",
+                    "shop": null,
+                    "money": "345.25",
+                    "phone": "1234567899"
+                },
+                "product": 28,
+                "rating": 4,
+                "comment": "非常好的商品！",
+                "create_date": "2024-11-19T14:54:35.926455Z",
+                "merchant_reply": "感谢您的支持！",
+                "reply_date": "2024-11-19T15:08:54.135512Z"
+            }
+        ],
+        "total_count": 1,
+        "total_page": 1,
+        "cur_page": 1
+    }
 }
 ```

@@ -14,7 +14,7 @@ from utils import get_error_message
 from Ugo_Online.utils import api_response, list_response
 from shop.models import SellerShop, Shop, InvitationCode, Product, Category, ShopTransaction, Review
 from shop.serializers import ShopSerializer, ShopProfileSerializer, InvitationCodeSerializer, ProductSerializer, \
-    CategorySerializer, ShopTransactionSerializer, ReviewReplySerializer, ReviewSerializer
+    CategorySerializer, ShopTransactionSerializer, ReviewReplySerializer, ReviewSerializer, ReviewListSerializer
 
 
 class ShopCreateView(APIView):
@@ -89,12 +89,6 @@ class JoinShopByCodeView(APIView):
         if not code or len(code) == 0:
             return api_response(False, code=302, message='邀请码不能为空')
 
-        # if not user.is_authenticated:
-        #     return api_response(False, code=401, message='用户未登录')
-        #
-        # if user.role != 'SELLER':
-        #     return api_response(False, code=400, message='用户不是卖家')
-
         try:
             invitation_code = InvitationCode.objects.get(code=code)
 
@@ -145,7 +139,6 @@ class ShopListView(ListAPIView):
         else:
             serializer = self.get_serializer(queryset, many=True)
             return api_response(True, code=0, data={'shops': serializer.data})
-
 
 
 class AddProductView(APIView):
@@ -303,3 +296,24 @@ class ProductDetailView(APIView):
             return api_response(True, data=serializer.data)
         except Product.DoesNotExist:
             return api_response(False, code=404, message='商品不存在')
+
+
+class ProductReviewListView(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ReviewListSerializer
+    pagination_class = PageNumberPagination  # 可选，添加分页功能
+
+    def get_queryset(self):
+        product_id = self.kwargs.get('product_id')
+        return Review.objects.filter(product__id=product_id)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            paginated_response = self.get_paginated_response(serializer.data).data
+            return list_response(paginated_response, self.paginator, 'reviews')
+        else:
+            serializer = self.get_serializer(queryset, many=True)
+            return api_response(True, code=0, data={'reviews': serializer.data})

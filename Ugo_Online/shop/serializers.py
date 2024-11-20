@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework import serializers
 
+from accounts.serializers import ProfileSerializer
 from order.models import OrderItem
 from .models import Shop, SellerShop, InvitationCode, Product, Category, ShopTransaction, Review
 
@@ -187,4 +188,21 @@ class ReviewReplySerializer(serializers.ModelSerializer):
         return instance
 
 
+class ReviewListSerializer(serializers.ModelSerializer):
+    user = ProfileSerializer(read_only=True)
+    product = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Review
+        fields = [
+            'id',
+            'user',
+            'product',
+            'rating',
+            'comment',
+            'create_date',
+            'merchant_reply',
+            'reply_date',
+        ]
+        read_only_fields = fields
 
