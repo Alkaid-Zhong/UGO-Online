@@ -15,6 +15,7 @@
 				</template>
 				<v-card-actions v-if="shop_id == user.shopId">
 					<v-btn color="primary" @click="showAddProduct = true" prepend-icon="mdi-plus">添加商品</v-btn>
+					<v-btn color="primary" @click="showInvite = true" prepend-icon="mdi-account-plus">邀请加入商店</v-btn>
 				</v-card-actions>
 			</v-card>
 			<v-row v-if="products">
@@ -100,12 +101,78 @@
 			</v-card-item>
 		</v-card>
 	</v-dialog>
+	
+	<v-dialog v-model="showInvite" transition="dialog-bottom-transition" max-width="600px">
+		<v-card>
+			<v-toolbar>
+				<v-btn
+					icon="mdi-close"
+					@click="showInvite = false"
+				></v-btn>
+				<v-toolbar-title>邀请加入{{ shopInfo.name }}</v-toolbar-title>
+			</v-toolbar>
+			<v-card-item v-if="!inviteInfo">
+				<v-select
+					v-model="never_expire"
+					label="有效期"
+					:items="[
+						{ text: '永久', value: true },
+						{ text: '自定义', value: false }
+					]"
+					item-title="text"
+					item-value="value"
+					:disabled="generateInviteCodeLoading"
+				></v-select>
+				<v-expand-transition>
+					<v-text-field
+						v-show="!never_expire"
+						label="有效期(天)"
+						v-model="expires_in_days"
+						type="number"
+						required
+						:disabled="generateInviteCodeLoading"
+					></v-text-field>
+				</v-expand-transition>
+				<v-text-field
+					label="使用次数"
+					v-model="usage_limit"
+					type="number"
+					required
+					:disabled="generateInviteCodeLoading"
+				></v-text-field>
+				<v-btn
+					color="primary"
+					@click="onclickGenerateInviteCode"
+					text="生成邀请码"
+					:loading="generateInviteCodeLoading"
+				></v-btn>
+			</v-card-item>
+			<div v-else>
+				<v-card-item class="text-center">
+					<v-sheet color="green" class="d-flex justify-center align-center rounded-xl ma-4">
+						<v-icon size="36px" color="white" class="mr-2 my-2">mdi-check</v-icon>
+						<span class="font-weight-bold text-h5">邀请码：{{ inviteInfo.code }}</span>
+					</v-sheet>
+					<v-card-text>创建日期：{{ new Date(inviteInfo.created_at).toLocaleString() }}</v-card-text>
+					<v-card-text>有效期至：{{ inviteInfo.expires_at ? new Date(inviteInfo.expires_at).toLocaleString() : '永久' }}</v-card-text>
+					<v-card-text>已用次数：{{ inviteInfo.usage_count }}</v-card-text>
+					<v-card-text>剩余次数：{{ inviteInfo.usage_limit - inviteInfo.usage_count }}</v-card-text>
+					<v-btn
+						class="mb-2"
+						color="red"
+						@click="inviteInfo = null"
+						variant="plain"
+					>重新生成</v-btn>
+				</v-card-item>
+			</div>
+		</v-card>
+	</v-dialog>
 </template>
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { user } from '@/store/user';
-import { getShopInfo } from '@/api/shop';
+import { getInviteCode, getShopInfo } from '@/api/shop';
 import { addProduct, getCategories, getProductList } from '@/api/product';
 import snackbar from '@/api/snackbar';
 
@@ -115,6 +182,7 @@ const { shop_id } = route.params
 const shopInfo = ref(null)
 const categoryList = ref(null)
 const showAddProduct = ref(false)
+const showInvite = ref(false)
 
 const productName = ref('')
 const productDescription = ref('')
@@ -124,11 +192,32 @@ const productStock = ref('')
 const productImage = ref(null)
 const products = ref(null)
 
+const inviteInfo = ref(null)
+const never_expire = ref(true)
+const expires_in_days = ref(1)
+const usage_limit = ref(1)
+const generateInviteCodeLoading = ref(false)
+
 onMounted(async () => {
 	shopInfo.value = await getShopInfo(shop_id)
 	products.value = await getProductList(shop_id)
 	categoryList.value = (await getCategories()).data.categories
 })
+
+const onclickGenerateInviteCode = async () => {
+	generateInviteCodeLoading.value = true
+	const res = await getInviteCode(shop_id, {
+		expires_in_days: never_expire.value ? null : expires_in_days.value,
+		usage_limit: usage_limit.value
+	})
+	if (res.success) {
+		inviteInfo.value = res.data
+		snackbar.success('邀请码已生成')
+	} else {
+		snackbar.error(res.message)
+	}
+	generateInviteCodeLoading.value = false
+}
 
 const onclickAddProduct = async () => {
 	if (!productName.value || productName.value.trim() === '') {

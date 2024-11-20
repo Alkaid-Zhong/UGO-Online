@@ -42,3 +42,33 @@ export const getShopInfo = async (id: number) => {
     });
     return res.data as IShop;
 }
+
+interface IInviteInfo {
+    code: string;
+    shop: number;
+    creater: number;
+    is_active: boolean;
+    created_at: string;
+    expires_at: string;
+    usage_limit: number;
+    usage_count: number;
+}
+
+export const getInviteCode = async (
+    id: number, 
+    params: { expires_in_days?: number, usage_limit?: number } = {expires_in_days: null, usage_limit: 1}
+) => {
+    const res = await server.post({
+        url: `/shop/${id}/create_invitation_code/`,
+        data: params.expires_in_days ? {
+            expires_in_days: params.expires_in_days, 
+            usage_limit: params.usage_limit
+        } : {
+            usage_limit: params.usage_limit
+        }
+    });
+    return {
+        ...res,
+        data: res.data as IInviteInfo
+    }
+}
