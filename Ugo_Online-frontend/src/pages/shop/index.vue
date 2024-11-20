@@ -15,15 +15,21 @@
 				<v-card
 					:to="`/shop/${shop.id}`"
 				>
-					<template #title>
-						<h2 class="headline mb-1">{{ shop.name }}</h2>
-					</template>
-					<template #subtitle>
+					<v-card-title>
+						<h2 class="headline mt-2">{{ shop.name }}</h2>
+					</v-card-title>
+					<v-rating
+						readonly
+						density="compact"
+						half-increments
+						active-color="amber"
+						color="amber-darken-1"
+						:model-value="shop.total_income"
+					></v-rating>
+					<v-card-text>
 						<p class="mb-2 font-weight-bold">{{ `地址：${shop.address}` }}</p>
 						<p>{{ shop.description }}</p>
-					</template>
-					<template #append>
-					</template>
+					</v-card-text>
 				</v-card>
 			</v-col>
 		</v-row>

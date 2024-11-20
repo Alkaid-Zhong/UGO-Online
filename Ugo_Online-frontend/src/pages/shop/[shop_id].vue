@@ -4,7 +4,18 @@
 		<div v-else>
 			<v-card class="mb-4">
 				<template #title>
-					<h2 class="headline mb-1">{{ shopInfo.name }}</h2>
+					<div class="d-flex align-center mb-2">
+						<h2 class="headline">{{ shopInfo.name }}</h2>
+						<v-rating
+							class="ml-2"
+							readonly
+							density="compact"
+							half-increments
+							active-color="amber"
+							color="amber-darken-1"
+							:model-value="shopInfo.total_income"
+						></v-rating>
+					</div>
 				</template>
 				<template #subtitle>
 					<p class="mb-2 font-weight-bold">{{ `地址：${shopInfo.address}` }}</p>
