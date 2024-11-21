@@ -98,11 +98,6 @@ class ProductSerializer(serializers.ModelSerializer):
         validated_data['shop'] = self.context['shop']
         return super().create(validated_data)
 
-    def get_image_url(self, obj):
-        if obj.image:
-            return request.build_absolute_uri(obj.image.url)
-        return None
-
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:

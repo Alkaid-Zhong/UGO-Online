@@ -15,11 +15,14 @@ from pathlib import Path
 # 自定义用户模型
 AUTH_USER_MODEL = 'accounts.User'
 
+# 获取服务器的主机名和端口号
+HOST_NAME = '8.152.218.70'  # 替换为您的服务器IP地址或域名
+PORT = '8000'               # 替换为您的Nginx监听端口
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MEDIA_URL = '/media/'
+MEDIA_URL = f'http://{HOST_NAME}:{PORT}/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
