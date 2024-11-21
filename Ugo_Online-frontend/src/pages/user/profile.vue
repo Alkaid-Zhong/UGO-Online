@@ -26,12 +26,12 @@
 			<v-divider></v-divider>
 			<v-card-item class="text-center">
 				<v-row>
-					<v-col cols="12" md="6">
+					<v-col cols="6">
 						<v-icon>mdi-phone</v-icon>
 						<p class="mt-2">{{ user.phone }}</p>
 					</v-col>
 					<v-divider vertical></v-divider>
-					<v-col cols="12" md="6">
+					<v-col cols="6">
 						<v-icon>mdi-wallet</v-icon>
 						<div class="mt-2">
 							<span style="font-size: 12px;">￥</span>

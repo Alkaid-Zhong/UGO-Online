@@ -60,6 +60,8 @@ import { ref } from 'vue'
 import snackbar from '@/api/snackbar';
 import { createShop, joinShop } from '@/api/shop';
 import router from '@/router';
+import { profile } from '@/api/user';
+import { user } from '@/store/user';
 
 const joinMode = ref(false);
 
@@ -80,7 +82,8 @@ const onclickSubmitCreate = async () => {
 	});
 	if (res.success) {
 		snackbar.success('创建成功');
-		window.reload();
+		await profile();
+		router.replace(`/shop/${user.shopId}`);
 	}
 }
 
@@ -92,7 +95,8 @@ const onclickSubmitJoin = async () => {
 	const res = await joinShop(inviteCode.value);
 	if (res.success) {
 		snackbar.success('加入成功');
-		window.reload();
+		await profile();
+		router.replace(`/shop/${user.shopId}`);
 	}
 }
 
