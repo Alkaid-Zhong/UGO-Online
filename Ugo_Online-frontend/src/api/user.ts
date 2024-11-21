@@ -70,3 +70,63 @@ export const addMoney = async (money: number) => {
 	}
 	return response;
 };
+
+export const getAddresses = async () => {
+	return server.get({ url: "/user/address/list/", showSnackbar: false });
+}
+
+export const addAddress = async (recipient_name: string, province: string, city: string, address: string, phone: string, is_default: boolean) => {
+	const response = await server.post({
+		url: "/user/address/create/",
+		data: {
+			recipient_name,
+			province,
+			city,
+			address,
+			phone,
+			is_default
+		}
+	});
+
+	if (response.success) {
+		snackbar.success("地址添加成功");
+	} else {
+		snackbar.error("地址添加失败：" + response.message);
+	}
+	return response;
+}
+
+export const getDefaultAddress = async () => {
+	return server.get({ url: "/user/address/default/", showSnackbar: false });
+}
+
+export const deleteAddress = async (address_id: number) => {
+	const response = await server._delete({ url: "/user/address/" + address_id + "delete/" });
+	if (response.success) {
+		snackbar.success("地址删除成功");
+	} else {
+		snackbar.error("地址删除失败：" + response.message);
+	}
+	return response;
+}
+
+export const updateAddress = async (address_id: number, recipient_name: string, province: string, city: string, address: string, phone: string, is_default: boolean) => {
+	const response = await server.put({
+		url: "/user/address/" + address_id + "/update/",
+		data: {
+			recipient_name,
+			province,
+			city,
+			address,
+			phone,
+			is_default
+		}
+	});
+
+	if (response.success) {
+		snackbar.success("地址更新成功");
+	} else {
+		snackbar.error("地址更新失败：" + response.message);
+	}
+	return response;
+}

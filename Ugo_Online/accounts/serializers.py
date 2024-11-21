@@ -175,6 +175,11 @@ class AddMoneySerializer(serializers.ModelSerializer):
         fields = ['add_money', 'money']
         read_only_fields = ['id', 'user']
 
+    def validate_add_money(self, value):
+        if value <= 0:
+            raise serializers.ValidationError({"error": "充值金额必须大于0"})
+        return value
+
     def update(self, instance, validated_data):
         instance.money += validated_data.get('add_money', 0)
         instance.save()

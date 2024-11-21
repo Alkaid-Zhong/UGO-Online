@@ -1,7 +1,7 @@
 import server from "./server";
 
 export const addProduct = async (
-    shopId: number, 
+    shopId: number,
     data: {
         name: string;
         description: string;
@@ -21,17 +21,17 @@ export const addProduct = async (
 };
 
 export const getCategories = async () => {
-    return server.get({
+    return await server.get({
         url: "/shop/category_list/",
     });
 }
 
 export const getProductList = async (
-    shopId: number, 
+    shopId: number,
     params: {
         page: number;
         category: number;
-    } = {page: 1, category: null}
+    } = { page: 1, category: null }
 ) => {
     return (await server.get({
         url: `/shop/${shopId}/products/`,
@@ -39,3 +39,8 @@ export const getProductList = async (
     })).data;
 };
 
+export const getProductDetail = async (id: number) => {
+    return await server.get({
+        url: "/shop/product/" + id + "/",
+    });
+}

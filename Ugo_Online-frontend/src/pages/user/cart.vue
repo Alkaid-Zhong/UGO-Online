@@ -122,7 +122,7 @@
         
       </v-col>
       <v-col cols="12" md="4">
-        <v-card>
+        <v-card style="position: sticky; top: 84px;">
           <v-card-title>
             <span class="font-weight-bold">明细</span>
           </v-card-title>
@@ -173,12 +173,17 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { deleteItem, getCart, updateCart } from '@/api/cart';
 import snackbar from '@/api/snackbar';
 import router from '@/router';
+import { cart } from '@/store/cart';
 
 const loading = ref(true);
 
 const fetchCartItems = async () => {
   const response = await getCart();
   shopLists.value = response.data.shops;
+  cart.items = shopLists.value.flatMap(shop => shop.items);
+  if (cart.selectedItems.length !== 0) {
+    itemSelected.value = cart.selectedItems;
+  } 
   loading.value = false;
 };
 
@@ -310,26 +315,24 @@ watch(selectAll, (value) => {
   }
 });
 
-watch(itemSelected, (value) => {
-  console.log(value);
-});
-
-
-// const allSelected = computed(() => {
-//   return itemSelected.value.length === cartCount.value;
-// });
-
-// watch(allSelected, (value) => {
-//   selectAll.value = value;
-// });
 
 const checkout = () => {
-  alert('还没写！');
+  // alert('还没写！');
+  if (selectedNotEmpty.value) {
+    cart.actualSum = actualSum;
+    cart.discount = discount;
+    cart.totalSum = totalSum;
+    cart.selectedItems = itemSelected.value;
+    router.push('/user/checkout/');
+  } else {
+    // TODO shake animation and alert
+    snackbar.warning("请选择商品后再结算");
+  }
 };
 
 const currency = (value) => {
   let val = parseFloat(value);
-  if (val > 10000) {
+  if (val > 9999999) {
     return `￥${(val / 10000).toFixed(2)} 万`;
   } else {
     return `￥${parseFloat(value).toFixed(2)}`;
@@ -338,10 +341,6 @@ const currency = (value) => {
 </script>
 
 <style scoped>
-.headline {
-  font-weight: bold;
-}
-
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;

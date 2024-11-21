@@ -81,6 +81,11 @@ const toggleTheme = () => {
 
 onMounted(async () => {
   const showSnackbar = route.path !== '/user/login';
+  if (localStorage.getItem('oo_theme')) {
+    theme.value = localStorage.getItem('oo_theme');
+  } else {
+    setSystemTheme();
+  }
   await profile(showSnackbar);
 });
 

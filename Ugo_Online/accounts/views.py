@@ -192,3 +192,5 @@ class AddMoneyView(APIView):
         if serializer.is_valid():
             serializer.save()
             return api_response(True, message='充值成功', data=serializer.data)
+        else:
+            return api_response(False, code=500, message=get_error_message(serializer.errors), data=serializer.errors)
