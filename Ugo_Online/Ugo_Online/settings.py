@@ -33,7 +33,7 @@ SECRET_KEY = "django-insecure-7#c1kv3)6b^+k*g-y!98(7q0p9u26dlvt0p_85zl%804vhdf32
 DEBUG = True
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1', '[::1]']
 
 # coookie
 CORS_ALLOW_CREDENTIALS = True
@@ -111,11 +111,23 @@ WSGI_APPLICATION = "Ugo_Online.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+#
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'h_db22371053',       # 数据库名称
+        'USER': 'u22371053',            # 数据库用户名
+        'PASSWORD': 'Aa789051',        # 数据库密码
+        'HOST': '120.46.3.97',
+        'PORT': '3306',        # GaussDB的端口号，默认为5432
     }
 }
 
@@ -160,3 +172,5 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
