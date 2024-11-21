@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.db.models import Avg
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from rest_framework import serializers
+from rest_framework import serializers, request
 
 from accounts.serializers import ProfileSerializer
 from order.models import OrderItem
@@ -97,6 +97,11 @@ class ProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['shop'] = self.context['shop']
         return super().create(validated_data)
+
+    def get_image_url(self, obj):
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
 
 class CategorySerializer(serializers.ModelSerializer):
