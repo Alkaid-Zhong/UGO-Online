@@ -9,3 +9,11 @@ export const createOrder = async (data: any) => {
     }
     return response;
 }
+
+export const userGetOrders = async (page = 1, status?: string) => {
+    return await server.get({ url: "/order/user_orders/", showSnackbar: false, params: { page, status } });
+}
+
+export const userPayOrders = async (order_ids: Array<Number>) => {
+    return await server.post({ url: "/order/pay/", data: { order_ids } });
+}

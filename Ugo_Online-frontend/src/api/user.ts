@@ -75,17 +75,13 @@ export const getAddresses = async () => {
 	return server.get({ url: "/user/address/list/", showSnackbar: false });
 }
 
-export const addAddress = async (recipient_name: string, province: string, city: string, address: string, phone: string, is_default: boolean) => {
+export const addAddress = async (data: any) => {
+	// recipient_name: string, province: string, city: string, address: string, phone: string, is_default: boolean
+
+	console.log(data);
 	const response = await server.post({
 		url: "/user/address/create/",
-		data: {
-			recipient_name,
-			province,
-			city,
-			address,
-			phone,
-			is_default
-		}
+		data: data,
 	});
 
 	if (response.success) {
