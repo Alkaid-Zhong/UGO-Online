@@ -182,7 +182,7 @@ class ProductListView(ListAPIView):
 
     def get_queryset(self):
         if self.shop is not None:
-            if SellerShop.objects.filter(seller=self.request.user, shop=self.shop).exists():
+            if self.request.user.is_authenticated and SellerShop.objects.filter(seller=self.request.user, shop=self.shop).exists():
                 queryset = Product.objects.filter(shop=self.shop)
             else:
                 queryset = Product.objects.filter(shop=self.shop, status='Available')
