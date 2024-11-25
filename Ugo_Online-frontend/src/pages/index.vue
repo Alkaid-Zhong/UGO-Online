@@ -4,16 +4,13 @@
     <transition name="ease">
     <v-card v-if="showLatestUpdate" key="'latest update'">
       <v-card-title class="text-h6">Latest update</v-card-title>
-      <v-card-subtitle>最近更新时间： 11.25 13:04</v-card-subtitle>
+      <v-card-subtitle>最近更新时间： 11.26 13:04</v-card-subtitle>
       <v-list>
          <v-list-item>
-               <v-list-item-title>1. 支付 & 订单列表</v-list-item-title>
+               <v-list-item-title>1. 商家的订单列表</v-list-item-title>
          </v-list-item>
          <v-list-item>
-               <v-list-item-title>2. 优化了一些功能</v-list-item-title>
-         </v-list-item>
-         <v-list-item>
-               <v-list-item-title>3. 增加了一些新功能</v-list-item-title>
+               <v-list-item-title>2. 退款功能 </v-list-item-title>
          </v-list-item>
       </v-list>
       <v-card-text class="text-body-1">
@@ -24,10 +21,10 @@
                <strong>已知Bug：</strong>Cart page幽灵商品, Profile页面 商家充值ban掉，商铺页面“编辑商品”只对该商铺管理者可见（而非所有Seller）、商铺评价显示问题
          </v-list-item>
          <v-list-item>
-               <strong>完全没写：</strong>商品页和评价页、首页
+               <strong>完全没写：</strong>商品页和评价页、首页，（订单详情）
          </v-list-item>
          <v-list-item>
-               <strong>正在完善：</strong> 订单状态、退货、修改地址；商家订单页面（UUQ）
+               <strong>正在完善：</strong> 用户订单：订单修改地址、确认收货；商家订单页面：发货、地址信息显示； 高亮样式：待付款（用户）& 待发货（商家）（UUQ）
          </v-list-item>
       </v-list>
       <v-card-actions>

@@ -17,3 +17,14 @@ export const userGetOrders = async (page = 1, status?: string) => {
 export const userPayOrders = async (order_ids: Array<Number>) => {
     return await server.post({ url: "/order/pay/", data: { order_ids } });
 }
+
+export const userRefund = async (order_id: Number, item_ids: Array<Number>) => {
+    return await server.post({
+        url: "/order/" + order_id + "/refund/",
+        data: { item_ids: item_ids }
+    });
+}
+
+export const sellerGetOrders = async (page = 1, status?: string) => {
+    return await server.get({ url: "/order/seller_orders/", showSnackbar: false, params: { page, status } });
+}
