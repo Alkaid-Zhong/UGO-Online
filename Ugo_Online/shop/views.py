@@ -182,7 +182,7 @@ class ProductListView(ListAPIView):
         if self.shop is not None:
             queryset = Product.objects.filter(shop=self.shop, status='Available')
         else:
-            queryset = Product.objects.filter(status='Available')
+            queryset = Product.objects.all()
         return queryset.annotate(
             average_rating=Avg('reviews__rating')
         )
