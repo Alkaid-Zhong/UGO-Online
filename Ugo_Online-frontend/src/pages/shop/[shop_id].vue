@@ -27,6 +27,7 @@
 				<v-card-actions v-if="shop_id == user.shopId">
 					<v-btn color="primary" @click="showAddProduct = true" prepend-icon="mdi-plus">添加商品</v-btn>
 					<v-btn color="primary" @click="showInvite = true" prepend-icon="mdi-account-plus">邀请加入商店</v-btn>
+					<v-btn color="primary" @click="onclickShowFlow" prepend-icon="mdi-chart-line" :loading="loadingFlow">查看商店流水</v-btn>
 				</v-card-actions>
 			</v-card>
 			<v-row v-if="products">
@@ -163,12 +164,44 @@
 			</div>
 		</v-card>
 	</v-dialog>
+
+	
+	<v-dialog v-model="showShopFlow" transition="dialog-bottom-transition" fullscreen>
+		<v-card>
+			<v-toolbar>
+				<v-btn
+					icon="mdi-close"
+					@click="showShopFlow = false"
+				></v-btn>
+				<v-toolbar-title>{{ shopInfo.name }}的流水</v-toolbar-title>
+				<v-spacer></v-spacer>
+			</v-toolbar>
+			<v-card-item>
+				<v-data-table
+					:headers="flowHeaders"
+					:items="shopFlow.transactions"
+					items-per-page="15"
+					:items-per-page-options="[15]"
+					:page="shopFlow.cur_page"
+				>
+					<template v-slot:item.date="{ item }">
+						{{ new Date(item.date).toLocaleString() }}
+					</template>
+					<template v-slot:item.transaction_type="{ item }">
+						<v-chip v-if="item.transaction_type === 'Income'" color="green" small>收入</v-chip>
+						<v-chip v-else color="red" small>退款</v-chip>
+					</template>
+				</v-data-table>
+			</v-card-item>
+		</v-card>
+	</v-dialog>
+	
 </template>
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { user } from '@/store/user';
-import { getInviteCode, getShopInfo } from '@/api/shop';
+import { getInviteCode, getShopFlow, getShopInfo } from '@/api/shop';
 import { addProduct, getCategories, getProductList } from '@/api/product';
 import snackbar from '@/api/snackbar';
 import productCard from '@/components/productCard.vue';
@@ -180,6 +213,8 @@ const shopInfo = ref(null)
 const categoryList = ref(null)
 const showAddProduct = ref(false)
 const showInvite = ref(false)
+const showShopFlow = ref(false)
+const loadingFlow = ref(false)
 
 const productName = ref('')
 const productDescription = ref('')
@@ -195,11 +230,34 @@ const expires_in_days = ref(1)
 const usage_limit = ref(1)
 const generateInviteCodeLoading = ref(false)
 
+const shopFlow = ref(null)
+
+const flowHeaders = [
+	{ title: '流水号', key: 'id' },
+	{ title: '订单号', key: 'order_id' },
+	{ title: '交易金额', key: 'amount' },
+	{ title: '交易类型', key: 'transaction_type' },
+	{ title: '交易时间', key: 'date' },
+	{ title: '描述', key: 'description' }
+]
+
 onMounted(async () => {
 	shopInfo.value = await getShopInfo(shop_id)
 	products.value = await getProductList(shop_id)
 	categoryList.value = (await getCategories()).data.categories
 })
+
+const onclickShowFlow = async () => {
+	loadingFlow.value = true
+	const res = await getShopFlow(shop_id)
+	if (res.success) {
+		shopFlow.value = res.data
+	} else {
+		snackbar.error(res.message)
+	}
+	loadingFlow.value = false
+	showShopFlow.value = true
+}
 
 const onclickGenerateInviteCode = async () => {
 	generateInviteCodeLoading.value = true

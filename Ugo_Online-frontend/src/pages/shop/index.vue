@@ -27,7 +27,7 @@
 						:model-value="shop.total_income"
 					></v-rating>
 					<v-card-text>
-						<p class="mb-2 font-weight-bold">{{ `地址：${shop.address}` }}</p>
+						<p class="mb-2 font-weight-bold">{{ `${shop.address}` }}</p>
 						<p>{{ shop.description }}</p>
 					</v-card-text>
 				</v-card>

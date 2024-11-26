@@ -1,3 +1,4 @@
+import { options } from "node_modules/axios/index.cjs";
 import server from "./server";
 
 export const createShop = async (data: { name: string, address?: string, description?: string}) => {
@@ -77,5 +78,22 @@ export const joinShop = async (code: string) => {
     return await server.post({
         url: `/shop/join_by_code/`,
         data: { invitation_code: code }
+    });
+}
+
+export const getShopFlow = async (
+    id: number,
+    options: {
+        page: number, transaction_type?: 'Income' | 'Refund', date?: string, ordering?: 'data' | 'amount' | '-data' | '-amount'
+    } = { page: 1 }
+) => {
+    return await server.get({
+        url: `/shop/${id}/transactions/`,
+        params: {
+            page: options.page,
+            transaction_type: options.transaction_type,
+            date: options.date,
+            ordering: options.ordering
+        }
     });
 }
