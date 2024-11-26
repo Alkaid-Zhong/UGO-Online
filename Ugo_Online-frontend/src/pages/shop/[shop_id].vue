@@ -177,12 +177,30 @@
 				<v-spacer></v-spacer>
 			</v-toolbar>
 			<v-card-item>
-				<v-data-table
+				<div class="d-flex align-center justify-space-between mb-4">
+					<v-icon class="mr-4">mdi-filter</v-icon>
+					<v-chip-group
+						v-model="flowChoices"
+						filter
+					>
+						<v-chip color="green">只看收入</v-chip>
+						<v-chip color="red">只看退款</v-chip>
+					</v-chip-group>
+					<v-text-field
+						class="mt-4"
+						variant="outlined"
+						label="搜索日期"
+						v-model="flowDate"
+						type="date"
+					></v-text-field>
+				</div>
+				<v-data-table-server
 					:headers="flowHeaders"
 					:items="shopFlow.transactions"
-					items-per-page="15"
-					:items-per-page-options="[15]"
-					:page="shopFlow.cur_page"
+					:items-length="shopFlow.count"
+    			hide-default-footer
+					@update:options="reloadFlow"
+					:loading="loadingFlow"
 				>
 					<template v-slot:item.date="{ item }">
 						{{ new Date(item.date).toLocaleString() }}
@@ -191,14 +209,18 @@
 						<v-chip v-if="item.transaction_type === 'Income'" color="green" small>收入</v-chip>
 						<v-chip v-else color="red" small>退款</v-chip>
 					</template>
-				</v-data-table>
+				</v-data-table-server>
+				<v-pagination
+					v-model="flowPage"
+					:length="shopFlow.total_pages"
+				></v-pagination>
 			</v-card-item>
 		</v-card>
 	</v-dialog>
 	
 </template>
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { user } from '@/store/user';
 import { getInviteCode, getShopFlow, getShopInfo } from '@/api/shop';
@@ -231,14 +253,17 @@ const usage_limit = ref(1)
 const generateInviteCodeLoading = ref(false)
 
 const shopFlow = ref(null)
+const flowPage = ref(1)
+const flowChoices = ref(null)
+const flowDate = ref('')
 
 const flowHeaders = [
-	{ title: '流水号', key: 'id' },
-	{ title: '订单号', key: 'order_id' },
+	{ title: '流水号', key: 'id', sortable: false },
+	{ title: '订单号', key: 'order_id', sortable: false },
 	{ title: '交易金额', key: 'amount' },
-	{ title: '交易类型', key: 'transaction_type' },
+	{ title: '交易类型', key: 'transaction_type', sortable: false },
 	{ title: '交易时间', key: 'date' },
-	{ title: '描述', key: 'description' }
+	{ title: '描述', key: 'description', sortable: false }
 ]
 
 onMounted(async () => {
@@ -247,16 +272,59 @@ onMounted(async () => {
 	categoryList.value = (await getCategories()).data.categories
 })
 
+watch(flowChoices, async () => {
+	flowPage.value = 1
+	await fetchFlow()
+})
+
+watch(flowDate, async () => {
+	flowPage.value = 1
+	await fetchFlow()
+})
+
+const reloadFlow = async ({ sortBy }) => {
+	const sortOptions = {}
+	if (sortBy.length > 0) {
+		console.log(sortBy[0].order)
+		console.log(sortBy[0].key)
+		if (sortBy[0].order == 'desc') {
+			sortOptions['ordering'] = `-${sortBy[0].key}`
+		} else {
+			sortOptions['ordering'] = sortBy[0].key
+		}
+	}
+	await fetchFlow(sortOptions)
+}
+
 const onclickShowFlow = async () => {
 	loadingFlow.value = true
-	const res = await getShopFlow(shop_id)
+	flowChoices.value = null
+	await fetchFlow()
+	loadingFlow.value = false
+	showShopFlow.value = true
+}
+
+const fetchFlow = async ( sortOptions = {} ) => {
+	loadingFlow.value = true
+	const options = { ...sortOptions }
+	if (flowChoices.value === 0) {
+		options.transaction_type = 'Income'
+	} else if (flowChoices.value === 1) {
+		options.transaction_type = 'Refund'
+	}
+	if (flowDate.value && flowDate.value.trim() !== '') {
+		options.date = flowDate.value
+	}
+	const res = await getShopFlow(shop_id, {
+		page: flowPage.value,
+		...options
+	})
 	if (res.success) {
 		shopFlow.value = res.data
 	} else {
 		snackbar.error(res.message)
 	}
 	loadingFlow.value = false
-	showShopFlow.value = true
 }
 
 const onclickGenerateInviteCode = async () => {
