@@ -27,7 +27,7 @@
         <span>购物车</span>
       </v-btn>
 
-      <v-btn to="/user/order" v-if="user.login"> <!-- 商家和用户都用同一个 -->
+      <v-btn to="/order" v-if="user.login"> <!-- 商家和用户都用同一个 -->
         <v-icon>mdi-invoice-text-multiple-outline</v-icon>
         <span>订单</span>
       </v-btn>
