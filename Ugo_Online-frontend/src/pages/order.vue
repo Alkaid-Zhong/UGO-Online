@@ -1,5 +1,6 @@
 <template>
     <v-container v-if="!loading">
+        
         <v-row> <!-- customer -->
             <v-col cols="12">
             <v-list v-for="order in orders">
@@ -21,7 +22,7 @@
                     </v-card-title>
                     <v-card-subtitle class="font-weight-bold" >
                         <span> 共 {{ order.items.length }} 件商品，总价:</span> <span style="color:orangered;">￥{{ order.total_price }}</span> 
-                        <span> 订单状态：{{ formatStatus(order.status) }}</span>
+                        <span> 订单状态：<v-chip tile :color="orderStatusColor(order.status)">{{ formatStatus(order.status) }}</v-chip></span>
                     </v-card-subtitle>
                     
                     <v-list-item v-for="item in order.items" width="100%">
@@ -43,7 +44,7 @@
                                     
                                     <b>x {{item.quantity}}</b><br><br>
                                     <!-- {{order.status}} {{  item.is_cancelled }} -->
-                                    <v-btn text="退货" v-if="isCustomer && showRefuncButton(order.status, item.is_cancelled)" @click="refund(order.order_id,item)"></v-btn> <!-- v-if="showRefuncButton(order)"  bug？-->
+                                    <v-btn text="退货" v-if="isCustomer && showRefundButton(order.status, item.is_cancelled)" @click="refund(order,item)"></v-btn> <!-- v-if="showRefuncButton(order)"  bug？-->
 
                                 </v-col>
                             </v-row>
@@ -54,7 +55,10 @@
                     </v-list-item>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="success" v-if="isSeller && order.status === 'Payment Received' " @click="snackbar.warning('还没写')">发货</v-btn>
+                        <v-btn color="warning" v-if="isCustomer && order.status === 'Pending Payment'" class="font-weight-bold" @click="orderDialog('pay', order)">支付</v-btn> <!--payOrder(order)--> 
+                        
+                        
+                        <v-btn color="success" v-if="isSeller && order.status === 'Payment Received' " @click="ship(order)">发货</v-btn>
                         <v-btn color="primary" @click="router.push(`/order/${order.order_id}/`)">查看详情</v-btn>
                     </v-card-actions>
                 </v-card>
@@ -70,6 +74,45 @@
                 </v-list>
             </v-col>
         </v-row> -->
+
+        <v-dialog width="40%" v-model="showDialog">
+
+            <template v-if="dialogContent==='pay'" v-slot:default="{ isActive }">
+                <v-card title="支付确认">
+                <v-card-text>
+                    <span>当前余额：￥{{ user.money }}元</span><br>
+                    <span>支付金额：￥{{ curOrder.total_price }}元</span>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                    text="取消"
+                    @click="isActive.value = false"
+                    ></v-btn>
+                    <v-btn color="warning" class="font-weight-bold" text="确认支付" @click="payOrder(curOrder), isActive.value = false">
+                    </v-btn>
+                </v-card-actions>
+                </v-card>
+            </template>
+
+            <template v-else-if="dialogContent==='change address'" v-slot:default="{ isActive }">
+                <v-card title="修改地址"> 
+                <!-- <v-card-text> TODO
+                    <span>当前余额：￥{{ user.money }}元</span><br>
+                    <span>支付金额：￥{{ curOrder.total_price }}元</span>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                    text="取消"
+                    @click="isActive.value = false"
+                    ></v-btn>
+                    <v-btn color="warning" class="font-weight-bold" text="确认修改" @click="payOrder(curOrder), isActive.value = false">
+                    </v-btn>
+                </v-card-actions> -->
+                </v-card>
+            </template>
+        </v-dialog>
     </v-container>
     <v-container v-else class="d-flex justify-center align-center">
         <v-progress-circular
@@ -87,10 +130,9 @@
 import { ref, onMounted, computed } from 'vue';
 import { user } from '@/store/user';
 import snackbar from '@/api/snackbar';
-import { sellerGetOrders, userGetOrders, userRefund } from '@/api/order';
+import { sellerGetOrders, sellerShip, userGetOrders, userPayOrders, userRefund } from '@/api/order';
 import { getShopInfo } from '@/api/shop';
 import router from '@/router';
-import Profile from './user/profile.vue';
 import { profile } from '@/api/user';
 
 const currency = (value) => {
@@ -142,19 +184,109 @@ onMounted(() => {
     
 })
 
-const showRefuncButton = ((orderStatus, isCancelled) => {
+const curOrder = ref();
+const showDialog = ref(false);
+const dialogContent = ref(''); // pay, change address, receive, cancel!   (refund?)
+
+const orderDialog = (content, order) => {
+    dialogContent.value = content;
+    switch (content) {
+        case 'pay':
+            profile().then(() => {
+                console.log(user);
+                console.log("订单价格：" + order.total_price, "用户余额：" + user.money);
+                if (parseInt(user.money) < parseInt(order.total_price)) {
+                    snackbar.error("余额不足(当前余额 "+ user.money +"元), 请充值");
+                    return;
+                } else {
+                    curOrder.value = order;
+                    showDialog.value = true;
+                    
+                }
+            });
+            break;
+        case 'change address':
+            //changeAddressDialog(order);
+            break;
+        case 'receive':
+            //receiveDialog(order);
+            break;
+        default:
+            break;
+    }
+    console.log(order);
+}
+
+const orderStatusColor = (status)=> {
+    switch (status) {
+        case 'Pending Payment':
+            return 'warning';
+        case 'Payment Received':
+            return 'primary';
+        case 'Completed':
+            return 'success';
+        case 'Cancelled':
+            return 'error';
+        case 'Refund Requested':
+            return 'error';
+        case 'Refund Successful':
+            return 'error';
+        case 'Shipped':
+            return 'primary';
+        default:
+            return 'grey';
+    }
+
+        // if (isCustomer.value) {
+        //     // 用户
+            
+        // } else {
+        //     // 商家
+        //     return 'success';
+        // }
+};
+
+const showRefundButton = ((orderStatus, isCancelled) => {
     return orderStatus === 'Payment Received' && isCancelled === false ; // || status === 'Completed'
 });
 
-const refund = async (order_id, item) => {
+const refund = async (order, item) => {
+    const order_id = order.order_id;
     console.log(order_id, item);
     
     const response = await userRefund(order_id, [item.id]);
     if (response.success) {
         snackbar.success("退款申请成功");
         item.is_cancelled = true;
+        if (order.items.every(item => item.is_cancelled)) {
+            order.status = 'Refund Requested';
+        }
     } else {
         snackbar.error("退款申请失败" + response.message);
+    }
+}
+
+const payOrder = async (order) => {
+    console.log(order);
+    const response = await userPayOrders([order.order_id]);
+    if (response.success) {
+        snackbar.success("支付成功");
+        order.status = 'Payment Received';
+    } else {
+        // console.log(response);
+        snackbar.error("支付失败：" + response.data.message);
+    }
+}
+
+
+const ship = async (order) => {
+    console.log(order);
+    const response = await sellerShip(order.order_id);
+    if (response.success) {
+        snackbar.success("发货成功");
+        order.status = 'Completed';
+    } else {
+        snackbar.error("发货失败：" + response.message);
     }
 }
 
@@ -163,7 +295,7 @@ const formatStatus = (status) => {
         case 'Pending Payment':
             return '待支付';
         case 'Payment Received':
-            return '已支付，待收货';
+            return '已支付，待发货';
         case 'Completed':
             return '已完成';
         case 'Cancelled':
@@ -172,9 +304,10 @@ const formatStatus = (status) => {
             return '退款申请中';
         case 'Refund Successful':
             return '退款成功';
-
+        case 'Shipped':
+            return '商家已发货';
         default:
-            return "出现错误，请重试";
+            return status;
     }
 }
 

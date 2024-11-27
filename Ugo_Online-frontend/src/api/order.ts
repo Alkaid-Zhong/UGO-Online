@@ -28,3 +28,7 @@ export const userRefund = async (order_id: Number, item_ids: Array<Number>) => {
 export const sellerGetOrders = async (page = 1, status?: string) => {
     return await server.get({ url: "/order/seller_orders/", showSnackbar: false, params: { page, status } });
 }
+
+export const sellerShip = async (order_id: Number) => {
+    return await server.post({ url: "/order/" + order_id + "/ship/" });
+}

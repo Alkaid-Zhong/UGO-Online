@@ -4,7 +4,7 @@
     <transition name="ease">
     <v-card v-if="showLatestUpdate" key="'latest update'">
       <v-card-title class="text-h6">Latest update</v-card-title>
-      <v-card-subtitle>最近更新时间： 11.26 13:04</v-card-subtitle>
+      <v-card-subtitle>最近更新时间： 11.27 23:26</v-card-subtitle>
       <v-list>
          <v-list-item>
                <v-list-item-title>1. 商家的订单列表</v-list-item-title>
@@ -24,7 +24,8 @@
                <strong>完全没写：</strong>商品页和评价页、首页，（订单详情）
          </v-list-item>
          <v-list-item>
-               <strong>正在完善：</strong> 用户订单：订单修改地址、确认收货；商家订单页面：发货、地址信息显示； 高亮样式：待付款（用户）& 待发货（商家）（UUQ）
+               <strong>正在完善：</strong> 用户订单：订单修改地址、确认收货；商家订单页面：发货、地址信息显示； 高亮样式：待付款（用户）& 待发货（商家） 购物车失效商品判断（UUQ）<br/>
+               商铺页面“编辑商品”功能
          </v-list-item>
       </v-list>
       <v-card-actions>
