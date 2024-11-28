@@ -45,7 +45,7 @@
                                     <b>x {{item.quantity}}</b><br><br>
                                     <!-- {{order.status}} {{  item.is_cancelled }} -->
                                     <v-btn text="退货" v-if="isCustomer && showRefundButton(order.status, item.is_cancelled)" @click="refund(order,item)"></v-btn> <!-- v-if="showRefuncButton(order)"  bug？-->
-
+                                    
                                 </v-col>
                             </v-row>
                             
@@ -58,7 +58,7 @@
                         <v-btn color="red" v-if="isCustomer && order.status==='Pending Payment'" @click="orderDialog('cancel', order)">取消订单</v-btn>
                         <v-btn color="" v-if="isCustomer && showChangeAddressButton(order.status)" @click="orderDialog('change address', order)">修改地址</v-btn>
                         <v-btn color="warning" v-if="isCustomer && order.status === 'Pending Payment'" class="font-weight-bold" @click="orderDialog('pay', order)">支付</v-btn> <!--payOrder(order)--> 
-                        
+                        <v-btn color="success" v-if="isCustomer && order.status === 'Shipped'" class="font-weight-bold" @click="orderDialog('receive',order)">确认收货</v-btn>
                         
                         <v-btn color="success" v-if="isSeller && order.status === 'Payment Received' " @click="ship(order)">发货</v-btn>
                         <v-btn color="primary" @click="router.push(`/order/${order.order_id}/`)">查看详情</v-btn>
@@ -138,6 +138,25 @@
                     </v-card-actions>
                 </v-card>
             </template>
+            <template v-else-if="dialogContent==='receive'" v-slot:default="{isActive}">
+                <v-card title="确认收货">
+                    <v-card-text>
+                        <span>您确定已经收到货物了吗？</span>
+                        <br>
+                        <small>确认收货后将无法退款</small>
+                    </v-card-text>
+                    
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                        text="我再想想"
+                        @click="isActive.value = false"
+                        ></v-btn>
+                        <v-btn color="warning" class="font-weight-bold" text="确认收货" @click="userReceive(curOrder), isActive.value = false">
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </template>
         </v-dialog>
         <v-row>
             <v-col cols="12" class="d-flex justify-center">
@@ -166,7 +185,7 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { user } from '@/store/user';
 import snackbar from '@/api/snackbar';
-import { sellerGetOrders, sellerShip, userCancelOrder, userChangeAddress, userGetOrders, userPayOrders, userRefund } from '@/api/order';
+import { sellerGetOrders, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userGetOrders, userPayOrders, userRefund } from '@/api/order';
 import { getShopInfo } from '@/api/shop';
 import router from '@/router';
 import { profile } from '@/api/user';
@@ -263,6 +282,7 @@ const dialogContent = ref(''); // pay, change address, receive, cancel!   (refun
 
 const orderDialog = (content, order) => {
     dialogContent.value = content;
+    curOrder.value = order;
     switch (content) {
         case 'pay':
             profile().then(() => {
@@ -272,24 +292,23 @@ const orderDialog = (content, order) => {
                     snackbar.error("余额不足(当前余额 "+ user.money +"元), 请充值");
                     return;
                 } else {
-                    curOrder.value = order;
                     showDialog.value = true;
                     
                 }
             });
             break;
         case 'change address':
-            curOrder.value = order;
             showDialog.value = true;
             console.log("修改地址");
             //changeAddressDialog(order);
             break;
         case 'cancel':
-            curOrder.value = order;
             showDialog.value = true;
             
             break;
         case 'receive':
+            showDialog.value = true;
+
             //receiveDialog(order);
             break;
         default:
@@ -371,6 +390,17 @@ const userCancel = async (order) => {
         order.status = 'Cancelled';
     } else {
         snackbar.error("订单取消失败：" + response.message);
+    }
+}
+
+const userReceive = async (order) => {
+    console.log(order);
+    const response = await userConfirmOrder(order.order_id);
+    if (response.success) {
+        snackbar.success("确认收货成功");
+        order.status = 'Completed';
+    } else {
+        snackbar.error("确认收货失败：" + response.message);
     }
 }
 

@@ -26,6 +26,10 @@ export const userCancelOrder = async (order_id: Number) => {
     return await server.post({ url: "/order/" + order_id + "/cancel/" });
 }
 
+export const userConfirmOrder = async (order_id: Number) => {
+    return await server.post({ url: "/order/" + order_id + "/complete/" });
+}
+
 export const userRefund = async (order_id: Number, item_ids: Array<Number>) => {
     return await server.post({
         url: "/order/" + order_id + "/refund/",

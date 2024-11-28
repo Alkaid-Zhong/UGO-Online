@@ -1,12 +1,14 @@
 <template>
 <v-card :elevation="cardElevator">
 
-<v-card-title>
-    <h3>{{ title }}</h3>
-    <template v-slot:prepend>
-        <v-icon v-if="paying" @click="editAddress">mdi-pencil</v-icon>
+    <template #title>
+        <h3>{{ title }}</h3>
+
     </template>
-</v-card-title>
+    <template #append>
+        <v-icon @click="snackbar.warning('敬请期待')"> mdi-cart</v-icon>
+        <v-icon @click="snackbar.warning('敬请期待')"> mdi-plus</v-icon>
+    </template>
 
 <v-divider></v-divider>
 <v-card-text>

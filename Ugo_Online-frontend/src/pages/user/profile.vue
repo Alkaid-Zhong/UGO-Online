@@ -43,6 +43,7 @@
 								@click="showRecharge = true"
 								variant="text"
 								size="small"
+								v-if="user.role === 'CUSTOMER'"
 							>充值</v-btn>
 					</v-col>
 				</v-row>
@@ -61,6 +62,19 @@
 				<v-chip color="green" prepend-icon="mdi-store">我的商铺</v-chip>
 			</template>
 		</v-card>
+
+		<AddressSelect v-if="user.role==='CUSTOMER'" class="mt-5"
+						:title=" '我的地址'"
+						:addressPerPage="3"
+						:paying="false"
+						:preSelect="false"
+		></AddressSelect>
+		<!-- <v-card v-if="user.role==='CUSTOMER'" class="mt-4">
+			<v-card-title class="text-h5 font-weight-bold">
+				我的地址
+			</v-card-title>
+			
+		</v-card> -->
 	</v-container>
 	<v-dialog v-model="showRecharge" max-width="500px">
 		<v-card>
@@ -84,6 +98,7 @@ import { onMounted, ref } from 'vue';
 import { user } from '@/store/user';
 import { addMoney, logout } from '@/api/user';
 import { getShopInfo } from '@/api/shop';
+import AddressSelect from '@/components/addressSelect.vue';
 
 const shopInfo = ref(null)
 const loading = ref(false);
