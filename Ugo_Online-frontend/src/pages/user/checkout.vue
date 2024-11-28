@@ -5,6 +5,7 @@
             <v-col cols="12" :md="paying?6:8" key="left-col" class="animate_07s">
               <AddressSelect :paying="paying"
                              :addressPerPage="3"
+                             :title="paying ? '地址信息' : '选择地址'"
                              @updateSelectedAddress="updateSelectedAddress">
 
               </AddressSelect>  
@@ -309,8 +310,6 @@ const quantityAll = computed(() => {
 */
 const updateSelectedAddress = (newAddress) => {
   selectedAddress.value = newAddress;
-  console.log("outside update to");
-  console.log(selectedAddress.value);
 };
 
 // const addresses = ref([]);
