@@ -182,8 +182,16 @@ const fetchCartItems = async () => {
   shopLists.value = response.data.shops;
   cart.items = shopLists.value.flatMap(shop => shop.items);
   if (cart.selectedItems.length !== 0) {
-    itemSelected.value = cart.selectedItems;
-  } 
+    // itemSelected.value = cart.selectedItems.filter(selectedItem => 
+    //   shopLists.value.some(shop => shop.items.some(item => item.item_id === selectedItem.item_id))
+    // );
+    cart.selectedItems.forEach(selectedItem => {
+      const item = cart.items.find(item => item.item_id === selectedItem.item_id);
+      if (item) {
+        itemSelected.value.push(item);
+      }
+    });
+  }
   loading.value = false;
 };
 
@@ -317,7 +325,6 @@ watch(selectAll, (value) => {
 
 
 const checkout = () => {
-  // alert('还没写！');
   if (selectedNotEmpty.value) {
     cart.actualSum = actualSum;
     cart.discount = discount;

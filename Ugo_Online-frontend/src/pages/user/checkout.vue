@@ -3,7 +3,12 @@
         <v-row v-if="!loading">
           <!-- <transition name="col-transition"> -->
             <v-col cols="12" :md="paying?6:8" key="left-col" class="animate_07s">
-                <v-card>
+              <AddressSelect :paying="paying"
+                             :addressPerPage="3"
+                             @updateSelectedAddress="updateSelectedAddress">
+
+              </AddressSelect>  
+              <!--<v-card>
                     <v-card-title>
                         <h3>{{ paying ? "地址信息" : "选择地址" }}</h3>
                         <template v-slot:prepend>
@@ -17,9 +22,8 @@
                         <v-row v-if="!paying" class="" key="'empty'">
                             <v-item-group v-model="selectedAddress" mandatory class="d-flex" style="flex-grow: 1;">
                                 <v-container>
-                                  <v-row :style="{flexGrow:1, minHeight:minheight+'px' }" id="address-card" >
-                                    <!-- <transition-group :name="transitionName" mode="out-in">  -->
-                                        <v-col cols="4" style="flex-grow: 1;" v-for="(address, index) in paginatedAddresses" :key="address.id" > <!-- v-if="false" -->
+                                  <v-row :style="{flexGrow:1, minHeight:minheight+'px' }" id="address-card" > \
+                                        <v-col cols="4" style="flex-grow: 1;" v-for="(address, index) in paginatedAddresses" :key="address.id" > 
                                             <v-item v-slot= "{ isSelected, toggle }" :value="address">
                                                 <v-card :class="[ { ['bg-primary']: isSelected }]" @click="toggle" height="100%">
                   
@@ -108,8 +112,6 @@
                                           </v-dialog>
                                         </v-col>
 
-                                  <!-- </transition-group>  -->
-
                                   <v-spacer></v-spacer>
                                     </v-row>
                                 </v-container>
@@ -133,7 +135,7 @@
                         <v-btn @click="prevPage" :disabled="currentPage <= 0">上一页</v-btn>
                         <v-btn @click="nextPage" :disabled="currentPage >= totalPages - 1">下一页</v-btn>
                     </v-card-actions>
-                </v-card>
+              </v-card>-->
                 <br>
                 <v-card>
                     <v-card-title>
@@ -255,6 +257,7 @@ import snackbar from '@/api/snackbar';
 import { getShopInfo } from '@/api/shop';
 import { getProductDetail } from '@/api/product';
 import { createOrder, userPayOrders } from '@/api/order';
+import AddressSelect from '@/components/addressSelect.vue';
 
 
 
@@ -270,8 +273,6 @@ function formatDate(dateStr) {
   }
 
 const loading = ref(true);
-const addresses = ref([]);
-const selectedAddress = ref(null);
 const router = useRouter();
 const items = ref([]);
 
@@ -306,79 +307,78 @@ const quantityAll = computed(() => {
 地址相关
 
 */
-const currentPage = ref(0);
-const addressPerPage = 3;
-const newAddress = ref({
-    recipient_name: '',
-    phone: '',
-    province: '',
-    city: '',
-    address: '',
-    is_default: false
-});
-
-const createAddress = async (isActive) => {
-  console.log(newAddress.value);
-    const response = await addAddress(
-      newAddress.value
-    );
-    if (response.success) {
-        snackbar.success("添加成功");
-        isActive.value = false;
-        fetchAddresses();
-    } else {
-        snackbar.error("添加失败");
-    }
+const updateSelectedAddress = (newAddress) => {
+  selectedAddress.value = newAddress;
+  console.log("outside update to");
+  console.log(selectedAddress.value);
 };
 
-const isLastPage = computed(() => {
-    return currentPage.value === totalPages.value - 1;
-});
+// const addresses = ref([]);
+const selectedAddress = ref(null);
+// const currentPage = ref(0);
+// const addressPerPage = 3;
+// const newAddress = ref({
+//     recipient_name: '',
+//     phone: '',
+//     province: '',
+//     city: '',
+//     address: '',
+//     is_default: false
+// });
 
-const paginatedAddresses = computed(() => {
-    const start = currentPage.value * addressPerPage;
-    const end = start + addressPerPage;
-    return addresses.value.slice(start, end);
-});
+// const createAddress = async (isActive) => {
+//   console.log(newAddress.value);
+//     const response = await addAddress(
+//       newAddress.value
+//     );
+//     if (response.success) {
+//         snackbar.success("添加成功");
+//         isActive.value = false;
+//         fetchAddresses();
+//     } else {
+//         snackbar.error("添加失败");
+//     }
+// };
 
-// const getAddressIndex = (address) => {
-//     return addresses.value.findIndex(a => a === address);
-// }
+// const isLastPage = computed(() => {
+//     return currentPage.value === totalPages.value - 1;
+// });
 
-const minheight = ref(0);
+// const paginatedAddresses = computed(() => {
+//     const start = currentPage.value * addressPerPage;
+//     const end = start + addressPerPage;
+//     return addresses.value.slice(start, end);
+// });
 
-const nextPage = () => {
-  transitionName.value = 'slide-right';
-  const firstAddressCard = document.getElementById('address-card');
-  if (firstAddressCard) {
-    minheight.value = firstAddressCard.offsetHeight;
-    console.log("success", minheight.value);
-  }
-  currentPage.value++;
-};
+// const minheight = ref(0);
+// const transitionName = ref('slide-left');
 
-const prevPage = () => {
-  transitionName.value = 'slide-left';
-  currentPage.value--;
-};
+// const nextPage = () => {
+//   transitionName.value = 'slide-right';
+//   const firstAddressCard = document.getElementById('address-card');
+//   if (firstAddressCard) {
+//     minheight.value = firstAddressCard.offsetHeight;
+//     console.log("success", minheight.value);
+//   }
+//   currentPage.value++;
+// };
 
-const transitionName = ref('slide-left');
+// const prevPage = () => {
+//   transitionName.value = 'slide-left';
+//   currentPage.value--;
+// };
 
+// const totalPages = computed(() => {
+//     return Math.ceil((addresses.value.length + 1) / addressPerPage);
+// });
 
-const totalPages = computed(() => {
-    // if (paginatedAddresses.value.length === 3) {
-    //     console.log("test");
-    //     return Math.ceil(addresses.value.length / addressPerPage) + 1;
-    // }
-    return Math.ceil((addresses.value.length + 1) / addressPerPage);
-});
+// const fetchAddresses = async () => {
+//   const response = await getAddresses();
+//   addresses.value = response.data;
+//   selectedAddress.value = addresses.value[0];
+// };
 
-const fetchAddresses = async () => {
-  const response = await getAddresses();
-  addresses.value = response.data;
-  selectedAddress.value = addresses.value[0];
-};
-
+// shopInfo
 
 const shopInfoCache = {};
 const product_shop = {};
@@ -410,7 +410,7 @@ const waitingPayment = ref(false);
 
 onMounted(() => {
  
-  fetchAddresses();
+  // fetchAddresses();
   fetchOrderItems();
 });
 
@@ -438,10 +438,12 @@ const checkout = async () => {
     paying.value = true;
     console.log(response.data.orders);
     orders.value = response.data.orders;
+    cart.selectedItems = [];
     orderIdList.value = response.data.orders.map(order => order.order_id);
     console.log(orderIdList.value);
   } else {
     snackbar.error("下单失败");
+    console.log(addressId);
   }
 };
 

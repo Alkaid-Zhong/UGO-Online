@@ -1,7 +1,7 @@
 <template>
     <v-container v-if="!loading">
         
-        <v-row> <!-- customer -->
+        <v-row v-if="!orderLoading"> <!-- customer -->
             <v-col cols="12">
             <v-list v-for="order in orders">
                 <v-card>
@@ -55,6 +55,7 @@
                     </v-list-item>
                     <v-card-actions>
                         <v-spacer></v-spacer>
+                        <v-btn color="" v-if="isCustomer && showChangeAddressButton(order.status)" @click="orderDialog('change address', order)">修改地址</v-btn>
                         <v-btn color="warning" v-if="isCustomer && order.status === 'Pending Payment'" class="font-weight-bold" @click="orderDialog('pay', order)">支付</v-btn> <!--payOrder(order)--> 
                         
                         
@@ -67,6 +68,7 @@
             </v-col>
         </v-row> 
 
+        <v-skeleton-loader v-else type="image, article" />
         <!-- <v-row v-else> 
             <v-col cols="12">
                 <v-list>
@@ -97,6 +99,7 @@
 
             <template v-else-if="dialogContent==='change address'" v-slot:default="{ isActive }">
                 <v-card title="修改地址"> 
+                
                 <!-- <v-card-text> TODO
                     <span>当前余额：￥{{ user.money }}元</span><br>
                     <span>支付金额：￥{{ curOrder.total_price }}元</span>
@@ -113,6 +116,16 @@
                 </v-card>
             </template>
         </v-dialog>
+        <v-row>
+            <v-col cols="12" class="d-flex justify-center">
+                <v-pagination
+                    v-model="currentPage"
+                    :length="totalPages"
+                    total-visible="5"
+                    
+                ></v-pagination> <!--@input="fetchOrders(currentPage)"-->
+            </v-col>
+        </v-row>
     </v-container>
     <v-container v-else class="d-flex justify-center align-center">
         <v-progress-circular
@@ -127,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { user } from '@/store/user';
 import snackbar from '@/api/snackbar';
 import { sellerGetOrders, sellerShip, userGetOrders, userPayOrders, userRefund } from '@/api/order';
@@ -145,11 +158,17 @@ const currency = (value) => {
 };
 
 const loading = ref(true);
+const orderLoading = ref(true);
 const isCustomer = ref(false);
 const isSeller = ref(false);
 
 const orders = ref([]);
-
+const totalPages = ref(0);
+const currentPage = ref(1);
+watch (currentPage, (newVal, oldVal) => {
+    orderLoading.value = true;
+    fetchOrders(newVal);
+});
 onMounted(() => {
     profile().then(()=>{
         if (user.role === 'CUSTOMER') {
@@ -159,8 +178,10 @@ onMounted(() => {
             userGetOrders().then(res => {
                 //console.log(res.data.orders);
                 orders.value = res.data.orders;
+                totalPages.value = res.data.total_page;
                 fetchShopInfo().then(() => {
                     loading.value = false;
+                    orderLoading.value = false;
                     // console.log("loading false");
                 });
             }).catch(err => {
@@ -174,6 +195,7 @@ onMounted(() => {
                 orders.value = res.data.orders;
                 // fetchCustomerInfo().then(() => {
                 loading.value = false;
+                orderLoading.value = false;
                 // });
             }).catch(err => {
                 console.log(err);
@@ -183,6 +205,33 @@ onMounted(() => {
     
     
 })
+// function fetchOrders(page) {
+    // console.log(123);
+// }
+
+const fetchOrders = async(page) => {
+    console.log(page);
+    if (isCustomer.value) {
+        userGetOrders(currentPage.value).then(res => {
+            orders.value = res.data.orders;
+            totalPages.value = res.data.total_page;
+            fetchShopInfo().then(() => {
+                orderLoading.value = false;
+            });
+        }).catch(err => {
+            console.log(err);
+        })
+    } else {
+        sellerGetOrders(currentPage.value).then(res => {
+            orders.value = res.data.orders;
+            totalPages.value = res.data.total_page;
+            orderLoading.value = false;
+
+        }).catch(err => {
+            console.log(err);
+        })
+    }
+}
 
 const curOrder = ref();
 const showDialog = ref(false);
@@ -206,6 +255,9 @@ const orderDialog = (content, order) => {
             });
             break;
         case 'change address':
+            curOrder.value = order;
+            showDialog.value = true;
+            console.log("修改地址");
             //changeAddressDialog(order);
             break;
         case 'receive':
@@ -214,7 +266,7 @@ const orderDialog = (content, order) => {
         default:
             break;
     }
-    console.log(order);
+    //console.log(order);
 }
 
 const orderStatusColor = (status)=> {
@@ -250,6 +302,10 @@ const showRefundButton = ((orderStatus, isCancelled) => {
     return orderStatus === 'Payment Received' && isCancelled === false ; // || status === 'Completed'
 });
 
+const showChangeAddressButton = ((status) => {
+    return status === 'Payment Received' || status === 'Pending Payment';
+})
+
 const refund = async (order, item) => {
     const order_id = order.order_id;
     console.log(order_id, item);
@@ -278,6 +334,9 @@ const payOrder = async (order) => {
     }
 }
 
+const changeAddress = (()=>{
+
+});
 
 const ship = async (order) => {
     console.log(order);
