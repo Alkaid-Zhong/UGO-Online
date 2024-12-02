@@ -37,6 +37,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     registration_date = models.DateTimeField(auto_now_add=True)
     money = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    shops = models.ManyToManyField('shop.Shop', through='shop.SellerShop', related_name='sellers')
 
     objects = UserManager()
 

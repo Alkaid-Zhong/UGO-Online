@@ -96,10 +96,10 @@ class JoinShopByCodeView(APIView):
                 invitation_code.save()
                 return api_response(False, code=302, message='邀请码已达到使用次数限制')
 
-            shops = SellerShop.objects.filter(seller=user)
-            # 检查用户是否已有商店
-            if shops.exists():
-                return api_response(False, code=300, message='同一商家只能管理一个商铺')
+            # shops = SellerShop.objects.filter(seller=user)
+            # # 检查用户是否已有商店
+            # if shops.exists():
+            #     return api_response(False, code=300, message='同一商家只能管理一个商铺')
 
             invitation_code.usage_count += 1
             if invitation_code.usage_limit and invitation_code.usage_count >= invitation_code.usage_limit:

@@ -36,7 +36,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
 
 
-
 class MerchantRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, error_messages={
         'required': '密码不能为空',
@@ -112,11 +111,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['name', 'email', 'role', 'shop', 'money', 'phone']
 
     def get_shop(self, obj):
-        try:
-            seller_shop = SellerShop.objects.get(seller=obj)
-            return seller_shop.shop.id  # 返回商店的 ID
-        except SellerShop.DoesNotExist:
-            return None
+        return [shop.id for shop in obj.shops.all()]
 
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
