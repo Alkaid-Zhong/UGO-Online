@@ -143,6 +143,7 @@ const onclickAddProduct = async () => {
 	formData.append('category', productCategory.value);
 	formData.append('stock_quantity', productStock.value);
 	formData.append('image', productImage.value);
+	formData.append('product_id', product.id);
 	const res = await updateProduct(shopId, formData);
 	if (res.success) {
 		snackbar.success('商品信息更新成功');
