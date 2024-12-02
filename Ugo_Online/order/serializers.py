@@ -101,6 +101,14 @@ class OrderSerializer(serializers.Serializer):
             order.total_price = total_amount
             order.save()
             created_orders.append(order)
+
+        # 清除购物车项
+        cart = user.cart
+        for item_data in items_data:
+            product_id = item_data['product_id']
+            cart_item = cart.items.get(product__id=product_id)
+            cart_item.delete()
+
         # print('return!')
         return created_orders
 
