@@ -68,7 +68,7 @@
 			</v-chip-group>
 			<v-row v-if="products">
 				<v-col cols="12" md="4" v-for="product in products.products">
-					<product-card :product="product" />
+					<product-card :product="product" :category-list="categoryList" :shop-id="shop_id"/>
 				</v-col>
 			</v-row>
 		</div>

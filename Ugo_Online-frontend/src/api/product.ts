@@ -20,6 +20,26 @@ export const addProduct = async (
     });
 };
 
+export const updateProduct = async (
+    shopId: number,
+    data: {
+        name: string;
+        description: string;
+        price: number;
+        category: number;
+        stock_quantity: number;
+        image: File;
+    }
+) => {
+    return server.put({
+        url: `/shop/${shopId}/product/update/`,
+        data,
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
+};
+
 export const getCategories = async () => {
     return await server.get({
         url: "/shop/category_list/",

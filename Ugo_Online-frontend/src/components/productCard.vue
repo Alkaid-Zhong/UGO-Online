@@ -24,23 +24,107 @@
 			<v-btn
 				v-if="user.role === 'SELLER'"
 				color="primary"
+				@click="showUpdateProduct = true"
 			>编辑商品</v-btn>
 		</v-card-actions>
 	</v-card>
+	
+	<v-dialog v-model="showUpdateProduct" transition="dialog-bottom-transition">
+		<v-card>
+			<v-toolbar>
+				<v-btn
+					icon="mdi-close"
+					@click="showUpdateProduct = false"
+				></v-btn>
+				<v-toolbar-title>编辑{{ product.name }}</v-toolbar-title>
+				<v-spacer></v-spacer>
+				<v-toolbar-items>
+					<v-btn
+						text="上传"
+						variant="text"
+						@click="onclickAddProduct"
+						prepend-icon="mdi-check"
+					></v-btn>
+				</v-toolbar-items>
+			</v-toolbar>
+			
+			<v-card-item>
+				<v-form>
+					<v-text-field
+						label="商品名称"
+						v-model="productName"
+						required
+					></v-text-field>
+					<v-text-field
+						label="商品描述"
+						v-model="productDescription"
+						required
+					></v-text-field>
+					<v-text-field
+						label="商品价格"
+						v-model="productPrice"
+						type="number"
+						required
+					></v-text-field>
+					<v-select
+						label="商品分类"
+						v-model="productCategory"
+						required
+						:items="categoryList"
+						item-title="name"
+						item-value="id"
+					></v-select>
+					<v-text-field
+						label="商品库存"
+						v-model="productStock"
+						type="number"
+						required
+					></v-text-field>
+					<v-file-input
+						label="商品图片"
+						multiple
+						accept="image/*"
+						required
+						@change="productImage = $event.target.files[0]"
+					></v-file-input>
+				</v-form>
+			</v-card-item>
+		</v-card>
+	</v-dialog>
+	
 </template>
 <script setup>
+import { ref } from 'vue';
 import { addToCart } from '@/api/cart';
 import snackbar from '@/api/snackbar';
 import { user } from '@/store/user';
+import { updateProduct } from '@/api/product';
 
 const props = defineProps({
+	shopId: {
+		type: Number,
+		required: true
+	},
 	product: {
 		type: Object,
+		required: true
+	},
+	categoryList: {
+		type: Array,
 		required: true
 	}
 })
 
-const { product } = props
+const { product, shopId } = props
+
+const showUpdateProduct = ref(false)
+
+const productName = ref(product.name)
+const productDescription = ref(product.description)
+const productPrice = ref(product.price)
+const productCategory = ref(product.category)
+const productStock = ref(product.stock_quantity)
+const productImage = ref(null)
 
 const onclickAdd2Card = async () => {
 	const res = await addToCart(product.id, 1);
@@ -48,6 +132,23 @@ const onclickAdd2Card = async () => {
 		snackbar.success(`${product.name} 已加入购物车`);
 	} else {
 		snackbar.error('添加失败');
+	}
+}
+
+const onclickAddProduct = async () => {
+	const formData = new FormData();
+	formData.append('name', productName.value);
+	formData.append('description', productDescription.value);
+	formData.append('price', productPrice.value);
+	formData.append('category', productCategory.value);
+	formData.append('stock_quantity', productStock.value);
+	formData.append('image', productImage.value);
+	const res = await updateProduct(shopId, formData);
+	if (res.success) {
+		snackbar.success('商品信息更新成功');
+		showUpdateProduct.value = false;
+	} else {
+		snackbar.error('商品信息更新失败');
 	}
 }
 
