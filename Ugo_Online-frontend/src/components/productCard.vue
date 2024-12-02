@@ -142,12 +142,21 @@ const onclickAddProduct = async () => {
 	formData.append('price', productPrice.value);
 	formData.append('category', productCategory.value);
 	formData.append('stock_quantity', productStock.value);
-	formData.append('image', productImage.value);
+	if (productImage.value) {
+		formData.append('image', productImage.value);
+	}
 	formData.append('product_id', product.id);
 	const res = await updateProduct(shopId, formData);
 	if (res.success) {
 		snackbar.success('商品信息更新成功');
 		showUpdateProduct.value = false;
+		product.name = res.data.name;
+		product.description = res.data.description;
+		product.price = res.data.price;
+		product.category = res.data.category;
+		product.stock_quantity = res.data.stock_quantity;
+		product.image = res.data.image;
+		product.category_name = res.data.category_name;
 	} else {
 		snackbar.error('商品信息更新失败');
 	}
