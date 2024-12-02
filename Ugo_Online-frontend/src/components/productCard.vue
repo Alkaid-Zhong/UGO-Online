@@ -27,6 +27,11 @@
 					color="primary"
 					@click="showUpdateProduct = true"
 				>编辑商品</v-btn>
+				<v-btn
+					v-if="user.role === 'SELLER'"
+					color="red"
+					@click="onclickDeleteProduct"
+				>删除商品</v-btn>
 			</v-card-actions>
 		</div>
 	</v-card>
@@ -100,7 +105,7 @@ import { ref } from 'vue';
 import { addToCart } from '@/api/cart';
 import snackbar from '@/api/snackbar';
 import { user } from '@/store/user';
-import { updateProduct } from '@/api/product';
+import { deleteProduct, updateProduct } from '@/api/product';
 
 const props = defineProps({
 	shopId: {
@@ -114,10 +119,14 @@ const props = defineProps({
 	categoryList: {
 		type: Array,
 		required: true
+	},
+	removeProductCallback: {
+		type: Function,
+		required: true
 	}
 })
 
-const { product, shopId } = props
+const { product, shopId, removeProductCallback } = props
 
 const showUpdateProduct = ref(false)
 
@@ -127,6 +136,13 @@ const productPrice = ref(product.price)
 const productCategory = ref(product.category)
 const productStock = ref(product.stock_quantity)
 const productImage = ref(null)
+
+const onclickDeleteProduct = async () => {
+	if((await deleteProduct(shopId, product.id)).success) {
+		removeProductCallback(product.id)
+		snackbar.success('商品删除成功');
+	}
+}
 
 const onclickAdd2Card = async () => {
 	const res = await addToCart(product.id, 1);

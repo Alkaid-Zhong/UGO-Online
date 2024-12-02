@@ -40,6 +40,15 @@ export const updateProduct = async (
     });
 };
 
+export const deleteProduct = async (shopId: number, productId: number) => {
+    return server._delete({
+        url: `/shop/${shopId}/product/delete/`,
+        data: {
+            product_id: productId
+        }
+    });
+};
+
 export const getCategories = async () => {
     return await server.get({
         url: "/shop/category_list/",

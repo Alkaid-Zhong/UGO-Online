@@ -68,7 +68,12 @@
 			</v-chip-group>
 			<v-row v-if="products">
 				<v-col cols="12" md="4" v-for="product in products.products">
-					<product-card :product="product" :category-list="categoryList" :shop-id="shop_id"/>
+					<product-card 
+						:product="product" 
+						:category-list="categoryList" 
+						:shop-id="shop_id"
+						:remove-product-callback="removeProductCallback"
+					/>
 				</v-col>
 			</v-row>
 		</div>
@@ -329,6 +334,15 @@ watch(flowPage, async () => {
 watch([chosenCategory, priceRange_low, priceRange_high, searchName, orderBy], async () => {
 	await fetchProductList()
 })
+
+const removeProductCallback = async (product_id) => {
+	for (let i = 0; i < products.value.products.length; i++) {
+		if (products.value.products[i].id === product_id) {
+			products.value.products.splice(i, 1)
+			break
+		}
+	}
+}
 
 const fetchProductList = async () => {
 	products.value = null
