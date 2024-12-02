@@ -192,6 +192,7 @@
 						label="搜索日期"
 						v-model="flowDate"
 						type="date"
+						clearable 
 					></v-text-field>
 				</div>
 				<v-data-table-server
