@@ -13,7 +13,7 @@
 							half-increments
 							active-color="amber"
 							color="amber-darken-1"
-							:model-value="shopInfo.total_income"
+							:model-value="shopInfo.average_rating"
 						></v-rating>
 					</div>
 				</template>

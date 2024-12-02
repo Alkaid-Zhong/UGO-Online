@@ -24,7 +24,7 @@
 						half-increments
 						active-color="amber"
 						color="amber-darken-1"
-						:model-value="shop.total_income"
+						:model-value="shop.average_rating"
 					></v-rating>
 					<v-card-text>
 						<p class="mb-2 font-weight-bold">{{ `${shop.address}` }}</p>
