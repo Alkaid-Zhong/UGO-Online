@@ -126,3 +126,15 @@ export const updateAddress = async (address_id: number, recipient_name: string, 
 	}
 	return response;
 }
+
+export const changePassword = async (old_password: string, new_password: string) => {
+	const response = await server.post({
+		url: "/user/change-password/",
+		data: {
+			old_password,
+			password: new_password,
+			password_confirm: new_password
+		}
+	});
+	return response;
+}

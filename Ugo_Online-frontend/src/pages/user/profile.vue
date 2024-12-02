@@ -10,6 +10,13 @@
 			</template>
 			<template #append>
 				<v-btn
+					prepend-icon="mdi-lock-open-outline"
+					@click="showChangePassword = true"
+					variant="text"
+					color="primary"
+					:loading="loading"
+				>修改密码</v-btn>
+				<v-btn
 					prepend-icon="mdi-logout"
 					@click="submitLogout"
 					variant="text"
@@ -64,10 +71,10 @@
 		</v-card>
 
 		<AddressSelect v-if="user.role==='CUSTOMER'" class="mt-5"
-						:title=" '我的地址'"
-						:addressPerPage="3"
-						:paying="false"
-						:preSelect="false"
+			:title=" '我的地址'"
+			:addressPerPage="3"
+			:paying="false"
+			:preSelect="false"
 		></AddressSelect>
 		<!-- <v-card v-if="user.role==='CUSTOMER'" class="mt-4">
 			<v-card-title class="text-h5 font-weight-bold">
@@ -92,18 +99,68 @@
 			</v-card-item>
 		</v-card>
 	</v-dialog>
+
+	<v-dialog v-model="showChangePassword" max-width="500px">
+		<v-card>
+			<v-toolbar>
+				<v-btn icon="mdi-close" @click="showChangePassword = false"></v-btn>
+				<v-toolbar-title>修改密码</v-toolbar-title>
+			</v-toolbar>
+			<v-card-item>
+				<v-text-field
+					label="旧密码"
+					type="password"
+					v-model="oldPassword"
+				></v-text-field>
+				<v-text-field
+					label="新密码"
+					type="password"
+					v-model="newPassword"
+				></v-text-field>
+				<v-text-field
+					label="确认密码"
+					type="password"
+					v-model="confirmPassword"
+				></v-text-field>
+				<v-btn color="primary" @click="onclickSubmitChangePassword" variant="contained" :loading="loading">修改密码</v-btn>
+			</v-card-item>
+		</v-card>
+	</v-dialog>
 </template>
 <script setup>
 import { onMounted, ref } from 'vue';
 import { user } from '@/store/user';
-import { addMoney, logout } from '@/api/user';
+import { addMoney, changePassword, logout } from '@/api/user';
 import { getShopInfo } from '@/api/shop';
 import AddressSelect from '@/components/addressSelect.vue';
+import snackbar from '@/api/snackbar';
 
 const shopInfo = ref(null)
 const loading = ref(false);
 const showRecharge = ref(false);
 const rechargeMoney = ref(0);
+const showChangePassword = ref(false);
+
+const oldPassword = ref('');
+const newPassword = ref('');
+const confirmPassword = ref('');
+
+const onclickSubmitChangePassword = async () => {
+	if (newPassword.value !== confirmPassword.value) {
+		snackbar.error('两次输入的密码不一致');
+		return;
+	}
+	loading.value = true;
+	let res = await changePassword(oldPassword.value, newPassword.value);
+	console.log(res);
+	if (res.success) {
+		showChangePassword.value = false;
+		snackbar.success('修改密码成功');
+	} else {
+		snackbar.error('修改密码失败: ' + res.response.data.message);
+	}
+	loading.value = false;
+};
 
 const submitLogout = async () => {
 	loading.value = true;
