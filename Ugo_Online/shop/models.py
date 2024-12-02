@@ -99,6 +99,7 @@ class ShopTransaction(models.Model):
 class Review(models.Model):
     user = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='reviews')
     product = models.ForeignKey('shop.Product', on_delete=models.CASCADE, related_name='reviews')
+    order = models.ForeignKey('order.OrderItem', on_delete=models.SET_NULL, null=True, blank=True, related_name='reviews')
     rating = models.PositiveIntegerField()
     comment = models.TextField(blank=True, null=True)
     create_date = models.DateTimeField(auto_now_add=True)

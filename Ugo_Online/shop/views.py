@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
+from order.models import OrderItem
 from shop.filters import ShopTransactionFilter
 from utils import get_error_message
 from Ugo_Online.utils import api_response, list_response
@@ -161,6 +162,42 @@ class AddProductView(APIView):
             return api_response(True, code=0, message='商品创建成功', data=serializer.data)
         else:
             return api_response(False, code=300, message=get_error_message(serializer.errors), data=serializer.errors)
+
+    def put(self, request, id):
+        user = request.user
+        try:
+            shop = Shop.objects.get(id=id)
+        except Shop.DoesNotExist:
+            return api_response(False, code=300, message='商铺不存在')
+        try:
+            product = Product.objects.get(id=request.data['product_id'])
+        except Product.DoesNotExist:
+            return api_response(False, code=300, message='商品不存在')
+
+        if not SellerShop.objects.filter(seller=user, shop=shop).exists():
+            return api_response(False, code=301, message='您不是该商铺的管理者')
+        serializer = ProductSerializer(product, data=request.data, context={'shop': shop}, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return api_response(True, code=0, message='商品修改成功', data=serializer.data)
+        else:
+            return api_response(False, code=300, message=get_error_message(serializer.errors), data=serializer.errors)
+
+    def delete(self, request, id):
+
+        user = request.user
+        try:
+            shop = Shop.objects.get(id=id)
+        except Shop.DoesNotExist:
+            return api_response(False, code=300, message='商铺不存在')
+        try:
+            product = Product.objects.get(id=request.data['product_id'])
+        except Product.DoesNotExist:
+            return api_response(False, code=300, message='商品不存在')
+        if not SellerShop.objects.filter(seller=user, shop=shop).exists():
+            return api_response(False, code=301, message='您不是该商铺的管理者')
+        product.delete()
+        return api_response(True, code=0, message='商品删除成功')
 
 
 class ProductListView(ListAPIView):
@@ -332,3 +369,22 @@ class ProductReviewListView(ListAPIView):
         else:
             serializer = self.get_serializer(queryset, many=True)
             return api_response(True, code=0, data={'reviews': serializer.data})
+
+
+class OrderItemReviewView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ReviewSerializer
+
+    def get(self, request, order_item_id):
+        try:
+            OrderItem.objects.get(id=order_item_id)
+        except OrderItem.DoesNotExist:
+            return api_response(False, code=404, message='订单项不存在')
+
+        try:
+            review = Review.objects.get(order__id=order_item_id)
+            serializer = ReviewSerializer(review, context={'request': request})
+            return api_response(True, data=serializer.data)
+        except Review.DoesNotExist:
+            return api_response(False, code=404, message='评论不存在')
+

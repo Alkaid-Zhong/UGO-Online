@@ -4,7 +4,7 @@ from django.db import transaction
 
 from accounts.models import Address
 from .models import Order, OrderItem
-from shop.models import Product
+from shop.models import Product, Review
 from shop.serializers import ProductSerializer
 
 
@@ -13,11 +13,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
     product_id = serializers.IntegerField(write_only=True)
     unit_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     total_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    has_reviewed = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'product', 'product_id', 'quantity', 'unit_price', 'total_price']
-        read_only_fields = ['id', 'product', 'unit_price', 'total_price']
+        fields = ['id', 'product', 'product_id', 'quantity', 'unit_price', 'total_price', 'has_reviewed']
+        read_only_fields = ['id', 'product', 'unit_price', 'total_price', 'has_reviewed']
+
+    def get_has_reviewed(self, obj):
+        return obj.review is not None
 
 
 class OrderSerializer(serializers.Serializer):
@@ -101,6 +105,14 @@ class OrderSerializer(serializers.Serializer):
             order.total_price = total_amount
             order.save()
             created_orders.append(order)
+
+        # 清除购物车项
+        cart = user.cart
+        for item_data in items_data:
+            product_id = item_data['product_id']
+            cart_item = cart.items.get(product__id=product_id)
+            cart_item.delete()
+
         # print('return!')
         return created_orders
 
@@ -134,6 +146,10 @@ class OrderSerializer(serializers.Serializer):
             order_items = order.items.all()
             # order_total_price = 0
             for item in order_items:
+                if Review.objects.filter(order=item.id).exists():
+                    has_reviewed = True
+                else:
+                    has_reviewed = False
                 order_data['items'].append({
                     'id': item.id,
                     'product': ProductSerializer(item.product).data,
@@ -141,6 +157,7 @@ class OrderSerializer(serializers.Serializer):
                     'unit_price': str(item.unit_price),
                     'total_price': str(item.total_price),
                     'is_cancelled': item.is_cancelled,
+                    'has_reviewed': has_reviewed,
                 })
                 # if not item.is_cancelled:
                 #     order_total_price += item.total_price
