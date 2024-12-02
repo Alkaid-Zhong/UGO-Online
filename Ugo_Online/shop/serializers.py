@@ -6,7 +6,7 @@ from django.utils.crypto import get_random_string
 from rest_framework import serializers, request
 
 from accounts.serializers import ProfileSerializer
-from order.models import OrderItem
+from order.models import OrderItem, Order
 from .models import Shop, SellerShop, InvitationCode, Product, Category, ShopTransaction, Review
 
 from accounts.models import User
@@ -128,10 +128,11 @@ class ShopTransactionSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.id')
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    order = serializers.PrimaryKeyRelatedField(queryset=OrderItem.objects.all())
 
     class Meta:
         model = Review
-        fields = ['id', 'user', 'product', 'rating', 'comment', 'create_date', 'merchant_reply', 'reply_date']
+        fields = ['id', 'user', 'product', 'rating', 'comment', 'create_date', 'merchant_reply', 'reply_date', 'order']
         read_only_fields = ['id', 'user', 'create_date', 'merchant_reply', 'reply_date']
 
     def validate_rating(self, value):
@@ -143,18 +144,21 @@ class ReviewSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         product = data['product']
 
-        # 检查用户是否购买过该商品
-        purchased_items = OrderItem.objects.filter(
+        order = OrderItem.objects.filter(
+            id=data['order'].id,
             order__user=user,
             product=product,
             order__status='Completed',
             is_cancelled=False
         )
-        if not purchased_items.exists():
-            raise serializers.ValidationError("您尚未购买该商品，无法评价")
 
-        if Review.objects.filter(user=user, product=product).exists():
-            raise serializers.ValidationError("您已评价过该商品，无法重复评价")
+        if not order.exists():
+            raise serializers.ValidationError({'error': "该订单未完成，无法评价"})
+
+        print(order.first())
+
+        if Review.objects.filter(user=user, order=order.first(), product=product).exists():
+            raise serializers.ValidationError({'error': "您已评价过该订单，无法重复评价"})
 
         return data
 
@@ -204,6 +208,7 @@ class ReviewListSerializer(serializers.ModelSerializer):
             'create_date',
             'merchant_reply',
             'reply_date',
+            'order',
         ]
         read_only_fields = fields
 

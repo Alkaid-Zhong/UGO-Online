@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
+from order.models import OrderItem
 from shop.filters import ShopTransactionFilter
 from utils import get_error_message
 from Ugo_Online.utils import api_response, list_response
@@ -368,3 +369,22 @@ class ProductReviewListView(ListAPIView):
         else:
             serializer = self.get_serializer(queryset, many=True)
             return api_response(True, code=0, data={'reviews': serializer.data})
+
+
+class OrderItemReviewView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ReviewSerializer
+
+    def get(self, request, order_item_id):
+        try:
+            OrderItem.objects.get(id=order_item_id)
+        except OrderItem.DoesNotExist:
+            return api_response(False, code=404, message='订单项不存在')
+
+        try:
+            review = Review.objects.get(order__id=order_item_id)
+            serializer = ReviewSerializer(review, context={'request': request})
+            return api_response(True, data=serializer.data)
+        except Review.DoesNotExist:
+            return api_response(False, code=404, message='评论不存在')
+

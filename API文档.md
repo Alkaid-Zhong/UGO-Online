@@ -1059,141 +1059,527 @@ product_id是必须要传的，其它内容选传。
     "code": 0,
     "message": "查询返回成功",
     "data": {
-        "count": 3,
+        "count": 10,
         "next": null,
         "previous": null,
         "orders": [
             {
-                "order_id": 23,
-                "user": 5,
-                "shop_id": 2,
-                "total_price": "15.00",
-                "order_date": "2024-11-19T07:18:12.156984+00:00",
-                "status": "Payment Received",
+                "order_id": 88,
+                "user": 18,
+                "shop_id": 6,
+                "total_price": "334618.44",
+                "order_date": "2024-12-02T07:45:40.086820+00:00",
+                "status": "Pending Payment",
                 "address": {
-                    "recipient_name": "czx",
-                    "address": "学院路37号北航",
-                    "city": "海淀区",
-                    "province": "北京市",
-                    "phone": "17770793406"
+                    "recipient_name": "Zhixin Cai is god",
+                    "address": "bj",
+                    "city": "Ganzhou",
+                    "province": "Jiangxi",
+                    "phone": "13021173406"
                 },
                 "items": [
                     {
-                        "id": 26,
+                        "id": 127,
                         "product": {
-                            "id": 27,
-                            "shop": 2,
-                            "name": "测试物品1",
-                            "description": "测试物品1",
-                            "price": "10.00",
-                            "stock_quantity": 10,
+                            "id": 7,
+                            "shop": 6,
+                            "name": "【孤独摇滚】 喜多郁代 色纸",
+                            "description": "【ぼっち・ざ・ろっく】 喜多 郁代   色紙",
+                            "price": "15.00",
+                            "stock_quantity": 945,
                             "category": 6,
                             "status": "Available",
-                            "create_date": "2024-11-19T07:04:53.473233Z",
-                            "image": null,
-                            "category_name": "玩具"
+                            "create_date": "2024-11-24T21:58:51.432201+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/%E8%89%B2%E7%BA%B8.jpg",
+                            "category_name": "玩具",
+                            "average_rating": null,
+                            "sales_volume": 54
                         },
-                        "quantity": 1,
-                        "unit_price": "10.00",
-                        "total_price": "10.00",
-                        "is_cancelled": true
+                        "quantity": 8,
+                        "unit_price": "15.00",
+                        "total_price": "120.00",
+                        "is_cancelled": false,
+                        "has_reviewed": false
                     },
                     {
-                        "id": 27,
+                        "id": 128,
                         "product": {
-                            "id": 29,
-                            "shop": 2,
-                            "name": "测试物品3",
-                            "description": "",
-                            "price": "5.00",
-                            "stock_quantity": 7,
-                            "category": null,
-                            "status": "Available",
-                            "create_date": "2024-11-19T07:05:59.221573Z",
-                            "image": null
-                        },
-                        "quantity": 3,
-                        "unit_price": "5.00",
-                        "total_price": "15.00",
-                        "is_cancelled": false
-                    }
-                ]
-            },
-            {
-                "order_id": 24,
-                "user": 5,
-                "shop_id": 1,
-                "total_price": "30.00",
-                "order_date": "2024-11-19T07:18:12.161156+00:00",
-                "status": "Shipped",
-                "address": {
-                    "recipient_name": "czx",
-                    "address": "学院路37号北航",
-                    "city": "海淀区",
-                    "province": "北京市",
-                    "phone": "17770793406"
-                },
-                "items": [
-                    {
-                        "id": 28,
-                        "product": {
-                            "id": 28,
-                            "shop": 1,
-                            "name": "测试物品2",
-                            "description": "",
-                            "price": "15.00",
-                            "stock_quantity": 8,
-                            "category": null,
-                            "status": "Available",
-                            "create_date": "2024-11-19T07:05:13.828545Z",
-                            "image": null
-                        },
-                        "quantity": 2,
-                        "unit_price": "15.00",
-                        "total_price": "30.00",
-                        "is_cancelled": false
-                    }
-                ]
-            },
-            {
-                "order_id": 25,
-                "user": 5,
-                "shop_id": 2,
-                "total_price": "20.00",
-                "order_date": "2024-11-19T07:40:46.680367+00:00",
-                "status": "Cancelled",
-                "address": {
-                    "recipient_name": "czx",
-                    "address": "学院路37号北航",
-                    "city": "海淀区",
-                    "province": "北京市",
-                    "phone": "17770793406"
-                },
-                "items": [
-                    {
-                        "id": 29,
-                        "product": {
-                            "id": 27,
-                            "shop": 2,
-                            "name": "测试物品1",
-                            "description": "测试物品1",
-                            "price": "10.00",
-                            "stock_quantity": 10,
+                            "id": 22,
+                            "shop": 6,
+                            "name": "『我是UUQ』书画作品 独家限量",
+                            "description": "由15-427特邀书法家aiou创作。“我是UUQ”几个字，苍白无力却结构紧凑，处处体现出427的张弛有度。这这幅作品内涵深厚，“我是UUQ”体现出作者的自信风采。\"Q\"采取未封口结构，展现出一种不被定义、不被限制的愿望和期许。U与Q相连，同时展现出人的差异性但又彼此互联互通的社会特点。",
+                            "price": "1.88",
+                            "stock_quantity": 99973,
                             "category": 6,
                             "status": "Available",
-                            "create_date": "2024-11-19T07:04:53.473233Z",
-                            "image": null,
-                            "category_name": "玩具"
+                            "create_date": "2024-11-28T13:38:55.658167+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/1000216726.jpg",
+                            "category_name": "玩具",
+                            "average_rating": null,
+                            "sales_volume": 26
+                        },
+                        "quantity": 13,
+                        "unit_price": "1.88",
+                        "total_price": "24.44",
+                        "is_cancelled": false,
+                        "has_reviewed": false
+                    },
+                    {
+                        "id": 129,
+                        "product": {
+                            "id": 23,
+                            "shop": 6,
+                            "name": "大虎鲸",
+                            "description": "斯哈",
+                            "price": "88.00",
+                            "stock_quantity": 62,
+                            "category": 5,
+                            "status": "Available",
+                            "create_date": "2024-11-28T16:34:56.610090+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20230313204552.jpg",
+                            "category_name": "食品",
+                            "average_rating": null,
+                            "sales_volume": 26
+                        },
+                        "quantity": 13,
+                        "unit_price": "88.00",
+                        "total_price": "1144.00",
+                        "is_cancelled": false,
+                        "has_reviewed": false
+                    },
+                    {
+                        "id": 130,
+                        "product": {
+                            "id": 24,
+                            "shop": 6,
+                            "name": "uuuuqqqqqq",
+                            "description": "辛勤工作",
+                            "price": "66666.00",
+                            "stock_quantity": 55555550,
+                            "category": 3,
+                            "status": "Available",
+                            "create_date": "2024-11-29T00:27:14.752801+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/IMG20241129002553.jpg",
+                            "category_name": "家居用品",
+                            "average_rating": null,
+                            "sales_volume": 5
+                        },
+                        "quantity": 5,
+                        "unit_price": "66666.00",
+                        "total_price": "333330.00",
+                        "is_cancelled": false,
+                        "has_reviewed": false
+                    }
+                ]
+            },
+            {
+                "order_id": 87,
+                "user": 18,
+                "shop_id": 5,
+                "total_price": "1919810.00",
+                "order_date": "2024-12-02T07:43:49.843394+00:00",
+                "status": "Pending Payment",
+                "address": {
+                    "recipient_name": "Zhixin Cai is god",
+                    "address": "bj",
+                    "city": "Ganzhou",
+                    "province": "Jiangxi",
+                    "phone": "13021173406"
+                },
+                "items": [
+                    {
+                        "id": 126,
+                        "product": {
+                            "id": 3,
+                            "shop": 5,
+                            "name": "UUQ",
+                            "description": "UGO",
+                            "price": "1919810.00",
+                            "stock_quantity": 124124239,
+                            "category": 6,
+                            "status": "Available",
+                            "create_date": "2024-11-21T19:23:49.746815+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-11-21_192314.png",
+                            "category_name": "玩具",
+                            "average_rating": null,
+                            "sales_volume": 201
+                        },
+                        "quantity": 1,
+                        "unit_price": "1919810.00",
+                        "total_price": "1919810.00",
+                        "is_cancelled": false,
+                        "has_reviewed": false
+                    }
+                ]
+            },
+            {
+                "order_id": 77,
+                "user": 18,
+                "shop_id": 6,
+                "total_price": "0.00",
+                "order_date": "2024-11-28T16:51:44.107012+00:00",
+                "status": "Cancelled",
+                "address": {
+                    "recipient_name": "Zhixin Cai is god",
+                    "address": "bj",
+                    "city": "Ganzhou",
+                    "province": "Jiangxi",
+                    "phone": "13021173406"
+                },
+                "items": [
+                    {
+                        "id": 101,
+                        "product": {
+                            "id": 24,
+                            "shop": 6,
+                            "name": "uuuuqqqqqq",
+                            "description": "辛勤工作",
+                            "price": "66666.00",
+                            "stock_quantity": 55555550,
+                            "category": 3,
+                            "status": "Available",
+                            "create_date": "2024-11-29T00:27:14.752801+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/IMG20241129002553.jpg",
+                            "category_name": "家居用品",
+                            "average_rating": null,
+                            "sales_volume": 5
+                        },
+                        "quantity": 5,
+                        "unit_price": "66666.00",
+                        "total_price": "333330.00",
+                        "is_cancelled": true,
+                        "has_reviewed": false
+                    }
+                ]
+            },
+            {
+                "order_id": 75,
+                "user": 18,
+                "shop_id": 5,
+                "total_price": "1919810.00",
+                "order_date": "2024-11-28T11:36:55.733207+00:00",
+                "status": "Payment Received",
+                "address": {
+                    "recipient_name": "Zhixin Cai is god4",
+                    "address": "bj",
+                    "city": "Ganzhou",
+                    "province": "Jiangxi",
+                    "phone": "13021173406"
+                },
+                "items": [
+                    {
+                        "id": 99,
+                        "product": {
+                            "id": 3,
+                            "shop": 5,
+                            "name": "UUQ",
+                            "description": "UGO",
+                            "price": "1919810.00",
+                            "stock_quantity": 124124239,
+                            "category": 6,
+                            "status": "Available",
+                            "create_date": "2024-11-21T19:23:49.746815+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-11-21_192314.png",
+                            "category_name": "玩具",
+                            "average_rating": null,
+                            "sales_volume": 201
+                        },
+                        "quantity": 1,
+                        "unit_price": "1919810.00",
+                        "total_price": "1919810.00",
+                        "is_cancelled": false,
+                        "has_reviewed": false
+                    }
+                ]
+            },
+            {
+                "order_id": 74,
+                "user": 18,
+                "shop_id": 6,
+                "total_price": "1288.44",
+                "order_date": "2024-11-28T11:36:35.326018+00:00",
+                "status": "Shipped",
+                "address": {
+                    "recipient_name": "Zhixin Cai is god",
+                    "address": "bj",
+                    "city": "Ganzhou",
+                    "province": "Jiangxi",
+                    "phone": "13021173406"
+                },
+                "items": [
+                    {
+                        "id": 96,
+                        "product": {
+                            "id": 7,
+                            "shop": 6,
+                            "name": "【孤独摇滚】 喜多郁代 色纸",
+                            "description": "【ぼっち・ざ・ろっく】 喜多 郁代   色紙",
+                            "price": "15.00",
+                            "stock_quantity": 945,
+                            "category": 6,
+                            "status": "Available",
+                            "create_date": "2024-11-24T21:58:51.432201+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/%E8%89%B2%E7%BA%B8.jpg",
+                            "category_name": "玩具",
+                            "average_rating": null,
+                            "sales_volume": 54
+                        },
+                        "quantity": 8,
+                        "unit_price": "15.00",
+                        "total_price": "120.00",
+                        "is_cancelled": false,
+                        "has_reviewed": false
+                    },
+                    {
+                        "id": 97,
+                        "product": {
+                            "id": 22,
+                            "shop": 6,
+                            "name": "『我是UUQ』书画作品 独家限量",
+                            "description": "由15-427特邀书法家aiou创作。“我是UUQ”几个字，苍白无力却结构紧凑，处处体现出427的张弛有度。这这幅作品内涵深厚，“我是UUQ”体现出作者的自信风采。\"Q\"采取未封口结构，展现出一种不被定义、不被限制的愿望和期许。U与Q相连，同时展现出人的差异性但又彼此互联互通的社会特点。",
+                            "price": "1.88",
+                            "stock_quantity": 99973,
+                            "category": 6,
+                            "status": "Available",
+                            "create_date": "2024-11-28T13:38:55.658167+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/1000216726.jpg",
+                            "category_name": "玩具",
+                            "average_rating": null,
+                            "sales_volume": 26
+                        },
+                        "quantity": 13,
+                        "unit_price": "1.88",
+                        "total_price": "24.44",
+                        "is_cancelled": false,
+                        "has_reviewed": false
+                    },
+                    {
+                        "id": 98,
+                        "product": {
+                            "id": 23,
+                            "shop": 6,
+                            "name": "大虎鲸",
+                            "description": "斯哈",
+                            "price": "88.00",
+                            "stock_quantity": 62,
+                            "category": 5,
+                            "status": "Available",
+                            "create_date": "2024-11-28T16:34:56.610090+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20230313204552.jpg",
+                            "category_name": "食品",
+                            "average_rating": null,
+                            "sales_volume": 26
+                        },
+                        "quantity": 13,
+                        "unit_price": "88.00",
+                        "total_price": "1144.00",
+                        "is_cancelled": false,
+                        "has_reviewed": false
+                    }
+                ]
+            },
+            {
+                "order_id": 55,
+                "user": 18,
+                "shop_id": 5,
+                "total_price": "88.00",
+                "order_date": "2024-11-28T03:04:19.586575+00:00",
+                "status": "Completed",
+                "address": {
+                    "recipient_name": "111",
+                    "address": "111",
+                    "city": "11",
+                    "province": "11",
+                    "phone": "17770793406"
+                },
+                "items": [
+                    {
+                        "id": 75,
+                        "product": {
+                            "id": 15,
+                            "shop": 5,
+                            "name": "优秀宿舍",
+                            "description": "荣誉",
+                            "price": "88.00",
+                            "stock_quantity": 1,
+                            "category": 2,
+                            "status": "Available",
+                            "create_date": "2024-11-25T12:01:32.924757+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/IMG20241125120047.jpg",
+                            "category_name": "服装",
+                            "average_rating": 4.0,
+                            "sales_volume": 1
+                        },
+                        "quantity": 1,
+                        "unit_price": "88.00",
+                        "total_price": "88.00",
+                        "is_cancelled": false,
+                        "has_reviewed": true
+                    }
+                ]
+            },
+            {
+                "order_id": 54,
+                "user": 18,
+                "shop_id": 8,
+                "total_price": "854854.00",
+                "order_date": "2024-11-28T03:04:19.564522+00:00",
+                "status": "Payment Received",
+                "address": {
+                    "recipient_name": "Zhixin Cai is god2",
+                    "address": "bj",
+                    "city": "Ganzhou",
+                    "province": "Jiangxi",
+                    "phone": "13021173406"
+                },
+                "items": [
+                    {
+                        "id": 74,
+                        "product": {
+                            "id": 17,
+                            "shop": 8,
+                            "name": "我来助你！",
+                            "description": "CAIGOU",
+                            "price": "427427.00",
+                            "stock_quantity": 218,
+                            "category": 6,
+                            "status": "Available",
+                            "create_date": "2024-11-25T12:03:11.036149+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/48f0a64a9308ae2d90f8fb9d5786825.png",
+                            "category_name": "玩具",
+                            "average_rating": null,
+                            "sales_volume": 4
                         },
                         "quantity": 2,
-                        "unit_price": "10.00",
-                        "total_price": "20.00",
-                        "is_cancelled": false
+                        "unit_price": "427427.00",
+                        "total_price": "854854.00",
+                        "is_cancelled": false,
+                        "has_reviewed": false
+                    }
+                ]
+            },
+            {
+                "order_id": 53,
+                "user": 18,
+                "shop_id": 8,
+                "total_price": "854854.00",
+                "order_date": "2024-11-28T03:01:00.312544+00:00",
+                "status": "Payment Received",
+                "address": {
+                    "recipient_name": "Zhixin Cai",
+                    "address": "bj",
+                    "city": "Ganzhou",
+                    "province": "Jiangxi",
+                    "phone": "17770793406"
+                },
+                "items": [
+                    {
+                        "id": 73,
+                        "product": {
+                            "id": 17,
+                            "shop": 8,
+                            "name": "我来助你！",
+                            "description": "CAIGOU",
+                            "price": "427427.00",
+                            "stock_quantity": 218,
+                            "category": 6,
+                            "status": "Available",
+                            "create_date": "2024-11-25T12:03:11.036149+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/48f0a64a9308ae2d90f8fb9d5786825.png",
+                            "category_name": "玩具",
+                            "average_rating": null,
+                            "sales_volume": 4
+                        },
+                        "quantity": 2,
+                        "unit_price": "427427.00",
+                        "total_price": "854854.00",
+                        "is_cancelled": false,
+                        "has_reviewed": false
+                    }
+                ]
+            },
+            {
+                "order_id": 52,
+                "user": 18,
+                "shop_id": 8,
+                "total_price": "0.00",
+                "order_date": "2024-11-27T15:56:20.889621+00:00",
+                "status": "Cancelled",
+                "address": {
+                    "recipient_name": "111",
+                    "address": "111",
+                    "city": "11",
+                    "province": "11",
+                    "phone": "17770793406"
+                },
+                "items": [
+                    {
+                        "id": 72,
+                        "product": {
+                            "id": 17,
+                            "shop": 8,
+                            "name": "我来助你！",
+                            "description": "CAIGOU",
+                            "price": "427427.00",
+                            "stock_quantity": 218,
+                            "category": 6,
+                            "status": "Available",
+                            "create_date": "2024-11-25T12:03:11.036149+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/48f0a64a9308ae2d90f8fb9d5786825.png",
+                            "category_name": "玩具",
+                            "average_rating": null,
+                            "sales_volume": 4
+                        },
+                        "quantity": 4,
+                        "unit_price": "427427.00",
+                        "total_price": "1709708.00",
+                        "is_cancelled": true,
+                        "has_reviewed": false
+                    }
+                ]
+            },
+            {
+                "order_id": 35,
+                "user": 18,
+                "shop_id": 5,
+                "total_price": "0.00",
+                "order_date": "2024-11-25T02:38:42.693394+00:00",
+                "status": "Cancelled",
+                "address": {
+                    "recipient_name": "Zhixin Cai",
+                    "address": "bj",
+                    "city": "Ganzhou",
+                    "province": "Jiangxi",
+                    "phone": "17770793406"
+                },
+                "items": [
+                    {
+                        "id": 49,
+                        "product": {
+                            "id": 3,
+                            "shop": 5,
+                            "name": "UUQ",
+                            "description": "UGO",
+                            "price": "1919810.00",
+                            "stock_quantity": 124124239,
+                            "category": 6,
+                            "status": "Available",
+                            "create_date": "2024-11-21T19:23:49.746815+08:00",
+                            "image": "http://8.152.218.70:8000/media/product_images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_2024-11-21_192314.png",
+                            "category_name": "玩具",
+                            "average_rating": null,
+                            "sales_volume": 201
+                        },
+                        "quantity": 1,
+                        "unit_price": "1919810.00",
+                        "total_price": "1919810.00",
+                        "is_cancelled": true,
+                        "has_reviewed": false
                     }
                 ]
             }
         ],
-        "total_count": 3,
+        "total_count": 10,
         "total_page": 1,
         "cur_page": 1
     }
@@ -1341,11 +1727,13 @@ product_id是必须要传的，其它内容选传。
 - **请求数据格式**：
 ```json
 {
+    "order": 55,
     "product": 28,
     "rating": 4,
     "comment": "非常好的商品！"
 }
 ```
+order传对应orderItem的id
 - **响应**：
 ```json
 {
@@ -1422,6 +1810,39 @@ product_id是必须要传的，其它内容选传。
         "total_count": 1,
         "total_page": 1,
         "cur_page": 1
+    }
+}
+```
+
+### 查看对订单项的评价
+
+- **请求路径**：`/shop/order_item/<int:order_item_id>/review/`
+- **请求方法**：GET
+- **权限要求**：需要认证
+- **返回数据格式**：
+```json
+{
+    "success": false,
+    "code": 404,
+    "message": "评论不存在",
+    "data": null
+}
+```
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": {
+        "id": 1,
+        "user": 18,
+        "product": 15,
+        "rating": 4,
+        "comment": "nice!",
+        "create_date": "2024-12-02T16:14:41.464490+08:00",
+        "merchant_reply": null,
+        "reply_date": null,
+        "order": 75
     }
 }
 ```
