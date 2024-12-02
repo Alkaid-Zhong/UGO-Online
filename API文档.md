@@ -664,6 +664,61 @@
 }
 ```
 
+### 更改指定商品的信息
+
+- 请求路径：`/shop/<int:id>/product/update/`
+- 请求方法：`PUT`
+- 权限要求：登录用户，是卖家
+- 请求参数：
+```json
+{
+  "product_id": "114514",
+  "name": "Iphone 6s",
+  "description": "最新款苹果手机", 
+  "price":  "1888.99",
+  "category": "这里传入对应category的id！",
+  "stock_quantity": "999",
+  "status": "Unavailable",
+  "image": "?"
+}
+```
+product_id是必须要传的，其它内容选传。
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "商品修改成功",
+    "data": {
+        "id": 28,
+        "shop": 6,
+        "name": "[我不是急b]",
+        "description": "嵌入式，中西结合，苍劲有力，错落有致",
+        "price": "19999.00",
+        "stock_quantity": 100,
+        "category": 6,
+        "status": "Unavailable",
+        "create_date": "2024-11-29T16:18:36.747895+08:00",
+        "image": "http://8.152.218.70:8000/media/product_images/eiou_DUDFFpT.jpg",
+        "category_name": "玩具",
+        "average_rating": null,
+        "sales_volume": 0
+    }
+}
+```
+
+### 删除商品
+
+- 请求路径：`/shop/<int:id>/product/delete/`
+- 请求方法：`DELETE`
+- 权限要求：登录用户，是卖家
+- 请求参数：
+```json
+{
+    "product_id": "28"
+}
+```
+
 ## 购物车相关
 
 ### 向购物车里添加商品

@@ -162,6 +162,42 @@ class AddProductView(APIView):
         else:
             return api_response(False, code=300, message=get_error_message(serializer.errors), data=serializer.errors)
 
+    def put(self, request, id):
+        user = request.user
+        try:
+            shop = Shop.objects.get(id=id)
+        except Shop.DoesNotExist:
+            return api_response(False, code=300, message='商铺不存在')
+        try:
+            product = Product.objects.get(id=request.data['product_id'])
+        except Product.DoesNotExist:
+            return api_response(False, code=300, message='商品不存在')
+
+        if not SellerShop.objects.filter(seller=user, shop=shop).exists():
+            return api_response(False, code=301, message='您不是该商铺的管理者')
+        serializer = ProductSerializer(product, data=request.data, context={'shop': shop}, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return api_response(True, code=0, message='商品修改成功', data=serializer.data)
+        else:
+            return api_response(False, code=300, message=get_error_message(serializer.errors), data=serializer.errors)
+
+    def delete(self, request, id):
+
+        user = request.user
+        try:
+            shop = Shop.objects.get(id=id)
+        except Shop.DoesNotExist:
+            return api_response(False, code=300, message='商铺不存在')
+        try:
+            product = Product.objects.get(id=request.data['product_id'])
+        except Product.DoesNotExist:
+            return api_response(False, code=300, message='商品不存在')
+        if not SellerShop.objects.filter(seller=user, shop=shop).exists():
+            return api_response(False, code=301, message='您不是该商铺的管理者')
+        product.delete()
+        return api_response(True, code=0, message='商品删除成功')
+
 
 class ProductListView(ListAPIView):
     permission_classes = [AllowAny]
