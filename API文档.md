@@ -116,8 +116,8 @@
 ```json
 {
     "old_password": "旧密码",
-    "new_password": "新密码",
-    "confirm_new_password": "确认新密码"
+    "password": "新密码",
+    "password_confirm": "确认新密码"
 }
 ```
 - 保证了更改密码后用户仍然在登陆状态

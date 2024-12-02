@@ -20,9 +20,44 @@ export const addProduct = async (
     });
 };
 
+export const updateProduct = async (
+    shopId: number,
+    data: {
+        name: string;
+        description: string;
+        price: number;
+        category: number;
+        stock_quantity: number;
+        image: File;
+    }
+) => {
+    return server.put({
+        url: `/shop/${shopId}/product/update/`,
+        data,
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
+};
+
+export const deleteProduct = async (shopId: number, productId: number) => {
+    return server._delete({
+        url: `/shop/${shopId}/product/delete/`,
+        data: {
+            product_id: productId
+        }
+    });
+};
+
 export const getCategories = async () => {
     return await server.get({
         url: "/shop/category_list/",
+    });
+}
+
+export const getShopCategories = async (shopId: number) => {
+    return await server.get({
+        url: `/shop/${shopId}/category_list/`,
     });
 }
 
@@ -31,8 +66,10 @@ export const getProductList = async (
     params: {
         page: number;
         category: number;
-    } = { page: 1, category: null }
-) => {
+        price__gte: number;
+        price__lte: number;
+    } = {page: 1, category: null, price__gte: null, price__lte: null}
+) => { 
     return (await server.get({
         url: `/shop/${shopId}/products/`,
         params

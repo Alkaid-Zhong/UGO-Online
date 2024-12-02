@@ -24,7 +24,7 @@
 						half-increments
 						active-color="amber"
 						color="amber-darken-1"
-						:model-value="shop.total_income"
+						:model-value="shop.average_rating"
 					></v-rating>
 					<v-card-text>
 						<p class="mb-2 font-weight-bold">{{ `${shop.address}` }}</p>
@@ -33,17 +33,29 @@
 				</v-card>
 			</v-col>
 		</v-row>
+		<v-pagination
+			class="mt-4"
+			v-if="shops"
+			v-model="page"
+			:length="shops.total_page"
+		></v-pagination>
 	</v-container>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { getShops } from '@/api/shop';
 import { user } from '@/store/user';
 
 const shops = ref()
+const page = ref(1)
 
 onMounted(async () => {
-	const res = await getShops()
+	const res = await getShops(1)
+	shops.value = res
+})
+
+watch(page, async (newPage) => {
+	const res = await getShops(newPage)
 	shops.value = res
 })
 

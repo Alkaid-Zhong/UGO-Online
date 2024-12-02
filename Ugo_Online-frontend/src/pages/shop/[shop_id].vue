@@ -13,7 +13,7 @@
 							half-increments
 							active-color="amber"
 							color="amber-darken-1"
-							:model-value="shopInfo.total_income"
+							:model-value="shopInfo.average_rating"
 						></v-rating>
 					</div>
 				</template>
@@ -30,9 +30,51 @@
 					<v-btn color="primary" @click="onclickShowFlow" prepend-icon="mdi-chart-line" :loading="loadingFlow">查看商店流水</v-btn>
 				</v-card-actions>
 			</v-card>
+			<v-sheet
+				class="mb-4 px-4 pt-4 rounded-lg"
+				elevation="2"
+			>
+				<v-text-field class="mx-2" v-model="searchName" label="搜索商品" variant="solo" clearable></v-text-field>
+				<v-row no-gutters>
+					<v-col cols="6">
+						<v-text-field class="mx-2" v-model="priceRange_low" label="最低价格" variant="solo" clearable type="number"></v-text-field>
+					</v-col>
+					<v-col cols="6">
+						<v-text-field class="mx-2" v-model="priceRange_high" label="最高价格" variant="solo" clearable type="number"></v-text-field>
+					</v-col>
+				</v-row>
+				<v-btn-toggle v-model="orderBy">
+          <v-btn prepend-icon="mdi-sort-ascending" value="price">价格</v-btn>
+          <v-btn prepend-icon="mdi-sort-descending" value="-price">价格</v-btn>
+          <v-btn prepend-icon="mdi-sort-ascending" value="name">名称</v-btn>
+          <v-btn prepend-icon="mdi-sort-descending" value="-name">名称</v-btn>
+          <v-btn prepend-icon="mdi-sort-ascending" value="create_date">上架时间</v-btn>
+          <v-btn prepend-icon="mdi-sort-descending" value="-create_date">上架时间</v-btn>
+          <v-btn prepend-icon="mdi-sort-ascending" value="average_rating">评分</v-btn>
+          <v-btn prepend-icon="mdi-sort-descending" value="-average_rating">评分</v-btn>
+        </v-btn-toggle>
+			</v-sheet>
+			<v-chip-group
+				class="mb-4"
+				v-model="chosenCategory"
+				v-if="categoryList"
+				column
+			>
+				<v-chip
+					v-for="category in shopCategory"
+					:key="category.id"
+					filter
+					color="primary"
+				>{{ category.name }}</v-chip>
+			</v-chip-group>
 			<v-row v-if="products">
 				<v-col cols="12" md="4" v-for="product in products.products">
-					<product-card :product="product" />
+					<product-card 
+						:product="product" 
+						:category-list="categoryList" 
+						:shop-id="shop_id"
+						:remove-product-callback="removeProductCallback"
+					/>
 				</v-col>
 			</v-row>
 		</div>
@@ -225,7 +267,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { user } from '@/store/user';
 import { getInviteCode, getShopFlow, getShopInfo } from '@/api/shop';
-import { addProduct, getCategories, getProductList } from '@/api/product';
+import { addProduct, getCategories, getProductList, getShopCategories } from '@/api/product';
 import snackbar from '@/api/snackbar';
 import productCard from '@/components/productCard.vue';
 
@@ -234,10 +276,17 @@ const { shop_id } = route.params
 
 const shopInfo = ref(null)
 const categoryList = ref(null)
+const shopCategory = ref(null)
 const showAddProduct = ref(false)
 const showInvite = ref(false)
 const showShopFlow = ref(false)
 const loadingFlow = ref(false)
+
+const chosenCategory = ref(null)
+const priceRange_low = ref(null)
+const priceRange_high = ref(null)
+const searchName = ref('')
+const orderBy = ref(null)
 
 const productName = ref('')
 const productDescription = ref('')
@@ -271,14 +320,10 @@ onMounted(async () => {
 	shopInfo.value = await getShopInfo(shop_id)
 	products.value = await getProductList(shop_id)
 	categoryList.value = (await getCategories()).data.categories
+	shopCategory.value = (await getShopCategories(shop_id)).data.categories
 })
 
-watch(flowChoices, async () => {
-	flowPage.value = 1
-	await fetchFlow()
-})
-
-watch(flowDate, async () => {
+watch([flowChoices, flowDate], async () => {
 	flowPage.value = 1
 	await fetchFlow()
 })
@@ -286,6 +331,31 @@ watch(flowDate, async () => {
 watch(flowPage, async () => {
 	await fetchFlow()
 })
+
+watch([chosenCategory, priceRange_low, priceRange_high, searchName, orderBy], async () => {
+	await fetchProductList()
+})
+
+const removeProductCallback = async (product_id) => {
+	for (let i = 0; i < products.value.products.length; i++) {
+		if (products.value.products[i].id === product_id) {
+			products.value.products.splice(i, 1)
+			break
+		}
+	}
+}
+
+const fetchProductList = async () => {
+	products.value = null
+	const options = {
+		category: chosenCategory.value && chosenCategory.value !== 0 ? shopCategory.value[chosenCategory.value].id : null,
+		price__gte: priceRange_low.value ? priceRange_low.value : null,
+		price__lte: priceRange_high.value ? priceRange_high.value : null,
+		search: searchName.value ? searchName.value : null,
+		ordering: orderBy.value ? orderBy.value : null
+	}
+	products.value = await getProductList(shop_id, options)
+}
 
 const reloadFlow = async ({ sortBy }) => {
 	const sortOptions = {}

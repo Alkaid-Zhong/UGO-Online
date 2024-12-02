@@ -58,10 +58,12 @@ const post = async (
 	}
 };
 
-const put = async ({ url, data, showSnackbar = true }: { url: string, data?: any, showSnackbar?: boolean }): Promise<Response> => {
-	let headers = {};
+const put = async ({ url, data, showSnackbar = true, headers = {} }: { url: string, data?: any, showSnackbar?: boolean, headers?: any }): Promise<Response> => {
 	if (document.cookie.includes('csrftoken=')) {
-		headers = { 'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0] }
+		headers = {
+			...headers,
+			'X-CSRFToken': document.cookie.split('csrftoken=')[1].split(';')[0]
+		}
 	}
 	try {
 		const res = await server.put(
