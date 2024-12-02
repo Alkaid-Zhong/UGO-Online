@@ -16,6 +16,7 @@ def get_error_message(errors):
 
 
 def new_message(user, message):
+    print(user, message)
     return Message.objects.create(
         user=user,
         content=message,
