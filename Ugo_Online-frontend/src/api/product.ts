@@ -26,13 +26,21 @@ export const getCategories = async () => {
     });
 }
 
+export const getShopCategories = async (shopId: number) => {
+    return await server.get({
+        url: `/shop/${shopId}/category_list/`,
+    });
+}
+
 export const getProductList = async (
     shopId: number,
     params: {
         page: number;
         category: number;
-    } = { page: 1, category: null }
-) => {
+        price__gte: number;
+        price__lte: number;
+    } = {page: 1, category: null, price__gte: null, price__lte: null}
+) => { 
     return (await server.get({
         url: `/shop/${shopId}/products/`,
         params
