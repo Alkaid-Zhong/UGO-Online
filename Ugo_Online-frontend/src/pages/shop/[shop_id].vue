@@ -212,7 +212,7 @@
 				</v-data-table-server>
 				<v-pagination
 					v-model="flowPage"
-					:length="shopFlow.total_pages"
+					:length="shopFlow.total_page"
 				></v-pagination>
 			</v-card-item>
 		</v-card>
@@ -279,6 +279,10 @@ watch(flowChoices, async () => {
 
 watch(flowDate, async () => {
 	flowPage.value = 1
+	await fetchFlow()
+})
+
+watch(flowPage, async () => {
 	await fetchFlow()
 })
 
