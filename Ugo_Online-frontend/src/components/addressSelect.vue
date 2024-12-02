@@ -1,24 +1,31 @@
 <template>
-<v-card>
+<v-card :elevation="cardElevator">
 
-<v-card-title>
-    <h3>{{ paying ? "地址信息" : "选择地址" }}</h3>
-    <template v-slot:prepend>
-        <v-icon v-if="paying" @click="editAddress">mdi-pencil</v-icon>
+    <template #title>
+        <h3>{{ title }}</h3>
+
     </template>
-</v-card-title>
+    <template #append>
+        <v-icon @click="snackbar.warning('敬请期待')"> mdi-cart</v-icon>
+        <v-icon @click="snackbar.warning('敬请期待')"> mdi-plus</v-icon>
+    </template>
 
 <v-divider></v-divider>
 <v-card-text>
     <transition name="fade" mode="out-in">
     <v-row v-if="!paying" class="" key="'empty'">
         <!--@click="updateAddress"-->
-        <v-item-group :value="selectedAddress"  mandatory class="d-flex" style="flex-grow: 1;">
+        <v-skeleton-loader
+            v-if="loading"
+            type="card"
+            class="mx-auto"
+            width="100%"
+        ></v-skeleton-loader>
+        <v-item-group v-else v-model="selectedAddress"  mandatory class="d-flex" style="flex-grow: 1;">
             <v-container>
                 <v-row :style="{flexGrow:1, minHeight:minheight+'px' }" id="address-card" >
                     <v-col cols="4" style="flex-grow: 1;" v-for="address in paginatedAddresses" :key="address.id" > 
                         <v-item v-slot="{ isSelected, toggle }" :value="address">
-
                             <v-card :class="[ { ['bg-primary']: isSelected }]" @click="toggle" height="100%">
                                 <v-card-text>
                                 <div>
@@ -122,7 +129,7 @@
     </v-row>
     </transition>
 </v-card-text>
-<v-card-actions class="animate_07s" v-if="!paying" key="'empty'">
+<v-card-actions class="animate_07s" v-if="!paying && !loading" key="'empty'" >
     <v-spacer></v-spacer>
     <v-btn @click="prevPage" :disabled="currentPage <= 0">上一页</v-btn>
     <v-btn @click="nextPage" :disabled="currentPage >= totalPages - 1">下一页</v-btn>
@@ -138,7 +145,7 @@ import snackbar from '@/api/snackbar';
 
 
 
-const props = defineProps(['paying', 'addressPerPage'])
+const props = defineProps(['paying', 'addressPerPage','title','cardElevator','preSelect']);
 const emit = defineEmits(['updateSelectedAddress']);
 
 onMounted(() => {
@@ -165,12 +172,13 @@ watch(() => props.addressPerPage, (newVal) => {
 
 // const addressPerPage = 3;
 const paying = ref(props.paying);
+const title = ref(props.title);
 const addressPerPage = ref(props.addressPerPage);
+const cardElevator = props.cardElevator !== undefined ? ref(props.cardElevator) : 1;
+const preSelect = props.preSelect !== undefined ? ref(props.preSelect) : ref(true);
 // const { paying, userid, addressPerPage } = props
 const addresses = ref([]);
-const selectedAddress = ref({
-
-});
+const selectedAddress = ref({});
 const newAddress = ref({
     recipient_name: '',
     phone: '',
@@ -189,7 +197,7 @@ watch(() => selectedAddress.value, (newVal) => {
 
 const createAddress = async (isActive) => {
     console.log("newAddr");
-  console.log(newAddress.value);
+    console.log(newAddress.value);
     const response = await addAddress(newAddress.value);
     if (response.success) {
         snackbar.success("添加成功");
@@ -200,7 +208,7 @@ const createAddress = async (isActive) => {
                 //console.log("新增默认地址");
                 //console.log(paginatedAddresses.value[0]===selectedAddress.value);
             } else {
-                selectedAddress.value = newAddress.value;
+                selectedAddress.value = response.data;
             }
         });
         
@@ -220,7 +228,7 @@ const paginatedAddresses = computed(() => {
     // console.log(addresses.value);
     return addresses.value.slice(start, end);
 });
-
+const loading = ref(true);
 const minheight = ref(0);
 const transitionName = ref('slide-left');
 
@@ -251,11 +259,19 @@ const fetchAddresses = async () => {
   addresses.value = response.data;
   if (addresses.value.length !== 0) {
     console.log("hey: " + addresses.value);
-    selectedAddress.value = addresses.value[0];
+    if (preSelect.value) {
+        console.log(preSelect.value);
+        console.warn(props.preSelect === undefined);
+        selectedAddress.value = addresses.value[0];
+    } else {
+
+    }
+    //selectedAddress.value = addresses.value[0];
     console.log(selectedAddress.value);
     console.log("total pages:", addresses.value.length);
     // emit('updateSelectedAddress', selectedAddress.value);
   }
+  loading.value = false;
 };
 
 

@@ -4,13 +4,13 @@
     <transition name="ease">
     <v-card v-if="showLatestUpdate" key="'latest update'">
       <v-card-title class="text-h6">Latest update</v-card-title>
-      <v-card-subtitle>最近更新时间： 11.27 23:26</v-card-subtitle>
+      <v-card-subtitle>最近更新时间： 11.28 17:56</v-card-subtitle>
       <v-list>
          <v-list-item>
-               <v-list-item-title>1. 商家的订单列表</v-list-item-title>
+               <v-list-item-title>1. 修复了购物车页面的bug</v-list-item-title>
          </v-list-item>
          <v-list-item>
-               <v-list-item-title>2. 退款功能 </v-list-item-title>
+               <v-list-item-title>2. 订单页面分页， 取消订单和修改地址 </v-list-item-title>
          </v-list-item>
       </v-list>
       <v-card-text class="text-body-1">
@@ -18,13 +18,13 @@
       </v-card-text>
       <v-list>
          <v-list-item>
-               <strong>已知Bug：</strong>Cart page幽灵商品, Profile页面 商家充值ban掉，商铺页面“编辑商品”只对该商铺管理者可见（而非所有Seller）、商铺评价显示问题
+               <strong>已知Bug：</strong> Profile页面 商家充值ban掉，商铺页面“编辑商品”只对该商铺管理者可见（而非所有Seller）、商铺评价显示问题
          </v-list-item>
          <v-list-item>
                <strong>完全没写：</strong>商品页和评价页、首页，（订单详情）
          </v-list-item>
          <v-list-item>
-               <strong>正在完善：</strong> 用户订单：订单修改地址、确认收货；商家订单页面：发货、地址信息显示;订单状况筛选； 高亮样式：待付款（用户）& 待发货（商家） 购物车失效商品判断（UUQ）<br/>
+               <strong>正在完善：</strong> 用户订单：确认收货；商家订单页面：地址信息显示;订单状况筛选； 高亮样式：待付款（用户）& 待发货（商家） 购物车失效商品判断（UUQ）<br/>
                商铺页面“编辑商品”功能
          </v-list-item>
       </v-list>

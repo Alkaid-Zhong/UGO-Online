@@ -51,9 +51,8 @@
                     
                     <v-list-item class="pl-0 pt-2 pb-3 pr-0" v-for="item in shop.items" :key="item.item_id">
 
-                      <!-- <template #default="{ active }"> -->
                         <v-list-item-action class="d-inline-flex" style="width:100%">
-                          <v-checkbox v-model="itemSelected" :value="item" class="d-flex" :disabled="item.product_stock_quantity < item.quantity"></v-checkbox>
+                          <v-checkbox v-model="itemSelected" :value="item" class="d-flex" :disabled="disabledItem(item)"></v-checkbox>
                         
                           <v-img :src="item.image" height="96" width="96"></v-img>
                           <v-container width="100%" style="margin-left: auto;">
@@ -61,7 +60,7 @@
                               <v-col cols="4" class="pt-0">
                                 <strong>{{ item.product_name }}</strong>
                               </v-col>
-                                <v-col cols="4" :style="{ color: item.product_stock_quantity >= item.quantity ? 'orangered' : 'grey' }" class="text-h6 pt-0">
+                                <v-col cols="4" :style="{ color: disabledItem(item)? 'grey' : 'orangered' }" class="text-h6 pt-0">
                                 {{ currency(item.price) }}
                                 </v-col>
                               <v-col cols="4" class="d-flex">
@@ -103,7 +102,6 @@
                           </v-container>
                         </v-list-item-action>
                         
-                      <!-- </template> -->
                     </v-list-item>
                   </transition-group>
                 </v-list>
@@ -208,6 +206,11 @@ const shopLists = ref([{
 
 const queryRemove = (item) => {
   
+}
+
+const disabledItem = (item) => {
+  console.log(item.status);
+  return item.product_stock_quantity < item.quantity || item.product_status === 'Unavailable';
 }
 
 
