@@ -31,15 +31,16 @@
 				</v-card-actions>
 			</v-card>
 			<v-sheet
-				class="mb-4 px-4 pt-4"
+				class="mb-4 px-4 pt-4 rounded-lg"
+				elevation="2"
 			>
-				<v-text-field v-model="searchName" label="搜索商品" variant="solo" clearable></v-text-field>
+				<v-text-field class="mx-2" v-model="searchName" label="搜索商品" variant="solo" clearable></v-text-field>
 				<v-row no-gutters>
 					<v-col cols="6">
-						<v-text-field v-model="priceRange_low" label="最低价格" variant="solo" clearable type="number"></v-text-field>
+						<v-text-field class="mx-2" v-model="priceRange_low" label="最低价格" variant="solo" clearable type="number"></v-text-field>
 					</v-col>
 					<v-col cols="6">
-						<v-text-field v-model="priceRange_high" label="最高价格" variant="solo" clearable type="number"></v-text-field>
+						<v-text-field class="mx-2" v-model="priceRange_high" label="最高价格" variant="solo" clearable type="number"></v-text-field>
 					</v-col>
 				</v-row>
 				<v-btn-toggle v-model="orderBy">
