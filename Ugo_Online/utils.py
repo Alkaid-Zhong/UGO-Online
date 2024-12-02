@@ -1,3 +1,6 @@
+from message.models import Message
+
+
 def get_error_message(errors):
     for field, error_list in errors.items():
         if isinstance(error_list, dict):
@@ -10,3 +13,10 @@ def get_error_message(errors):
                     return str(error)  # 直接返回第一个错误信息
         else:
             return str(error_list)
+
+
+def new_message(user, message):
+    return Message.objects.create(
+        user=user,
+        content=message,
+    )

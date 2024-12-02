@@ -8,7 +8,7 @@ from django.contrib.auth import login, logout
 from Ugo_Online.utils import api_response
 from order.models import Order
 from order.serializers import OrderSerializer
-from utils import get_error_message
+from utils import get_error_message, new_message
 from .permissions import IsCustomer
 from .models import Address
 from .serializers import (
@@ -191,6 +191,7 @@ class AddMoneyView(APIView):
         serializer = AddMoneySerializer(instance=request.user, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            new_message(request.user, "您为您的账户充值了" + str(serializer.validated_data['money']) + "元，账户当前余额为 " + str(request.user.money) + " 元。")
             return api_response(True, message='充值成功', data=serializer.data)
         else:
             return api_response(False, code=500, message=get_error_message(serializer.errors), data=serializer.errors)

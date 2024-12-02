@@ -12,7 +12,7 @@ from django.db import transaction
 from Ugo_Online.utils import list_response
 from accounts.models import Address
 from shop.models import Shop, SellerShop, ShopTransaction
-from utils import get_error_message
+from utils import get_error_message, new_message
 from .models import Order
 from .serializers import OrderSerializer, PaymentSerializer, UpdateOrderAddressSerializer
 from accounts.views import api_response
@@ -136,6 +136,11 @@ class OrderPaymentView(APIView):
                     description=f"Payment for {order}"
                 )
 
+                sellers = shop.sellers.all()
+
+                for seller in sellers:
+                    new_message(seller, f'[{order.shop.name}] 用户 {order.user} 已支付订单 {order.id}，请尽快发货！')
+
             # 更新订单状态
             orders.update(status='Payment Received')
 
@@ -166,6 +171,11 @@ class CancelOrderView(APIView):
         order.status = 'Cancelled'
         order.save()
 
+        sellers = order.shop.sellers.all()
+
+        for seller in sellers:
+            new_message(seller, f'[{order.shop.name}] 用户 {order.user} 取消了订单 {order.id}！')
+
         return api_response(True, message='订单已取消')
 
 
@@ -194,6 +204,8 @@ class RefundOrderItemsView(APIView):
         if order_items.count() != len(item_ids):
             return api_response(False, code=201, message='部分商品项不存在')
 
+        sellers = order.shop.sellers.all()
+
         total_refund = 0
         for item in order_items:
             if item.is_cancelled:
@@ -208,6 +220,9 @@ class RefundOrderItemsView(APIView):
             product.stock_quantity += item.quantity
             product.sales_volume -= item.quantity
             product.save()
+
+            for seller in sellers:
+                new_message(seller, f'[{order.shop.name}] 用户 {order.user} 退回了订单 {order.id} 中的商品项 {item.product}！')
 
             total_refund += item.total_price
 
@@ -253,6 +268,8 @@ class UpdateOrderStatus2ShippedView(APIView):
 
         order.status = 'Shipped'
         order.save()
+
+        new_message(order.user, f'您的订单 {order.id} 已发货，请在收到货后确认收货！')
 
         return api_response(True, message='订单状态已更新为已发货')
 
@@ -301,6 +318,10 @@ class UpdateOrderAddressView(APIView):
             order.province = address.province
             order.phone = address.phone
             order.save()
+
+            sellers = order.shop.sellers.all()
+            for seller in sellers:
+                new_message(seller, f'[{order.shop}] 订单 {order.id} 的地址已修改为 "{address}"！')
 
             return api_response(True, message='订单地址修改成功')
         else:

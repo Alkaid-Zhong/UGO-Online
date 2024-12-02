@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'shop',  # 商家和商品
     'cart',  # 购物车
     'order',  # 订单
+    'message',
     'corsheaders',
 ]
 

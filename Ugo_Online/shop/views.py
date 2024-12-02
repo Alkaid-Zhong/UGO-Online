@@ -13,7 +13,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from order.models import OrderItem
 from shop.filters import ShopTransactionFilter
-from utils import get_error_message
+from utils import get_error_message, new_message
 from Ugo_Online.utils import api_response, list_response
 from shop.models import SellerShop, Shop, InvitationCode, Product, Category, ShopTransaction, Review
 from shop.serializers import ShopSerializer, ShopProfileSerializer, InvitationCodeSerializer, ProductSerializer, \
@@ -106,6 +106,11 @@ class JoinShopByCodeView(APIView):
                 invitation_code.is_active = False
 
             shop = invitation_code.shop
+
+            sellers = shop.sellers.all()
+            for seller in sellers:
+                new_message(seller, f"[{shop}] 用户 {user} 加入了您的商店。")
+
             SellerShop.objects.create(shop=shop, seller=user)
 
             invitation_code.save()
