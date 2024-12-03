@@ -4,8 +4,8 @@ interface User {
     login: boolean;
     name: string;
     email: string;
-    role: 'CUSTOMER' | 'SELLER'
-    shopId: number
+    role: 'CUSTOMER' | 'SELLER' | null
+    shops: number[]
     money: number
     phone: string
 }
@@ -14,8 +14,8 @@ export const user = reactive<User>({
     login: false,
     name: '',
     email: '',
-    role: 'CUSTOMER',
-    shopId: null,
+    role: null,
+    shops: [],
     money: 0,
     phone: ''
 })

@@ -22,9 +22,9 @@
 					<p>{{ shopInfo.description }}</p>
 				</template>
 				<template #append>
-					<v-chip v-if="shop_id == user.shopId" color="green" prepend-icon="mdi-store">我的商铺</v-chip>
+					<v-chip v-if="user.shops.includes(Number(shop_id))" color="green" prepend-icon="mdi-store">我的商铺</v-chip>
 				</template>
-				<v-card-actions v-if="shop_id == user.shopId">
+				<v-card-actions v-if="shop_id in user.shops">
 					<v-btn color="primary" @click="showAddProduct = true" prepend-icon="mdi-plus">添加商品</v-btn>
 					<v-btn color="primary" @click="showInvite = true" prepend-icon="mdi-account-plus">邀请加入商店</v-btn>
 					<v-btn color="primary" @click="onclickShowFlow" prepend-icon="mdi-chart-line" :loading="loadingFlow">查看商店流水</v-btn>

@@ -57,7 +57,7 @@
 			</v-card-item>
 		</v-card>
 		
-		<v-card v-if="shopInfo" class="mt-4" :to="`/shop/${shopInfo.id}`">
+		<v-card v-for="shopInfo in shopInfo" class="mt-4" :to="`/shop/${shopInfo.id}`">
 			<template #title>
 				<h2 class="headline mb-1">{{ shopInfo.name }}</h2>
 			</template>
@@ -130,12 +130,12 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { user } from '@/store/user';
-import { addMoney, changePassword, logout } from '@/api/user';
+import { addMoney, changePassword, logout, profile } from '@/api/user';
 import { getShopInfo } from '@/api/shop';
 import AddressSelect from '@/components/addressSelect.vue';
 import snackbar from '@/api/snackbar';
 
-const shopInfo = ref(null)
+const shopInfo = ref([])
 const loading = ref(false);
 const showRecharge = ref(false);
 const rechargeMoney = ref(0);
@@ -175,8 +175,12 @@ const recharge = async () => {
 }
 
 onMounted(async () => {
-	if (user.shopId) {
-		shopInfo.value = await getShopInfo(user.shopId);
+	await profile();
+	if (!(user.shops.length === 0)) {
+		Promise.all(user.shops.map(async (shopId) => {
+			const shop = await getShopInfo(shopId);
+			shopInfo.value.push(shop);
+		}));
 	}
 })
 

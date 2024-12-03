@@ -83,7 +83,7 @@ const onclickSubmitCreate = async () => {
 	if (res.success) {
 		snackbar.success('创建成功');
 		await profile();
-		router.replace(`/shop/${user.shopId}`);
+		router.replace(`/shop/${user.shops}`);
 	}
 }
 
@@ -96,7 +96,7 @@ const onclickSubmitJoin = async () => {
 	if (res.success) {
 		snackbar.success('加入成功');
 		await profile();
-		router.replace(`/shop/${user.shopId}`);
+		router.replace(`/shop/${user.shops}`);
 	}
 }
 

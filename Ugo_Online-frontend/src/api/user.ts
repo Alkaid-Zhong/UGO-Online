@@ -21,7 +21,7 @@ export const logout = async () => {
 		user.name = "";
 		user.email = "";
 		user.role = "CUSTOMER";
-		user.shopId = null;
+		user.shops = null;
 		user.money = 0;
 		user.phone = "";
 	} else {
@@ -51,7 +51,7 @@ export const profile = async (showSnackbar = true) => {
 		user.name = response.data.name;
 		user.email = response.data.email;
 		user.role = response.data.role;
-		user.shopId = response.data.shop;
+		user.shops = response.data.shop;
 		user.money = response.data.money;
 		user.phone = response.data.phone;
 	} else {
