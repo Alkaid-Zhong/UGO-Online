@@ -1,7 +1,6 @@
 import axios from "axios";
 import snackbar from "./snackbar";
 import router from "@/router";
-import { head } from "node_modules/axios/index.cjs";
 
 interface Response {
 	success: boolean;
