@@ -337,12 +337,7 @@ watch([chosenCategory, priceRange_low, priceRange_high, searchName, orderBy], as
 })
 
 const removeProductCallback = async (product_id) => {
-	for (let i = 0; i < products.value.products.length; i++) {
-		if (products.value.products[i].id === product_id) {
-			products.value.products.splice(i, 1)
-			break
-		}
-	}
+  await fetchProductList()
 }
 
 const fetchProductList = async () => {
