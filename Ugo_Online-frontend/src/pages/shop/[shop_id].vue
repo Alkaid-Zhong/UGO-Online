@@ -78,6 +78,11 @@
 				</v-col>
 			</v-row>
 		</div>
+    <v-pagination
+      v-if="products"
+      v-model="page"
+      :length="products.total_page"
+    ></v-pagination>
 	</v-container>
 	<v-dialog v-model="showAddProduct" transition="dialog-bottom-transition">
 		<v-card>
@@ -281,6 +286,7 @@ const showAddProduct = ref(false)
 const showInvite = ref(false)
 const showShopFlow = ref(false)
 const loadingFlow = ref(false)
+const page = ref(1)
 
 const chosenCategory = ref(null)
 const priceRange_low = ref(null)
@@ -333,6 +339,11 @@ watch(flowPage, async () => {
 })
 
 watch([chosenCategory, priceRange_low, priceRange_high, searchName, orderBy], async () => {
+  page.value = 1
+	await fetchProductList()
+})
+
+watch(page, async () => {
 	await fetchProductList()
 })
 
@@ -343,6 +354,7 @@ const removeProductCallback = async (product_id) => {
 const fetchProductList = async () => {
 	products.value = null
 	const options = {
+    page: page.value,
 		category: chosenCategory.value && chosenCategory.value !== 0 ? shopCategory.value[chosenCategory.value].id : null,
 		price__gte: priceRange_low.value ? priceRange_low.value : null,
 		price__lte: priceRange_high.value ? priceRange_high.value : null,

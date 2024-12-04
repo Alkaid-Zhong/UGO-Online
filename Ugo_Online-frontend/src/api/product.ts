@@ -68,7 +68,8 @@ export const getProductList = async (
         category: number;
         price__gte: number;
         price__lte: number;
-    } = {page: 1, category: null, price__gte: null, price__lte: null}
+        search: string;
+    } = {page: 1, category: null, price__gte: null, price__lte: null, search: null}
 ) => { 
     return (await server.get({
         url: `/shop/${shopId}/products/`,
