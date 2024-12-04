@@ -77,6 +77,21 @@ export const getProductList = async (
     })).data;
 };
 
+export const getAllProductList = async (
+    params: {
+        page: number;
+        category: number;
+        price__gte: number;
+        price__lte: number;
+        search: string;
+    } = {page: 1, category: null, price__gte: null, price__lte: null, search: null}
+) => { 
+    return (await server.get({
+        url: `/shop/products/`,
+        params
+    })).data;
+};
+
 export const getProductDetail = async (id: number) => {
     return await server.get({
         url: "/shop/product/" + id + "/",

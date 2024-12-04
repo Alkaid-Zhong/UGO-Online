@@ -23,12 +23,12 @@
 					prepend-icon="mdi-cart"
 				>加入购物车</v-btn>
 				<v-btn
-					v-if="user.role === 'SELLER'"
+					v-if="user.role === 'SELLER' && user.shops.includes(Number(shopId))"
 					color="primary"
 					@click="showUpdateProduct = true"
 				>编辑商品</v-btn>
 				<v-btn
-					v-if="user.role === 'SELLER'"
+					v-if="user.role === 'SELLER' && removeProductCallback !== null"
 					color="red"
 					@click="onclickDeleteProduct"
 				>删除商品</v-btn>
