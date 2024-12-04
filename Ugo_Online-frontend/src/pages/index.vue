@@ -2,31 +2,41 @@
 	<v-container>
 		<v-infinite-scroll :items="items" :onLoad="fetchProducts">
 			<template v-for="(item, index) in items" :key="item.id">
-				<v-row v-if="index % 3 === 0" style="width: 100%;">
-					<v-col cols="4">
-						<product-card
-							:product="item" 
-							:shop-id="item.shop"
-							:remove-product-callback="null"
-						></product-card>
-					</v-col>
-					<v-col cols="4">
-						<product-card
-							v-if="index + 1 < items.length"
-							:product="items[index + 1]" 
-							:shop-id="items[index + 1].shop"
-							:remove-product-callback="null"
-						></product-card>
-					</v-col>
-					<v-col cols="4">
-						<product-card
-							v-if="index + 2 < items.length"
-							:product="items[index + 2]" 
-							:shop-id="items[index + 2].shop"
-							:remove-product-callback="null"
-						></product-card>
-					</v-col>
-				</v-row>
+				<div v-if="$vuetify.display.md">
+					<v-row v-if="index % 3 === 0" style="width: 100%;" class="mt-2">
+						<v-col cols="4">
+							<product-card
+								:product="item" 
+								:shop-id="item.shop"
+								:remove-product-callback="null"
+							></product-card>
+						</v-col>
+						<v-col cols="4">
+							<product-card
+								v-if="index + 1 < items.length"
+								:product="items[index + 1]" 
+								:shop-id="items[index + 1].shop"
+								:remove-product-callback="null"
+							></product-card>
+						</v-col>
+						<v-col cols="4">
+							<product-card
+								v-if="index + 2 < items.length"
+								:product="items[index + 2]" 
+								:shop-id="items[index + 2].shop"
+								:remove-product-callback="null"
+							></product-card>
+						</v-col>
+					</v-row>
+				</div>
+				<div v-else>
+					<div style="height: 8px;"></div>
+					<product-card
+						:product="item" 
+						:shop-id="item.shop"
+						:remove-product-callback="null"
+					></product-card>
+				</div>
 			</template>
 		</v-infinite-scroll>
 	</v-container>
