@@ -26,15 +26,30 @@
                 <v-row :style="{flexGrow:1, minHeight:minheight+'px' }" id="address-card" >
                     <v-col cols="4" style="flex-grow: 1;" v-for="address in paginatedAddresses" :key="address.id" > 
                         <v-item v-slot="{ isSelected, toggle }" :value="address">
+                            
                             <v-card :class="[ { ['bg-primary']: isSelected }]" @click="toggle" height="100%">
                                 <v-card-text>
-                                <div>
-                                    <div><small>{{ address.recipient_name }} {{ address.phone }}</small></div>
-                                    <div><small>{{ address.province }} {{ address.city }}</small></div>
-                                    <div class="font-weight-bold text-lg">{{ address.address }}</div>
-                                </div>
+                                    <v-row>
+                                    <v-col cols="10">
+                                    <div>
+                                        <div><small>{{ address.recipient_name }} {{ address.phone }} 
+                                                    
+                                            </small>
+                                            
+                                        </div>
+                                        <div><small>{{ address.province }} {{ address.city }}</small></div>
+                                        <div class="font-weight-bold text-lg">{{ address.address }}</div>
+                                    </div>
+                                    </v-col>
+                                    <v-col cols="2">
+                                        <v-badge color="green" content="默认" v-if="address.is_default">
+                                            
+                                        </v-badge>
+                                    </v-col>
+                                </v-row>
                                 </v-card-text>
                             </v-card>
+                            
                         </v-item>
                     </v-col>
                     <v-col cols="4" v-if="isLastPage" :key="'empty'">

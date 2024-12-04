@@ -192,7 +192,7 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { user } from '@/store/user';
 import snackbar from '@/api/snackbar';
-import { sellerGetOrders, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userCreateReview, userGetOrders, userPayOrders, userRefund } from '@/api/order';
+import { getReview, sellerGetOrders, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userCreateReview, userGetOrders, userPayOrders, userRefund } from '@/api/order';
 import { getShopInfo } from '@/api/shop';
 import router from '@/router';
 import { profile } from '@/api/user';
@@ -312,6 +312,17 @@ const review = (order, item) => {
     createReview.value = !item.has_reviewed;
     console.log(createReview.value);
     showReview.value = true;
+}
+
+const seeReview = async (order, item) => {
+    // `/shop/order_item/<int:order_item_id>/review/`
+    const response = await getReview(item.id);
+    if (response.success) {
+        snackbar.success("评价内容：" + response.data.comment + " 评分：" + response.data.rating);
+    } else {
+        snackbar.error("获取评价失败：" + response.message);
+    }
+    //snackbar.info("评价内容：" + item.review.content + " 评分：" + item.review.rating);
 }
 
 
