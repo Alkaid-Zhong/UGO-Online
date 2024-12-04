@@ -1,73 +1,87 @@
 <template>
     <v-container v-if="!loading">
-        
+
         <v-row v-if="!orderLoading"> <!-- customer -->
             <v-col cols="12">
-            <v-list v-for="order in orders">
-                <v-card>
-                    <v-card-title v-if="isCustomer">
-                        <v-btn
-                            class="text-h6 font-weight-bold"
-                            variant="text"
-                            prepend-icon="mdi-store"
-                            append-icon="mdi-chevron-right"
-                            @click="router.push(`/shop/${order.shop_id}/`)"
-                        >{{ ShopInfo(order.shop_id).name }} </v-btn>
-                    </v-card-title>
-                    <v-card-title v-else>
+                <v-list v-for="order in orders">
+                    <v-card>
+                        <v-card-title v-if="isCustomer">
+                            <v-btn class="text-h6 font-weight-bold" variant="text" prepend-icon="mdi-store"
+                                append-icon="mdi-chevron-right" @click="router.push(`/shop/${order.shop_id}/`)">{{
+                                    ShopInfo(order.shop_id).name }} </v-btn>
+                        </v-card-title>
+                        <v-card-title v-else>
 
-                        {{ order.address.recipient_name }} 的订单 
-                        <v-spacer></v-spacer>
-                        <small> 订单ID: {{ order.order_id    }}</small>
-                    </v-card-title>
-                    <v-card-subtitle class="font-weight-bold" >
-                        <span> 共 {{ order.items.length }} 件商品，总价:</span> <span style="color:orangered;">￥{{ order.total_price }}</span> 
-                        <span> 订单状态：<v-chip tile :color="orderStatusColor(order.status)">{{ formatStatus(order.status) }}</v-chip></span>
-                    </v-card-subtitle>
-                    
-                    <v-list-item v-for="item in order.items" width="100%">
-                        
-                            <v-container width="100%" style="margin-left: auto;" >
-                            <v-row>
-                                <v-col cols=3>
-                                <v-img :src="item.product.image" height="96" width="96"></v-img>
-                                </v-col>  
-                                <v-col cols="3">
-                                <strong>{{ item.product.name }}</strong>
-                                </v-col>
+                            {{ order.address.recipient_name }} 的订单
+                            <v-spacer></v-spacer>
+                            <small> 订单ID: {{ order.order_id }}</small>
+                        </v-card-title>
+                        <v-card-subtitle class="font-weight-bold">
+                            <span> 共 {{ order.items.length }} 件商品，总价:</span> <span style="color:orangered;">￥{{
+                                order.total_price }}</span>
+                            <span> 订单状态：<v-chip tile :color="orderStatusColor(order.status)">{{
+                                formatStatus(order.status) }}</v-chip></span>
+                        </v-card-subtitle>
 
-                                <v-col cols="3" style="color:orangered" class="text-h6  text-center">
-                                {{ currency(item.product.price) }}
-                                </v-col>
+                        <v-list-item v-for="item in order.items" width="100%">
 
-                                <v-col cols="3" class="text-center">
-                                    
-                                    <b>x {{item.quantity}}</b><br><br>
-                                    <!-- {{order.status}} {{  item.is_cancelled }} -->
-                                    <v-btn text="退货" v-if="isCustomer && showRefundButton(order.status, item.is_cancelled)" @click="refund(order,item)"></v-btn> <!-- v-if="showRefuncButton(order)"  bug？-->
-                                    
-                                </v-col>
-                            </v-row>
-                            
+                            <v-container width="100%" style="margin-left: auto;">
+                                <v-row>
+                                    <v-col cols=3>
+                                        <v-img :src="item.product.image" height="96" width="96"></v-img>
+                                    </v-col>
+                                    <v-col cols="3">
+                                        <strong>{{ item.product.name }}</strong>
+                                    </v-col>
+
+                                    <v-col cols="3" style="color:orangered" class="text-h6  text-center">
+                                        {{ currency(item.product.price) }}
+                                    </v-col>
+
+                                    <v-col cols="3" class="text-center">
+
+                                        <b>x {{ item.quantity }}</b><br><br>
+                                        <!-- {{order.status}} {{  item.is_cancelled }} -->
+                                        <v-btn text="退货" color="warning"
+                                            v-if="isCustomer && showRefundButton(order.status, item.is_cancelled)"
+                                            @click="refund(order, item)"></v-btn>
+
+                                        <v-btn text="评价" color="primary"
+                                            v-if="isCustomer && order.status === 'Completed' && !item.has_reviewed"
+                                            @click="review(order, item)"></v-btn>
+                                        <v-btn text="查看评价" color="info"
+                                            v-if="isCustomer && order.status ==='Completed' && item.has_reviewed"
+                                            @click="seeReview(order,item)"></v-btn>
+                                        <!-- v-if="showRefuncButton(order)"  bug？-->
+
+                                    </v-col>
+                                </v-row>
+
                             </v-container>
-                        
-                        <!-- {{ item }} -->
-                    </v-list-item>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="red" v-if="isCustomer && order.status==='Pending Payment'" @click="orderDialog('cancel', order)">取消订单</v-btn>
-                        <v-btn color="" v-if="isCustomer && showChangeAddressButton(order.status)" @click="orderDialog('change address', order)">修改地址</v-btn>
-                        <v-btn color="warning" v-if="isCustomer && order.status === 'Pending Payment'" class="font-weight-bold" @click="orderDialog('pay', order)">支付</v-btn> <!--payOrder(order)--> 
-                        <v-btn color="success" v-if="isCustomer && order.status === 'Shipped'" class="font-weight-bold" @click="orderDialog('receive',order)">确认收货</v-btn>
-                        
-                        <v-btn color="success" v-if="isSeller && order.status === 'Payment Received' " @click="ship(order)">发货</v-btn>
-                        <v-btn color="primary" @click="router.push(`/order/${order.order_id}/`)">查看详情</v-btn>
-                    </v-card-actions>
-                </v-card>
-                
-            </v-list>
+
+                            <!-- {{ item }} -->
+                        </v-list-item>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="red" v-if="isCustomer && order.status === 'Pending Payment'"
+                                @click="orderDialog('cancel', order)">取消订单</v-btn>
+                            <v-btn color="" v-if="isCustomer && showChangeAddressButton(order.status)"
+                                @click="orderDialog('change address', order)">修改地址</v-btn>
+                            <v-btn color="warning" v-if="isCustomer && order.status === 'Pending Payment'"
+                                class="font-weight-bold" @click="orderDialog('pay', order)">支付</v-btn>
+                            <!--payOrder(order)-->
+                            <v-btn color="success" v-if="isCustomer && order.status === 'Shipped'"
+                                class="font-weight-bold" @click="orderDialog('receive', order)">确认收货</v-btn>
+
+                            <v-btn color="success" v-if="isSeller && order.status === 'Payment Received'"
+                                @click="ship(order)">发货</v-btn>
+                            <!-- <v-btn color="primary" @click="router.push(`/order/${order.order_id}/`)">查看详情</v-btn> -->
+                        </v-card-actions>
+                    </v-card>
+
+                </v-list>
             </v-col>
-        </v-row> 
+        </v-row>
 
         <v-skeleton-loader v-else type="image, article" />
         <!-- <v-row v-else> 
@@ -77,82 +91,84 @@
                 </v-list>
             </v-col>
         </v-row> -->
-
+        <v-dialog v-model="showReview">
+            <template v-if="createReview" v-slot:default="{isActive}">
+                <v-card>
+                    <v-card-title>评价</v-card-title>
+                    <v-card-text>
+                        <v-textarea v-model="reviewContent" label="评价内容" rows="3"></v-textarea>
+                        <v-rating v-model="reviewRating" label="评分" color="amber"></v-rating>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn text @click="isActive.value = false">取消</v-btn>
+                        <v-btn color="primary" class="font-weight-bold" text="确认评价"
+                            @click="submitReview(isActive)"></v-btn>
+                    </v-card-actions>
+                </v-card>
+            </template>
+        </v-dialog>
         <v-dialog width="40%" v-model="showDialog">
 
-            <template v-if="dialogContent==='pay'" v-slot:default="{ isActive }">
+            <template v-if="dialogContent === 'pay'" v-slot:default="{ isActive }">
                 <v-card title="支付确认">
-                <v-card-text>
-                    <span>当前余额：￥{{ user.money }}元</span><br>
-                    <span>支付金额：￥{{ curOrder.total_price }}元</span>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                    text="取消"
-                    @click="isActive.value = false"
-                    ></v-btn>
-                    <v-btn color="warning" class="font-weight-bold" text="确认支付" @click="payOrder(curOrder), isActive.value = false">
-                    </v-btn>
-                </v-card-actions>
+                    <v-card-text>
+                        <span>当前余额：￥{{ user.money }}元</span><br>
+                        <span>支付金额：￥{{ curOrder.total_price }}元</span>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn text="取消" @click="isActive.value = false"></v-btn>
+                        <v-btn color="warning" class="font-weight-bold" text="确认支付"
+                            @click="payOrder(curOrder), isActive.value = false">
+                        </v-btn>
+                    </v-card-actions>
                 </v-card>
             </template>
 
-            <template v-else-if="dialogContent==='change address'" v-slot:default="{ isActive }">
-                <v-card title="修改地址"> 
-                <AddressSelect :addressPerPage="3"
-                                :paying="false"
-                                :cardElevator="0"
-                                :preSelect="false"
-                                @updateSelectedAddress="updateSelectedAddress">
+            <template v-else-if="dialogContent === 'change address'" v-slot:default="{ isActive }">
+                <v-card title="修改地址">
+                    <AddressSelect :addressPerPage="3" :paying="false" :cardElevator="0" :preSelect="false"
+                        @updateSelectedAddress="updateSelectedAddress">
 
-                </AddressSelect>
-               
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                    text="取消"
-                    @click="isActive.value = false"
-                    ></v-btn>
-                    <v-btn color="warning" 
-                           class="font-weight-bold" 
-                           text="确认修改" 
-                           @click="changeAddress(), isActive.value = false">
-                    </v-btn>
-                </v-card-actions> 
+                    </AddressSelect>
+
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn text="取消" @click="isActive.value = false"></v-btn>
+                        <v-btn color="warning" class="font-weight-bold" text="确认修改"
+                            @click="changeAddress(), isActive.value = false">
+                        </v-btn>
+                    </v-card-actions>
                 </v-card>
             </template>
-            <template v-else-if="dialogContent==='cancel'" v-slot:default="{ isActive }">
+            <template v-else-if="dialogContent === 'cancel'" v-slot:default="{ isActive }">
                 <v-card title="取消订单">
                     <v-card-text>
                         <span>确定取消订单吗？</span>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn
-                        text="我再想想"
-                        @click="isActive.value = false"
-                        ></v-btn>
-                        <v-btn color="warning" class="font-weight-bold" text="确认取消" @click="userCancel(curOrder), isActive.value = false">
+                        <v-btn text="我再想想" @click="isActive.value = false"></v-btn>
+                        <v-btn color="warning" class="font-weight-bold" text="确认取消"
+                            @click="userCancel(curOrder), isActive.value = false">
                         </v-btn>
                     </v-card-actions>
                 </v-card>
             </template>
-            <template v-else-if="dialogContent==='receive'" v-slot:default="{isActive}">
+            <template v-else-if="dialogContent === 'receive'" v-slot:default="{ isActive }">
                 <v-card title="确认收货">
                     <v-card-text>
                         <span>您确定已经收到货物了吗？</span>
                         <br>
                         <small>确认收货后将无法退款</small>
                     </v-card-text>
-                    
+
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn
-                        text="我再想想"
-                        @click="isActive.value = false"
-                        ></v-btn>
-                        <v-btn color="warning" class="font-weight-bold" text="确认收货" @click="userReceive(curOrder), isActive.value = false">
+                        <v-btn text="我再想想" @click="isActive.value = false"></v-btn>
+                        <v-btn color="success" class="font-weight-bold" text="确认收货"
+                            @click="userReceive(curOrder), isActive.value = false">
                         </v-btn>
                     </v-card-actions>
                 </v-card>
@@ -160,24 +176,15 @@
         </v-dialog>
         <v-row>
             <v-col cols="12" class="d-flex justify-center">
-                <v-pagination
-                    v-model="currentPage"
-                    :length="totalPages"
-                    total-visible="5"
-                    
-                ></v-pagination> <!--@input="fetchOrders(currentPage)"-->
+                <v-pagination v-model="currentPage" :length="totalPages" total-visible="5"></v-pagination>
+                <!--@input="fetchOrders(currentPage)"-->
             </v-col>
         </v-row>
     </v-container>
     <v-container v-else class="d-flex justify-center align-center">
-        <v-progress-circular
-        
-        style="height: 80vh;"
-        indeterminate
-        color="primary"
-        ></v-progress-circular>
+        <v-progress-circular style="height: 80vh;" indeterminate color="primary"></v-progress-circular>
     </v-container>
-    
+
 
 </template>
 
@@ -185,19 +192,19 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { user } from '@/store/user';
 import snackbar from '@/api/snackbar';
-import { sellerGetOrders, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userGetOrders, userPayOrders, userRefund } from '@/api/order';
+import { getReview, sellerGetOrders, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userCreateReview, userGetOrders, userPayOrders, userRefund } from '@/api/order';
 import { getShopInfo } from '@/api/shop';
 import router from '@/router';
 import { profile } from '@/api/user';
 import AddressSelect from '@/components/addressSelect.vue';
 
 const currency = (value) => {
-  let val = parseFloat(value);
-  if (val > 9999999) {
-    return `￥${(val / 10000).toFixed(2)} 万`;
-  } else {
-    return `￥${parseFloat(value).toFixed(2)}`;
-  }
+    let val = parseFloat(value);
+    if (val > 9999999) {
+        return `￥${(val / 10000).toFixed(2)} 万`;
+    } else {
+        return `￥${parseFloat(value).toFixed(2)}`;
+    }
 };
 
 const loading = ref(true);
@@ -206,16 +213,15 @@ const isCustomer = ref(false);
 const isSeller = ref(false);
 
 const orders = ref([]);
-const totalPages = ref(0);
+const totalPages = ref(1);
 const currentPage = ref(1);
-watch (currentPage, (newVal, oldVal) => {
+watch(currentPage, (newVal, oldVal) => {
     orderLoading.value = true;
     fetchOrders(newVal);
 });
 onMounted(() => {
-    profile().then(()=>{
+    profile().then(() => {
         if (user.role === 'CUSTOMER') {
-            console.log("haha");
             isCustomer.value = true;
             isSeller.value = false;
             userGetOrders().then(res => {
@@ -225,7 +231,6 @@ onMounted(() => {
                 fetchShopInfo().then(() => {
                     loading.value = false;
                     orderLoading.value = false;
-                    // console.log("loading false");
                 });
             }).catch(err => {
                 console.log(err);
@@ -234,25 +239,19 @@ onMounted(() => {
             isCustomer.value = false;
             isSeller.value = true;
             sellerGetOrders().then(res => {
-                //console.log(res.data.orders);
                 orders.value = res.data.orders;
-                // fetchCustomerInfo().then(() => {
                 loading.value = false;
                 orderLoading.value = false;
-                // });
             }).catch(err => {
                 console.log(err);
             })
         }
     });
-    
-    
-})
-// function fetchOrders(page) {
-    // console.log(123);
-// }
 
-const fetchOrders = async(page) => {
+
+})
+
+const fetchOrders = async (page) => {
     console.log(page);
     if (isCustomer.value) {
         userGetOrders(currentPage.value).then(res => {
@@ -277,6 +276,54 @@ const fetchOrders = async(page) => {
 }
 
 const curOrder = ref();
+const showReview = ref(false);
+const createReview = ref(false);
+const reviewContent = ref('');
+const reviewRating = ref(0);
+const curItem = ref();
+const submitReview = async (isActive) => {
+    console.log("评价内容：" + reviewContent, "评分：" + reviewRating);
+    console.log(curItem.value);
+    if (reviewRating.value === 0) {
+        snackbar.error("请给商品评分");
+        return;
+    }
+    const response = await userCreateReview(curItem.value.id, curItem.value.product.id, reviewRating.value, reviewContent.value).response;
+    if (response.success) {
+        snackbar.success("评价成功");
+        
+        curOrder.value.items.forEach(item => {
+            if (item.id === curItem.value.id) {
+                item.has_reviewed = true;
+            }
+        });
+        isActive.value=false;
+    } else {
+        console.log(response);
+        snackbar.error("评价失败：" + response.message);
+    }
+}
+const review = (order, item) => {
+    curOrder.value = order;
+    curItem.value = item;
+    createReview.value = !item.has_reviewed;
+    console.log(createReview.value);
+    showReview.value = true;
+}
+
+const seeReview = async (order, item) => {
+    // `/shop/order_item/<int:order_item_id>/review/`
+    const response = await getReview(item.id);
+    if (response.success) {
+        snackbar.success("评价内容：" + response.data.comment + " 评分：" + response.data.rating);
+    } else {
+        snackbar.error("获取评价失败：" + response.message);
+    }
+    //snackbar.info("评价内容：" + item.review.content + " 评分：" + item.review.rating);
+}
+
+
+
 const showDialog = ref(false);
 const dialogContent = ref(''); // pay, change address, receive, cancel!   (refund?)
 
@@ -289,11 +336,11 @@ const orderDialog = (content, order) => {
                 console.log(user);
                 console.log("订单价格：" + order.total_price, "用户余额：" + user.money);
                 if (parseInt(user.money) < parseInt(order.total_price)) {
-                    snackbar.error("余额不足(当前余额 "+ user.money +"元), 请充值");
+                    snackbar.error("余额不足(当前余额 " + user.money + "元), 请充值");
                     return;
                 } else {
                     showDialog.value = true;
-                    
+
                 }
             });
             break;
@@ -304,7 +351,7 @@ const orderDialog = (content, order) => {
             break;
         case 'cancel':
             showDialog.value = true;
-            
+
             break;
         case 'receive':
             showDialog.value = true;
@@ -317,7 +364,7 @@ const orderDialog = (content, order) => {
     //console.log(order);
 }
 
-const orderStatusColor = (status)=> {
+const orderStatusColor = (status) => {
     switch (status) {
         case 'Pending Payment':
             return 'warning';
@@ -337,17 +384,17 @@ const orderStatusColor = (status)=> {
             return 'grey';
     }
 
-        // if (isCustomer.value) {
-        //     // 用户
-            
-        // } else {
-        //     // 商家
-        //     return 'success';
-        // }
+    // if (isCustomer.value) {
+    //     // 用户
+
+    // } else {
+    //     // 商家
+    //     return 'success';
+    // }
 };
 
 const showRefundButton = ((orderStatus, isCancelled) => {
-    return orderStatus === 'Payment Received' && isCancelled === false ; // || status === 'Completed'
+    return orderStatus === 'Payment Received' && isCancelled === false; // || status === 'Completed'
 });
 
 const showChangeAddressButton = ((status) => {
@@ -357,7 +404,7 @@ const showChangeAddressButton = ((status) => {
 const refund = async (order, item) => {
     const order_id = order.order_id;
     console.log(order_id, item);
-    
+
     const response = await userRefund(order_id, [item.id]);
     if (response.success) {
         snackbar.success("退款申请成功");
@@ -407,10 +454,10 @@ const userReceive = async (order) => {
 
 const selectedAddress = ref({});
 const updateSelectedAddress = (newAddress) => {
-  selectedAddress.value = newAddress;
+    selectedAddress.value = newAddress;
 };
 
-const changeAddress =  ( async ()=>{
+const changeAddress = (async () => {
     //console.log("为订单" + curOrder.value.order_id + "修改地址为" + selectedAddress.value.id);
     const response = await userChangeAddress(curOrder.value.order_id, selectedAddress.value.id);
     if (response.success) {
@@ -453,31 +500,6 @@ const formatStatus = (status) => {
     }
 }
 
-// for Sellers
-
-// const fetchCustomerInfo = async () => {
-//     for (let i = 0; i < orders.value.length; i++) {
-//         await customerInfo(orders.value[i].user);
-//     }
-// }
-
-// const customerInfoCache = ref({});
-// const customerInfo = async (userId) => {
-//   if (!customerInfoCache.value[userId]) {
-//     const response = await  (userId);
-//     customerInfoCache.value[userId] = response;
-//   }
-//   return customerInfoCache[userId];
-// };
-
-// const CustomerInfo = (userId) => {
-//     // console.log(shop_id);
-//     console.log(customerInfoCache.value[userId]);
-//     return customerInfoCache.value[userId];
-// }
-
-// for customers
-
 const fetchShopInfo = async () => {
     for (let i = 0; i < orders.value.length; i++) {
         await shopInfo(orders.value[i].shop_id);
@@ -486,22 +508,20 @@ const fetchShopInfo = async () => {
 
 const shopInfoCache = ref({});
 const shopInfo = async (shopId) => {
-  if (!shopInfoCache.value[shopId]) {
-    const response = await getShopInfo(shopId);
-    shopInfoCache.value[shopId] = response;
-  }
-  return shopInfoCache[shopId];
+    if (!shopInfoCache.value[shopId]) {
+        const response = await getShopInfo(shopId);
+        shopInfoCache.value[shopId] = response;
+    }
+    return shopInfoCache[shopId];
 };
 
 const ShopInfo = (shop_id) => {
     // console.log(shop_id);
-    console.log(shopInfoCache.value[shop_id]);
+    //console.log(shopInfoCache.value[shop_id]);
     return shopInfoCache.value[shop_id];
 }
 
 
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -209,7 +209,7 @@ const queryRemove = (item) => {
 }
 
 const disabledItem = (item) => {
-  console.log(item.status);
+  // console.log(item.product_status);
   return item.product_stock_quantity < item.quantity || item.product_status === 'Unavailable';
 }
 

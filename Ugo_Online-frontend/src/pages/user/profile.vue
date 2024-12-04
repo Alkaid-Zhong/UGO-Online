@@ -75,6 +75,7 @@
 			:addressPerPage="3"
 			:paying="false"
 			:preSelect="false"
+			:mandatory="false"
 		></AddressSelect>
 		<!-- <v-card v-if="user.role==='CUSTOMER'" class="mt-4">
 			<v-card-title class="text-h5 font-weight-bold">

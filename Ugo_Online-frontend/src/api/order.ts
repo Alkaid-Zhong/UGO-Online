@@ -37,6 +37,18 @@ export const userRefund = async (order_id: Number, item_ids: Array<Number>) => {
     });
 }
 
+export const userCreateReview = async (order: Number, product: Number, rating: Number, comment: string) => {
+    return await server.post({
+        url: "/shop/review/create/",
+        data: { order, product, rating, comment }
+    });
+}
+
+export const getReview = async (order_item_id: Number) => {
+    // `/shop/order_item/<int:order_item_id>/review/`
+    return await server.get({ url: "/shop/order_item/" + order_item_id + "/review/" });
+}
+
 export const sellerGetOrders = async (page = 1, status?: string) => {
     return await server.get({ url: "/order/seller_orders/", showSnackbar: false, params: { page, status } });
 }

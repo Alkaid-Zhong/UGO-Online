@@ -6,8 +6,8 @@
 
     </template>
     <template #append>
-        <v-icon @click="snackbar.warning('敬请期待')"> mdi-cart</v-icon>
-        <v-icon @click="snackbar.warning('敬请期待')"> mdi-plus</v-icon>
+        <v-icon @click="showDialog('修改')"> mdi-pencil</v-icon>
+        <v-icon @click="showDialog('添加')"> mdi-plus</v-icon>
     </template>
 
 <v-divider></v-divider>
@@ -21,26 +21,39 @@
             class="mx-auto"
             width="100%"
         ></v-skeleton-loader>
-        <v-item-group v-else v-model="selectedAddress"  mandatory class="d-flex" style="flex-grow: 1;">
+        <v-item-group v-else v-model="selectedAddress"  :mandatory="mandatory" class="d-flex" style="flex-grow: 1;">
             <v-container>
                 <v-row :style="{flexGrow:1, minHeight:minheight+'px' }" id="address-card" >
                     <v-col cols="4" style="flex-grow: 1;" v-for="address in paginatedAddresses" :key="address.id" > 
                         <v-item v-slot="{ isSelected, toggle }" :value="address">
+                            
                             <v-card :class="[ { ['bg-primary']: isSelected }]" @click="toggle" height="100%">
                                 <v-card-text>
-                                <div>
-                                    <div><small>{{ address.recipient_name }} {{ address.phone }}</small></div>
-                                    <div><small>{{ address.province }} {{ address.city }}</small></div>
-                                    <div class="font-weight-bold text-lg">{{ address.address }}</div>
-                                </div>
+                                    <v-row>
+                                    <v-col cols="10">
+                                    <div>
+                                        <div><small>{{ address.recipient_name }} {{ address.phone }} 
+                                                    
+                                            </small>
+                                            
+                                        </div>
+                                        <div><small>{{ address.province }} {{ address.city }}</small></div>
+                                        <div class="font-weight-bold text-lg">{{ address.address }}</div>
+                                    </div>
+                                    </v-col>
+                                    <v-col cols="2">
+                                        <v-badge color="green" content="默认" v-if="address.is_default">
+                                            
+                                        </v-badge>
+                                    </v-col>
+                                </v-row>
                                 </v-card-text>
                             </v-card>
+                            
                         </v-item>
                     </v-col>
                     <v-col cols="4" v-if="isLastPage" :key="'empty'">
-                        <v-dialog width="40%">
-                        <template v-slot:activator="{props:activatorProps}">
-                            <v-card v-bind="activatorProps" height="100%" class="d-flex align-center justify-center">
+                        <v-card @click="showDialog('添加')" height="100%" class="d-flex align-center justify-center">
                             <v-card-text>
                                 <div class="text-center">
                                 
@@ -49,66 +62,8 @@
                                 
                                 </div>
                             </v-card-text>
-                            </v-card>
-            
-                        </template>
+                        </v-card>
 
-                        <template v-slot:default="{ isActive }">
-                            <v-card title="新建地址">
-                            <v-card-actions>
-                                <v-form style="width: 100%;">
-                                <v-text-field width="100%"
-                                    v-model="newAddress.recipient_name"
-                                    label="收件人姓名"
-                                    prepend-inner-icon="mdi-account"
-                                    required
-                                ></v-text-field>
-                                <v-text-field
-                                    v-model="newAddress.phone"
-                                    label="电话"
-                                    prepend-inner-icon="mdi-phone"
-                                    required
-                                ></v-text-field>
-                                <v-text-field
-                                    v-model="newAddress.province"
-                                    label="省份"
-                                    prepend-inner-icon="mdi-map-marker-minus-outline"
-                                    required
-                                ></v-text-field>
-                                <v-text-field
-                                    v-model="newAddress.city"
-
-                                    prepend-inner-icon="mdi-map-marker"
-                                    label="城市"
-                                    required
-                                ></v-text-field>
-                                <v-text-field
-                                    v-model="newAddress.address"
-                                    label="具体地址"
-                                    prepend-inner-icon="mdi-home"
-                                    required
-                                ></v-text-field>
-                                <v-radio-group v-model="newAddress.is_default" row>
-                                    <v-radio label="设为默认地址" :value="true"></v-radio>
-                                    <v-radio label="不设为默认地址" :value="false"></v-radio>
-                                </v-radio-group>
-                                </v-form>
-                            </v-card-actions>
-
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-
-                                <v-btn
-                                text="取消"
-                                @click="isActive.value = false"
-                                ></v-btn>
-                                <v-btn color="primary" text="添加" @click="createAddress(isActive)">
-
-                                </v-btn>
-                            </v-card-actions>
-                            </v-card>
-                        </template>
-                        </v-dialog>
                     </v-col>
 
                 <v-spacer></v-spacer>
@@ -136,16 +91,88 @@
 </v-card-actions>
 </v-card>
 
+<v-dialog v-model="showAddAddress" width="40%">
+    <!-- <template v-slot:activator="{props:activatorProps}">
+        <v-card v-bind="activatorProps" height="100%" class="d-flex align-center justify-center">
+        <v-card-text>
+            <div class="text-center">
+            
+            <v-icon>mdi-plus</v-icon>
+            <div>添加新地址</div>
+            
+            </div>
+        </v-card-text>
+        </v-card>
+
+    </template> -->
+
+    <template v-slot:default="{ isActive }">
+        <v-card title="新建地址">
+        <v-card-actions>
+            <v-form style="width: 100%;">
+            <v-text-field width="100%"
+                v-model="newAddress.recipient_name"
+                label="收件人姓名"
+                prepend-inner-icon="mdi-account"
+                required
+            ></v-text-field>
+            <v-text-field
+                v-model="newAddress.phone"
+                label="电话"
+                prepend-inner-icon="mdi-phone"
+                required
+            ></v-text-field>
+            <v-text-field
+                v-model="newAddress.province"
+                label="省份"
+                prepend-inner-icon="mdi-map-marker-minus-outline"
+                required
+            ></v-text-field>
+            <v-text-field
+                v-model="newAddress.city"
+
+                prepend-inner-icon="mdi-map-marker"
+                label="城市"
+                required
+            ></v-text-field>
+            <v-text-field
+                v-model="newAddress.address"
+                label="具体地址"
+                prepend-inner-icon="mdi-home"
+                required
+            ></v-text-field>
+            <v-radio-group v-model="newAddress.is_default" row>
+                <v-radio label="设为默认地址" :value="true"></v-radio>
+                <v-radio label="不设为默认地址" :value="false"></v-radio>
+            </v-radio-group>
+            </v-form>
+        </v-card-actions>
+
+        <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn
+            text="取消"
+            @click="isActive.value = false"
+            ></v-btn>
+            <v-btn text="删除" color="error" @click="deleteAddr()"></v-btn>
+            <v-btn color="primary" :text="showFor" @click="submitAddress(isActive)">
+
+            </v-btn>
+        </v-card-actions>
+        </v-card>
+    </template>
+    </v-dialog>
 </template>
 
 <script setup>
-import { getAddresses, addAddress } from '@/api/user';
+import { getAddresses, addAddress, updateAddress, deleteAddress } from '@/api/user';
 import { ref, onMounted, computed, watch } from 'vue';
 import snackbar from '@/api/snackbar';
 
 
 
-const props = defineProps(['paying', 'addressPerPage','title','cardElevator','preSelect']);
+const props = defineProps(['paying', 'addressPerPage','title','cardElevator','preSelect', 'mandatory']);
 const emit = defineEmits(['updateSelectedAddress']);
 
 onMounted(() => {
@@ -168,10 +195,11 @@ watch(() => props.addressPerPage, (newVal) => {
 });
 
 
-
-
+const showFor = ref(''); // 添加 or 修改
+const showAddAddress = ref(false);
 // const addressPerPage = 3;
 const paying = ref(props.paying);
+const mandatory = props.mandatory !== undefined ? ref(props.mandatory) : ref(true);
 const title = ref(props.title);
 const addressPerPage = ref(props.addressPerPage);
 const cardElevator = props.cardElevator !== undefined ? ref(props.cardElevator) : 1;
@@ -190,23 +218,95 @@ const newAddress = ref({
 const currentPage = ref(0);
 
 watch(() => selectedAddress.value, (newVal) => {
-    console.log("selected address changed");
-    console.log(newVal);
     emit('updateSelectedAddress', newVal);
 });
 
+const submitAddress = (isActive) => {
+    if(showFor.value === '添加') {
+        createAddress(isActive);
+    } else {
+        // showFor.value = '修改';
+        editAddress(isActive);
+    }
+};
+
+const deleteAddr = async () => {
+    const response = await deleteAddress(selectedAddress.value.id);
+    if (response.success) {
+        snackbar.success("删除成功");
+        fetchAddresses().then(() => {
+            console.log(mandatory.value);
+            selectedAddress.value = mandatory.value ? addresses.value[0] : null;
+        });
+    } else {
+        snackbar.error("删除失败");
+    }
+};
+
+const curAddrId = ref(0);
+const showDialog = (use) => {
+    // console.log("editAddr");
+    // console.log(selectedAddress.value);
+    showFor.value = use;
+    if (use ==='修改') {
+        curAddrId.value = selectedAddress.value.id;
+        if (curAddrId.value === undefined) {
+            snackbar.error("请先选择一个地址");
+            return;
+        }
+    }
+    newAddress.value = {
+        recipient_name: selectedAddress.value.recipient_name,
+        phone: selectedAddress.value.phone,
+        province: selectedAddress.value.province,
+        city: selectedAddress.value.city,
+        address: selectedAddress.value.address,
+        is_default: selectedAddress.value.is_default
+    };
+    showAddAddress.value = true;
+};
+
+const editAddress = async (isActive) => {
+    // console.log("editAddr");
+    // console.log(newAddress.value);
+    const response = await updateAddress(curAddrId.value, newAddress.value);
+    if (response.success) {
+        snackbar.success("修改成功");
+        newAddress.value = {
+            recipient_name: '',
+            phone: '',
+            province: '',
+            city: '',
+            address: '',
+            is_default: false
+        };
+        isActive.value = false;
+        fetchAddresses().then(() => {
+            selectedAddress.value = response.data;
+        });
+    } else {
+        snackbar.error("修改失败");
+    }
+};
+
 const createAddress = async (isActive) => {
-    console.log("newAddr");
-    console.log(newAddress.value);
+    // console.log("newAddr");
+    // console.log(newAddress.value);
     const response = await addAddress(newAddress.value);
     if (response.success) {
         snackbar.success("添加成功");
+        newAddress.value = {
+            recipient_name: '',
+            phone: '',
+            province: '',
+            city: '',
+            address: '',
+            is_default: false
+        };
         isActive.value = false;
         fetchAddresses().then(() => {
             if (newAddress.value.is_default) {
                 currentPage.value = 0;
-                //console.log("新增默认地址");
-                //console.log(paginatedAddresses.value[0]===selectedAddress.value);
             } else {
                 selectedAddress.value = response.data;
             }
@@ -237,7 +337,7 @@ const nextPage = () => {
   const firstAddressCard = document.getElementById('address-card');
   if (firstAddressCard) {
     minheight.value = firstAddressCard.offsetHeight;
-    console.log("success", minheight.value);
+    // console.log("success", minheight.value);
   }
 //   const tmp = currentPage.value*addressPerPage
 //   console.log(addresses.value.slice());

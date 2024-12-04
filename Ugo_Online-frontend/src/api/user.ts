@@ -97,7 +97,7 @@ export const getDefaultAddress = async () => {
 }
 
 export const deleteAddress = async (address_id: number) => {
-	const response = await server._delete({ url: "/user/address/" + address_id + "delete/" });
+	const response = await server._delete({ url: "/user/address/" + address_id + "/delete/" });
 	if (response.success) {
 		snackbar.success("地址删除成功");
 	} else {
@@ -106,16 +106,12 @@ export const deleteAddress = async (address_id: number) => {
 	return response;
 }
 
-export const updateAddress = async (address_id: number, recipient_name: string, province: string, city: string, address: string, phone: string, is_default: boolean) => {
+export const updateAddress = async (address_id: number, data: any) => {
 	const response = await server.put({
 		url: "/user/address/" + address_id + "/update/",
 		data: {
-			recipient_name,
-			province,
-			city,
-			address,
-			phone,
-			is_default
+			address_id: address_id,
+			...data
 		}
 	});
 
