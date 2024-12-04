@@ -42,14 +42,14 @@
 
                                         <b>x {{ item.quantity }}</b><br><br>
                                         <!-- {{order.status}} {{  item.is_cancelled }} -->
-                                        <v-btn text="退货"
+                                        <v-btn text="退货" color="warning"
                                             v-if="isCustomer && showRefundButton(order.status, item.is_cancelled)"
                                             @click="refund(order, item)"></v-btn>
 
                                         <v-btn text="评价" color="primary"
                                             v-if="isCustomer && order.status === 'Completed' && !item.has_reviewed"
                                             @click="review(order, item)"></v-btn>
-                                        <v-btn text="查看评价" 
+                                        <v-btn text="查看评价" color="info"
                                             v-if="isCustomer && order.status ==='Completed' && item.has_reviewed"
                                             @click="seeReview(order,item)"></v-btn>
                                         <!-- v-if="showRefuncButton(order)"  bug？-->
@@ -213,7 +213,7 @@ const isCustomer = ref(false);
 const isSeller = ref(false);
 
 const orders = ref([]);
-const totalPages = ref(0);
+const totalPages = ref(1);
 const currentPage = ref(1);
 watch(currentPage, (newVal, oldVal) => {
     orderLoading.value = true;
@@ -250,9 +250,6 @@ onMounted(() => {
 
 
 })
-// function fetchOrders(page) {
-// console.log(123);
-// }
 
 const fetchOrders = async (page) => {
     console.log(page);
