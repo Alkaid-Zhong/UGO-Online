@@ -114,12 +114,14 @@
 						@click="onclickAdd2Card"
 						variant="text"
 						prepend-icon="mdi-cart"
+            color="primary"
 					>加入购物车</v-btn>
 					<v-btn
 						v-if="user.role === 'SELLER' && user.shops.includes(Number(shopId))"
 						variant="text"
 						prepend-icon="mdi-pencil"
 						@click="showUpdateProduct = true"
+            color="primary"
 					>编辑商品</v-btn>
 					<v-btn
 						v-if="user.role === 'SELLER' && removeProductCallback !== null"
@@ -132,6 +134,7 @@
 						text="前往商店页"
 						variant="text"
 						@click="onclickGotoShopPage"
+            color="orange"
 						prepend-icon="mdi-store"
 					></v-btn>
 				</v-toolbar-items>
