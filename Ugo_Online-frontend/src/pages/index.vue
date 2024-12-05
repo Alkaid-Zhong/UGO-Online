@@ -1,7 +1,7 @@
 <template>
 	<v-container>
 		<v-sheet
-			class="mb-4 px-4 pt-4 rounded-lg"
+			class="mb-4 px-4 pt-4 rounded-lg pb-1"
 			elevation="2"
 		>
 			<v-text-field class="mx-2" v-model="searchName" label="搜索商品" variant="solo" clearable></v-text-field>
@@ -35,7 +35,7 @@
 				variant="text"
 			>上架时间</v-btn>
 			<v-chip-group
-				class="mb-4"
+				class="mb-2 mt-1"
 				v-model="chosenCategory"
 				v-if="categoryList"
 				column

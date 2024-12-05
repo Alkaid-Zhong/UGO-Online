@@ -31,7 +31,7 @@
 				</v-card-actions>
 			</v-card>
 			<v-sheet
-				class="mb-4 px-4 pt-4 rounded-lg pb-4"
+				class="mb-4 px-4 pt-4 rounded-lg pb-1"
 				elevation="2"
 			>
 				<v-text-field class="mx-2" v-model="searchName" label="搜索商品" variant="solo" clearable></v-text-field>
@@ -64,20 +64,20 @@
 					@click="onclickOrderBy('created_at')"
 					variant="text"
 				>上架时间</v-btn>
+				<v-chip-group
+					class="my-2"
+					v-model="chosenCategory"
+					v-if="categoryList"
+					column
+				>
+					<v-chip
+						v-for="category in shopCategory"
+						:key="category.id"
+						filter
+						color="primary"
+					>{{ category.name }}</v-chip>
+				</v-chip-group>
 			</v-sheet>
-			<v-chip-group
-				class="mb-4"
-				v-model="chosenCategory"
-				v-if="categoryList"
-				column
-			>
-				<v-chip
-					v-for="category in shopCategory"
-					:key="category.id"
-					filter
-					color="primary"
-				>{{ category.name }}</v-chip>
-			</v-chip-group>
 			<v-row v-if="products">
 				<v-col cols="12" md="4" v-for="product in products.products">
 					<product-card 
