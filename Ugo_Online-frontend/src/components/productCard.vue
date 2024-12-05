@@ -141,7 +141,7 @@
 			</v-toolbar>
 			<v-card-item>
 				<v-row>
-					<v-col cols="12" md="6">
+					<v-col>
 						<v-img :src="product.image" aspect-ratio="1" />
 						<v-divider class="my-4"></v-divider>
 						<p class="text-h5 font-weight-bold mt-2">{{ product.name }}
@@ -166,7 +166,7 @@
 						<p class="mt-2" style="font-size: 14px; color: #aaa">{{ product.description }}</p>
 					</v-col>
 					<v-divider vertical></v-divider>
-					<v-col cols="12" md="6">
+					<v-col cols="12" md="8">
             <v-sheet
               v-for="review in reviews"
               :key="review.id"
@@ -178,6 +178,10 @@
                 <span class="ml-2 text-caption font-weight-regular">发布于{{ new Date(review.create_date).toLocaleString() }}</span>
               </p>
               <p class="ml-2 mt-2" style="font-size: 14px; color: #aaa">{{ review.comment }}</p>
+							<p v-if="review.merchant_reply" class="ml-2 mt-2 text-caption" style="font-size: 14px; color: #aaa">
+								商家回复：{{ review.merchant_reply }}
+								<span class="ml-2 text-caption font-weight-regular">发布于{{ new Date(review.reply_date).toLocaleString() }}</span>
+							</p>
               <v-rating
                 class="mt-2"
                 readonly

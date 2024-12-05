@@ -12,6 +12,7 @@
 			<v-col cols="12" md="4" class="text-center"  v-for="shop in shops.shops">
 				<v-card
 					:to="`/shop/${shop.id}`"
+					style="height: 100%;"
 				>
 					<v-card-text>
 						<p class="headline mt-2 font-weight-bold text-h5">{{ shop.name }}</p>
