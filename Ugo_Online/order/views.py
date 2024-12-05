@@ -322,7 +322,9 @@ class UpdateOrderAddressView(APIView):
             order.save()
 
             sellers = order.shop.sellers.all()
+            print(sellers)
             for seller in sellers:
+                print(seller)
                 new_message(seller, f'[{order.shop}] 订单 {order.id} 的地址已修改为 "{address}"！')
 
             return api_response(True, message='订单地址修改成功')
