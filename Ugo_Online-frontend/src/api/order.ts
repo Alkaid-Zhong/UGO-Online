@@ -57,3 +57,7 @@ export const sellerGetOrders = async (shop_id: number, page = 1, status?: string
 export const sellerShip = async (order_id: Number) => {
     return await server.post({ url: "/order/" + order_id + "/ship/" });
 }
+
+export const sellerReplyComment = async (review_id: Number, merchant_reply: string) => {
+    return await server.put({ url: "/shop/review/" + review_id + "/reply/", data: { merchant_reply } });
+}

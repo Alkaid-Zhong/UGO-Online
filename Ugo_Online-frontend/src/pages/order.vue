@@ -3,6 +3,7 @@
         <v-row class="mt-3 mb-1">
             <v-col cols="4" v-if="isSeller">
                 <v-select
+                    :disabled="orderLoading"
                     v-model="selectedShop"
                     :items="sellerShops"
                     item-title="name"
@@ -17,6 +18,7 @@
                 <v-chip-group
                     v-model="selectedStatus"
                     column
+                    :disabled="orderLoading"
                     filter
                     :selected-class="'text-'+orderStatusColor(selectedStatus)"
                     class="mx-1"
@@ -42,6 +44,11 @@
                         <v-card-title v-else>
 
                             {{ order.address.recipient_name }} 的订单
+                            <v-tooltip text="此处为订单的收货人姓名">
+                                <template v-slot:activator="{ props }">
+                                    <v-icon size="x-small" v-bind="props">mdi-help-circle-outline</v-icon>
+                                </template>
+                            </v-tooltip>
                             <v-spacer></v-spacer>
                             <small> 订单ID: {{ order.order_id }}</small>
                         </v-card-title>
@@ -81,6 +88,10 @@
                                         <v-btn text="查看评价" color="info"
                                             v-if="isCustomer && order.status ==='Completed' && item.has_reviewed"
                                             @click="seeReview(order,item)"></v-btn>
+                                        <v-btn text="查看/回复评价" color="warning" 
+                                            v-if="isSeller && order.status === 'Completed' && item.has_reviewed"
+                                            @click="reply(order,item)">
+                                        </v-btn>
                                         <!-- v-if="showRefuncButton(order)"  bug？-->
 
                                     </v-col>
@@ -90,7 +101,33 @@
 
                             <!-- {{ item }} -->
                         </v-list-item>
-                        <v-card-actions>
+                        <v-divider></v-divider>
+                        <v-card-text>
+                            <v-row>
+                                <v-col cols="4">
+                                    <div class="text-h6">订单创建时间：</div>
+                                    <div class="ml-2 mt-1">
+                                        <div><strong>{{formatDate(order.order_date)}}</strong></div>
+                                    </div>
+                                </v-col>
+                                <v-col cols="4">
+                                    <div class="text-h6">地址信息：</div>
+                                    <div class="ml-2 mt-1">
+                                        <div><strong>收件人姓名:</strong> {{ order.address.recipient_name }}</div>
+                                        <div><strong>电话:</strong> {{ order.address.phone }}</div>
+                                        <div><strong>省份:</strong> {{ order.address.province }}<strong> 城市:</strong>{{ order.address.city }}</div>
+                                        <div><strong>具体地址:</strong> {{ order.address.address }}</div>
+                                    </div>
+                                </v-col>
+                                <v-col cols="4">
+                                    <div class="text-h6">订单总价格：</div>
+                                    <div class="ml-2 mt-1">
+                                        <div style="color:orangered;" class="text-h5"><strong>￥{{ order.total_price }}</strong></div>
+                                    </div>
+                                </v-col>
+                            </v-row>
+                        </v-card-text>
+                        <v-card-actions v-if="isCustomer && (order.status === 'Pending Payment' || showChangeAddressButton(order.status) || order.status === 'Shipped') || isSeller && order.status === 'Payment Received'">
                             <v-spacer></v-spacer>
                             <v-btn color="red" v-if="isCustomer && order.status === 'Pending Payment'"
                                 @click="orderDialog('cancel', order)">取消订单</v-btn>
@@ -106,6 +143,7 @@
                                 @click="ship(order)">发货</v-btn>
                             <!-- <v-btn color="primary" @click="router.push(`/order/${order.order_id}/`)">查看详情</v-btn> -->
                         </v-card-actions>
+                        <!-- <br v-else> -->
                     </v-card>
 
                 </v-list>
@@ -126,29 +164,35 @@
             </v-col>
         </v-row> -->
 
-        <v-dialog v-model="showReview" width="50%">
-            <template v-if="createReview" v-slot:default="{isActive}">
+        <v-dialog v-model="showReview" :width="$vuetify.display.smAndDown?'90%':'50%'">
+            <template v-slot:default="{isActive}">
                 <v-card>
-                    <v-card-title class="font-weight-bold">评价</v-card-title>
-                    <v-card-text class="d-flex flex-column ">
-                        <div class="d-flex align-center">
-                            综合评分:<v-rating v-model="reviewRating" label="评分" color="amber"></v-rating>
+                    <v-card-title class="font-weight-bold">{{createReview?"":"查看"}}评价</v-card-title>
+                    <v-card-text class="d-flex flex-column">
+                        <div >
+                            {{replying ? "买家":(createReview?'综合':'您的')}}评分:<br> 
+                            <v-rating v-model="reviewRating" label="评分" color="amber" :disabled="!createReview"></v-rating>
                         </div>
                         <br>
                         <div>
-                            <v-textarea v-model="reviewContent" label="评价内容" rows="3"></v-textarea>
+                            <v-textarea prepend-inner-icon="mdi-comment" v-model="reviewContent" label="评价内容" rows="3" :readonly="!createReview"></v-textarea>
+                        </div>
+                        <div v-if="replying">
+                            <v-textarea v-model="replyContent" label="商家回复" rows="3" :readonly="alreadyReply"></v-textarea>
                         </div>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn text @click="isActive.value = false">取消</v-btn>
-                        <v-btn color="primary" class="font-weight-bold" text="确认评价"
+                        <v-btn text @click="isActive.value = false">{{(createReview || replying && !alreadyReply)?'取消':'关闭'}}</v-btn>
+                        <v-btn color="primary" v-if="createReview" class="font-weight-bold" text="确认评价"
                             @click="submitReview(isActive)"></v-btn>
+                        <v-btn color="primay" v-if="replying && !alreadyReply" class="font-weight-bold" text="回复评价"
+                            @click="submitReply(isActive)"></v-btn>
                     </v-card-actions>
                 </v-card>
             </template>
         </v-dialog>
-        <v-dialog width="50%" v-model="showDialog">
+        <v-dialog :width="$vuetify.display.smAndDown?'90%':'50%'" v-model="showDialog">
 
             <template v-if="dialogContent === 'pay'" v-slot:default="{ isActive }">
                 <v-card title="支付确认">
@@ -232,7 +276,7 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { user } from '@/store/user';
 import snackbar from '@/api/snackbar';
-import { getReview, sellerGetOrders, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userCreateReview, userGetOrders, userPayOrders, userRefund } from '@/api/order';
+import { getReview, sellerGetOrders, sellerReplyComment, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userCreateReview, userGetOrders, userPayOrders, userRefund } from '@/api/order';
 import { getShopInfo } from '@/api/shop';
 import router from '@/router';
 import { profile } from '@/api/user';
@@ -262,22 +306,34 @@ const orderStatuses = ['Pending Payment', 'Payment Received', 'Shipped', 'Comple
 const selectedStatus = ref('');
 
 watch(currentPage, (newVal, oldVal) => {
+    //console.log();
     orderLoading.value = true;
-    fetchOrders(newVal);
+    fetchOrders(newVal, selectedStatus.value);
 });
 watch(selectedShop, (newVal, oldVal) => {
     orderLoading.value = true;
-    sellerGetOrders(newVal, currentPage.value).then(res => {
-        orders.value = res.data.orders;
-        orderLoading.value = false;
-        totalPages.value = res.data.total_page;
-    }).catch(err => {
-        console.log(err);
-    })
+    if (currentPage.value !== 1) {
+        currentPage.value = 1;
+    } else {
+        fetchOrders(currentPage.value, selectedStatus.value);
+        // sellerGetOrders(newVal, currentPage.value).then(res => {
+        //     orders.value = res.data.orders;
+        //     orderLoading.value = false;
+        //     totalPages.value = res.data.total_page;
+        // }).catch(err => {
+        //     console.log(err);
+        // })
+    }
 });
 watch(selectedStatus, (newVal, oldVal) => {
     orderLoading.value = true;
-    fetchOrders(currentPage.value,selectedStatus.value);
+    console.log("筛选条件：" + newVal);
+    if (currentPage.value !== 1 ){
+        currentPage.value = 1;
+    }else {
+        fetchOrders(currentPage.value, selectedStatus.value);
+    } 
+    //fetchOrders(currentPage.value,selectedStatus.value);
 });
 
 onMounted(() => {
@@ -331,7 +387,7 @@ onMounted(() => {
 })
 
 const fetchOrders = async (page, status) => {
-    console.log(page);
+    // console.log(page);
     if (isCustomer.value) {
         userGetOrders(currentPage.value, status).then(res => {
             orders.value = res.data.orders;
@@ -365,8 +421,11 @@ Cancelled, Shipped
 const curOrder = ref();
 const showReview = ref(false);
 const createReview = ref(false);
+const replying = ref(false);
 const reviewContent = ref('');
+const review_id = ref();
 const reviewRating = ref(0);
+const replyContent = ref('');
 const curItem = ref();
 const submitReview = async (isActive) => {
     console.log("评价内容：" + reviewContent, "评分：" + reviewRating);
@@ -392,6 +451,7 @@ const submitReview = async (isActive) => {
     }
 }
 const review = (order, item) => {
+    replying.value = false;
     curOrder.value = order;
     curItem.value = item;
     createReview.value = !item.has_reviewed;
@@ -402,12 +462,58 @@ const review = (order, item) => {
 const seeReview = async (order, item) => {
     // `/shop/order_item/<int:order_item_id>/review/`
     const response = await getReview(item.id);
+    replying.value=false;
     if (response.success) {
-        snackbar.success("评价内容：" + response.data.comment + " 评分：" + response.data.rating);
+        createReview.value = false;
+        reviewContent.value = response.data.comment;
+        reviewRating.value = response.data.rating;
+        showReview.value = true;
+        //snackbar.success("评价内容：" + response.data.comment + " 评分：" + response.data.rating);
     } else {
         snackbar.error("获取评价失败：" + response.message);
     }
     //snackbar.info("评价内容：" + item.review.content + " 评分：" + item.review.rating);
+}
+const alreadyReply = ref(false);
+const reply = async(order, item) => {
+    curOrder.value = order;
+    curItem.value = item;
+    const response = await getReview(item.id);
+    if (response.success) {
+        console.log(response.data);
+        review_id.value = response.data.id;
+        reviewContent.value = response.data.comment;
+        reviewRating.value = response.data.rating;
+        createReview.value = false;
+        if (response.data.merchant_reply !== null) {
+            replyContent.value = response.data.merchant_reply;
+            alreadyReply.value = true;
+        } else {
+            replyContent.value = '';
+            alreadyReply.value = false;
+        }
+        // reviewContent.value = item.review.content;
+        // reviewRating.value = item.review.rating;
+        replying.value = true;
+        showReview.value = true;
+    } else {
+        snackbar.error("获取评价失败：" + response.message);
+    }
+}
+
+const submitReply = async (isActive) => {
+    //console.log("回复内容：" + reviewContent, "评分：" + reviewRating);
+    console.log(curItem.value);
+    const response = await sellerReply(review_id.value, replyContent.value);
+    console.log(response);
+    if (response.success) {
+        snackbar.success("回复成功");
+        replyContent.value = '';
+        isActive.value = false;
+    } else {
+        console.log(response);
+        snackbar.error("回复失败：" + response.message);
+    }
 }
 
 
@@ -565,6 +671,17 @@ const ship = async (order) => {
     }
 }
 
+
+const sellerReply = async (review_id, reply) => {
+    const response = await sellerReplyComment(review_id, reply);
+    if (response.success) {
+        snackbar.success("回复成功");
+    } else {
+        snackbar.error("回复失败：" + response.message);
+    }
+    return response;
+}
+
 const formatStatus = (status) => {
     switch (status) {
         case 'Pending Payment':
@@ -626,6 +743,17 @@ const emptyOrderCaption = computed(() => {
         return "该商铺暂无符合要求的订单 (筛选条件： " + formatStatus(selectedStatus.value) + ")";
     }
 });
+
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hour = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}年${month}月${day}日 ${hour}:${min}:${seconds}`;
+}
 
 </script>
 

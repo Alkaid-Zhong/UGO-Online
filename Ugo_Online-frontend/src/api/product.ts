@@ -97,3 +97,12 @@ export const getProductDetail = async (id: number) => {
         url: "/shop/product/" + id + "/",
     });
 }
+
+export const getReview = async (id: number, page: number = 1) => {
+    return await server.get({
+        url: `/shop/product/${id}/reviews/`,
+        params: {
+            page
+        }
+    });
+}

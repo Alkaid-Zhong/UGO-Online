@@ -2,10 +2,10 @@
 <v-card :elevation="cardElevator">
 
     <template #title>
-        <h3>{{ title }}</h3>
+        <h3>{{ !paying?title:'确认地址信息' }}</h3>
 
     </template>
-    <template #append>
+    <template #append v-if="editable && !paying">
         <v-icon @click="showDialog('修改')"> mdi-pencil</v-icon>
         <v-icon @click="showDialog('添加')"> mdi-plus</v-icon>
     </template>
@@ -24,7 +24,7 @@
         <v-item-group v-else v-model="selectedAddress"  :mandatory="mandatory" class="d-flex" style="flex-grow: 1;">
             <v-container>
                 <v-row :style="{flexGrow:1, minHeight:minheight+'px' }" id="address-card" >
-                    <v-col cols="4" style="flex-grow: 1;" v-for="address in paginatedAddresses" :key="address.id" > 
+                    <v-col :cols="12/addressPerPage" style="flex-grow: 1;" v-for="address in paginatedAddresses" :key="address.id" > 
                         <v-item v-slot="{ isSelected, toggle }" :value="address">
                             
                             <v-card :class="[ { ['bg-primary']: isSelected }]" @click="toggle" height="100%">
@@ -52,7 +52,7 @@
                             
                         </v-item>
                     </v-col>
-                    <v-col cols="4" v-if="isLastPage" :key="'empty'">
+                    <v-col :cols="12/addressPerPage" v-if="isLastPage" :key="'empty'">
                         <v-card @click="showDialog('添加')" height="100%" class="d-flex align-center justify-center">
                             <v-card-text>
                                 <div class="text-center">
@@ -91,7 +91,7 @@
 </v-card-actions>
 </v-card>
 
-<v-dialog v-model="showAddAddress" width="40%">
+<v-dialog v-model="showAddAddress" :width="$vuetify.display.smAndUp?'45%':'90%'">
     <!-- <template v-slot:activator="{props:activatorProps}">
         <v-card v-bind="activatorProps" height="100%" class="d-flex align-center justify-center">
         <v-card-text>
@@ -172,11 +172,12 @@ import snackbar from '@/api/snackbar';
 
 
 
-const props = defineProps(['paying', 'addressPerPage','title','cardElevator','preSelect', 'mandatory']);
+const props = defineProps(['paying', 'addressPerPage','title','cardElevator','preSelect', 'mandatory','editable']);
 const emit = defineEmits(['updateSelectedAddress']);
 
 onMounted(() => {
     fetchAddresses();
+    //console.log($vuetify.display.mdAndUp);
 });
 
 // const updateAddress = (newAddress) => {
@@ -196,6 +197,7 @@ watch(() => props.addressPerPage, (newVal) => {
 
 
 const showFor = ref(''); // 添加 or 修改
+const editable = props.editable !== undefined ? ref(props.editable): ref(true);
 const showAddAddress = ref(false);
 // const addressPerPage = 3;
 const paying = ref(props.paying);
@@ -374,6 +376,15 @@ const fetchAddresses = async () => {
   loading.value = false;
 };
 
+const dynamicWidth = computed(() => {
+    switch ($vuetify.breakpoint.name) {
+    case 'xs': return '90%';
+    case 'sm': return '90%';
+    case 'md': return '90%';
+    case 'lg': return '40%';
+    case 'xl': return '40%';
+    }
+});
 
 </script>
 

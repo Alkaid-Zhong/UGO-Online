@@ -4,3 +4,4 @@ __pycache__/
 Ugo_Online/media/
 Ugo_Online/staticfiles
 Ugo_Online-frontend/package-lock.json
+run.sh
