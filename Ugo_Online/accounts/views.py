@@ -148,9 +148,7 @@ class AddressDeleteView(APIView):
     def delete(self, request, address_id):
         try:
             address = Address.objects.get(user=request.user, id=address_id)
-            # address.delete()
-            # 软删除
-            address.user = None
+            address.delete()
             return api_response(True, message='地址删除成功')
         except Address.DoesNotExist:
             return api_response(False, code=404, message='地址不存在')
