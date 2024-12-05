@@ -1,6 +1,6 @@
-from django.shortcuts import render
-from django.views.generic import ListView
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
+from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -11,12 +11,14 @@ from message.models import Message
 from message.serializers import MessageSerializer
 
 
-class MessageListView(ListView):
+class MessageListView(ListAPIView):
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['is_read']
+    ordering_fields = ['created_time']
+    ordering = ['-created_time']
 
     def get_queryset(self):
         return Message.objects.filter(user=self.request.user)

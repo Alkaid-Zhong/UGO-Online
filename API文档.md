@@ -1862,7 +1862,100 @@ order传对应orderItem的id
 - 请求路径：`/message/`
 - 请求方法：GET
 - 权限要求：需要认证
+- 请求参数：?is_read=true/false
 - 返回数据格式：
 ```json
+{
+    "success": true,
+    "code": 0,
+    "message": "查询返回成功",
+    "data": {
+        "count": 8,
+        "next": null,
+        "previous": null,
+        "messages": [
+            {
+                "id": 39,
+                "content": "[15-427] 用户 uuq@123.com 退回了订单 93 中的商品项 uuuuqqqqq！",
+                "created_time": "2024-12-05T15:53:07.471974+08:00",
+                "is_read": false,
+                "user": 1
+            },
+            {
+                "id": 37,
+                "content": "[15-427] 订单 87 的地址已修改为 \"Zhixin Cai - Jiangxi, Ganzhou, bj\"！",
+                "created_time": "2024-12-05T15:22:03.681155+08:00",
+                "is_read": false,
+                "user": 1
+            },
+            {
+                "id": 35,
+                "content": "[15-427] 订单 87 的地址已修改为 \"Zhixin Cai - Jiangxi, Ganzhou, bj\"！",
+                "created_time": "2024-12-05T15:20:42.349345+08:00",
+                "is_read": false,
+                "user": 1
+            },
+            {
+                "id": 34,
+                "content": "[UGO Online 官方旗舰店] 用户 123@321.123 加入了您的商店。",
+                "created_time": "2024-12-05T14:47:14.998052+08:00",
+                "is_read": false,
+                "user": 1
+            },
+            {
+                "id": 26,
+                "content": "[UGO Online 官方旗舰店] 用户 uuq@123.com 已支付订单 94，请尽快发货！",
+                "created_time": "2024-12-04T11:31:08.742279+08:00",
+                "is_read": false,
+                "user": 1
+            },
+            {
+                "id": 21,
+                "content": "[15-427] 用户 uuq@123.com 已支付订单 93，请尽快发货！",
+                "created_time": "2024-12-04T11:30:50.895074+08:00",
+                "is_read": false,
+                "user": 1
+            },
+            {
+                "id": 19,
+                "content": "[UGO Online 官方旗舰店] 用户 uuq@123.com 已支付订单 92，请尽快发货！",
+                "created_time": "2024-12-04T11:25:07.663296+08:00",
+                "is_read": false,
+                "user": 1
+            },
+            {
+                "id": 14,
+                "content": "[UGO Online 官方旗舰店] 用户 uuq@123.com 已支付订单 91，请尽快发货！",
+                "created_time": "2024-12-04T10:13:50.929905+08:00",
+                "is_read": false,
+                "user": 1
+            }
+        ],
+        "total_count": 8,
+        "total_page": 1,
+        "cur_page": 1
+    }
+}
+```
 
+### 查看某一条消息
+
+- URL: `/message/<int:message_id>`
+- Method: GET
+- Params: 无
+- 访问后，该消息变为已读
+- Response:
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": {
+        "id": 39,
+        "content": "[15-427] 用户 uuq@123.com 退回了订单 93 中的商品项 uuuuqqqqq！",
+        "created_time": "2024-12-05T15:53:07.471974+08:00",
+        "is_read": true,
+        "user": 1
+    }
+}
 ```
