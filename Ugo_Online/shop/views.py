@@ -198,7 +198,8 @@ class AddProductView(APIView):
             return api_response(False, code=300, message='商品不存在')
         if not SellerShop.objects.filter(seller=user, shop=shop).exists():
             return api_response(False, code=301, message='您不是该商铺的管理者')
-        product.delete()
+        product.status = False
+        product.save()
         return api_response(True, code=0, message='商品删除成功')
 
 
@@ -210,6 +211,7 @@ class ProductListView(ListAPIView):
     filterset_fields = {
         'category': ['exact'],
         'price': ['gte', 'lte'],
+        'status': ['exact'],
     }
     search_fields = ['name', 'description', 'shop__name']
     ordering_fields = ['average_rating', 'name', 'create_date', 'price', 'sales_volume']
