@@ -14,8 +14,8 @@
 				<v-chip size="x-small" color="primary" class="mb-1">{{ product.category_name }}</v-chip>
 			</v-card-title>
 			<v-card-subtitle class="py-0">库存：{{ product.stock_quantity }}</v-card-subtitle>
-			<v-card-text class="pt-2 pb-0">{{ product.description }}</v-card-text>
-			<v-card-actions>
+			<v-card-text class="pt-2 pb-6">{{ product.description }}</v-card-text>
+			<!-- <v-card-actions>
 				<v-btn
 					v-if="user.role === 'CUSTOMER'"
 					color="primary"
@@ -32,7 +32,7 @@
 					color="red"
 					@click="onclickDeleteProduct"
 				>删除商品</v-btn>
-			</v-card-actions>
+			</v-card-actions> -->
 		</div>
 	</v-card>
 	
@@ -104,11 +104,30 @@
 			<v-toolbar>
 				<v-btn
 					icon="mdi-close"
-					@click="showUpdateProduct = false"
+					@click="showDetail = false"
 				></v-btn>
 				<v-toolbar-title>{{ product.name }}</v-toolbar-title>
 				<v-spacer></v-spacer>
 				<v-toolbar-items>
+					<v-btn
+						v-if="user.role === 'CUSTOMER'"
+						@click="onclickAdd2Card"
+						variant="text"
+						prepend-icon="mdi-cart"
+					>加入购物车</v-btn>
+					<v-btn
+						v-if="user.role === 'SELLER' && user.shops.includes(Number(shopId))"
+						variant="text"
+						prepend-icon="mdi-pencil"
+						@click="showUpdateProduct = true"
+					>编辑商品</v-btn>
+					<v-btn
+						v-if="user.role === 'SELLER' && removeProductCallback !== null"
+						color="red"
+						variant="text"
+						@click="onclickDeleteProduct"
+						prepend-icon="mdi-delete"
+					>删除商品</v-btn>
 					<v-btn
 						text="前往商店页"
 						variant="text"
