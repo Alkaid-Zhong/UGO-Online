@@ -1595,7 +1595,7 @@ product_id是必须要传的，其它内容选传。
 
 ### 商家获取订单列表
 
-- 请求路径：`order/seller_orders/`
+- 请求路径：`order/seller_orders/<int:shop_id>/`
 - 请求方法：GET
 - 其余和上面用户那个一样
 

@@ -72,10 +72,12 @@ class SellerOrderListView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
 
         user = request.user
+        shop_id = self.kwargs.get('shop_id')
         try:
-            self.shop = SellerShop.objects.get(seller=user).shop
-        except SellerShop.DoesNotExist:
-            return api_response(False, code=201, message='您未拥有商铺')
+            self.shop = Shop.objects.get(id=shop_id)
+            SellerShop.objects.get(shop=self.shop, seller=user)
+        except SellerShop.DoesNotExist or Shop.DoesNotExist:
+            return api_response(False, code=201, message='您未拥有该商铺的管理权限')
 
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
