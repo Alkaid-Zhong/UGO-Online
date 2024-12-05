@@ -107,7 +107,7 @@
     </template> -->
 
     <template v-slot:default="{ isActive }">
-        <v-card title="新建地址">
+        <v-card :title="showFor ==='添加'? '新建地址':'编辑地址'">
         <v-card-actions>
             <v-form style="width: 100%;">
             <v-text-field width="100%"
@@ -355,10 +355,10 @@ const totalPages = computed(() => {
 
 const fetchAddresses = async () => {
   const response = await getAddresses();
-  console.log(addresses.value.length, response.data.length);
+//   console.log(addresses.value.length, response.data.length);
   addresses.value = response.data;
   if (addresses.value.length !== 0) {
-    console.log("hey: " + addresses.value);
+    // console.log("hey: " + addresses.value);
     if (preSelect.value) {
         console.log(preSelect.value);
         console.warn(props.preSelect === undefined);
@@ -367,8 +367,8 @@ const fetchAddresses = async () => {
 
     }
     //selectedAddress.value = addresses.value[0];
-    console.log(selectedAddress.value);
-    console.log("total pages:", addresses.value.length);
+    // console.log(selectedAddress.value);
+    // console.log("total pages:", addresses.value.length);
     // emit('updateSelectedAddress', selectedAddress.value);
   }
   loading.value = false;
