@@ -1,8 +1,37 @@
 <template>
     <v-container v-if="!loading">
-
-        <v-row v-if="!orderLoading"> <!-- customer -->
-            <v-col cols="12">
+        <v-row class="mt-3 mb-1">
+            <v-col cols="4" v-if="isSeller">
+                <v-select
+                    v-model="selectedShop"
+                    :items="sellerShops"
+                    item-title="name"
+                    item-value="id"
+                    label="选择商铺"
+                ></v-select>
+            </v-col>
+            <v-col :cols="isSeller?8:12" class="d-flex align-center pt-0">
+                
+                <div><span>订单状态：</span></div>
+                
+                <v-chip-group
+                    v-model="selectedStatus"
+                    column
+                    filter
+                    :selected-class="'text-'+orderStatusColor(selectedStatus)"
+                    class="mx-1"
+                >
+                <!-- @change="fetchOrders(currentPage.value)" -->
+                    <v-chip v-for="status in orderStatuses" :key="status" :value="status">
+                        {{ formatStatus(status) }}
+                    </v-chip>
+                </v-chip-group>
+            </v-col>
+        </v-row>
+        <v-divider></v-divider>
+        <v-row v-if="!orderLoading" class="mt-1"> 
+            
+            <v-col cols="12" v-if="orders.length !== 0">
                 <v-list v-for="order in orders">
                     <v-card>
                         <v-card-title v-if="isCustomer">
@@ -81,6 +110,10 @@
 
                 </v-list>
             </v-col>
+            <v-col cols="12" v-else>
+                <v-alert type="info" outlined>该商铺暂无订单</v-alert>
+                <br><br><br>
+            </v-col>
         </v-row>
 
         <v-skeleton-loader v-else type="image, article" />
@@ -91,13 +124,19 @@
                 </v-list>
             </v-col>
         </v-row> -->
-        <v-dialog v-model="showReview">
+
+        <v-dialog v-model="showReview" width="50%">
             <template v-if="createReview" v-slot:default="{isActive}">
                 <v-card>
-                    <v-card-title>评价</v-card-title>
-                    <v-card-text>
-                        <v-textarea v-model="reviewContent" label="评价内容" rows="3"></v-textarea>
-                        <v-rating v-model="reviewRating" label="评分" color="amber"></v-rating>
+                    <v-card-title class="font-weight-bold">评价</v-card-title>
+                    <v-card-text class="d-flex flex-column ">
+                        <div class="d-flex align-center">
+                            综合评分:<v-rating v-model="reviewRating" label="评分" color="amber"></v-rating>
+                        </div>
+                        <br>
+                        <div>
+                            <v-textarea v-model="reviewContent" label="评价内容" rows="3"></v-textarea>
+                        </div>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
@@ -108,7 +147,7 @@
                 </v-card>
             </template>
         </v-dialog>
-        <v-dialog width="40%" v-model="showDialog">
+        <v-dialog width="50%" v-model="showDialog">
 
             <template v-if="dialogContent === 'pay'" v-slot:default="{ isActive }">
                 <v-card title="支付确认">
@@ -189,7 +228,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { user } from '@/store/user';
 import snackbar from '@/api/snackbar';
 import { getReview, sellerGetOrders, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userCreateReview, userGetOrders, userPayOrders, userRefund } from '@/api/order';
@@ -212,24 +251,46 @@ const orderLoading = ref(true);
 const isCustomer = ref(false);
 const isSeller = ref(false);
 
+const shopIds = ref([]);
 const orders = ref([]);
 const totalPages = ref(1);
 const currentPage = ref(1);
+const selectedShop = ref({});
+const sellerShops = ref([]);
+const orderStatuses = ['Pending Payment', 'Payment Received', 'Shipped', 'Completed', 'Cancelled'];
+const selectedStatus = ref('');
+
 watch(currentPage, (newVal, oldVal) => {
     orderLoading.value = true;
     fetchOrders(newVal);
 });
+watch(selectedShop, (newVal, oldVal) => {
+    orderLoading.value = true;
+    sellerGetOrders(newVal, currentPage.value).then(res => {
+        orders.value = res.data.orders;
+        orderLoading.value = false;
+        totalPages.value = res.data.total_page;
+    }).catch(err => {
+        console.log(err);
+    })
+});
+watch(selectedStatus, (newVal, oldVal) => {
+    orderLoading.value = true;
+    fetchOrders(currentPage.value,selectedStatus.value);
+});
+
 onMounted(() => {
     profile().then(() => {
         if (user.role === 'CUSTOMER') {
+            loading.value = false;
             isCustomer.value = true;
             isSeller.value = false;
             userGetOrders().then(res => {
                 //console.log(res.data.orders);
                 orders.value = res.data.orders;
                 totalPages.value = res.data.total_page;
-                fetchShopInfo().then(() => {
-                    loading.value = false;
+                fetchShopInfo(orders.value).then(() => {
+                    
                     orderLoading.value = false;
                 });
             }).catch(err => {
@@ -238,42 +299,67 @@ onMounted(() => {
         } else {
             isCustomer.value = false;
             isSeller.value = true;
-            sellerGetOrders().then(res => {
-                orders.value = res.data.orders;
+            shopIds.value = user.shops;
+            console.log("获取商家管理的店铺ID：");
+            console.log(shopIds.value);
+            if (shopIds.value.length !== 0) {
+                fetchShopInfo(shopIds.value).then(() => {
+                    selectedShop.value = shopIds.value[0];
+                    sellerShops.value = shopIds.value.map(id => shopInfoCache.value[id]).filter(shop => shop !== undefined);
+                    console.log(sellerShops.value);
+
+                    loading.value = false;
+                    sellerGetOrders(selectedShop.value).then(res => {
+                        orders.value = res.data.orders;
+                        // loading.value = false;
+                        totalPages.value = res.data.total_page;
+                        orderLoading.value = false;
+                    }).catch(err => {
+                        console.log(err);
+                    })
+                });
+                
+            } else {
                 loading.value = false;
                 orderLoading.value = false;
-            }).catch(err => {
-                console.log(err);
-            })
+            }
         }
     });
 
 
 })
 
-const fetchOrders = async (page) => {
+const fetchOrders = async (page, status) => {
     console.log(page);
     if (isCustomer.value) {
-        userGetOrders(currentPage.value).then(res => {
+        userGetOrders(currentPage.value, status).then(res => {
             orders.value = res.data.orders;
             totalPages.value = res.data.total_page;
-            fetchShopInfo().then(() => {
+            fetchShopInfo(orders.value).then(() => {
                 orderLoading.value = false;
             });
         }).catch(err => {
+            snackbar.error("获取订单失败" );
             console.log(err);
         })
     } else {
-        sellerGetOrders(currentPage.value).then(res => {
+        sellerGetOrders(selectedShop.value , currentPage.value, status).then(res => {
             orders.value = res.data.orders;
             totalPages.value = res.data.total_page;
+            console.log("获取到总页数"+totalPages.value);
             orderLoading.value = false;
-
         }).catch(err => {
             console.log(err);
+            snackbar.error("获取订单失败" + err);
         })
     }
 }
+
+/* 
+Pending Payment, Payment Received, Completed, 
+Cancelled, Shipped
+*/
+
 
 const curOrder = ref();
 const showReview = ref(false);
@@ -374,10 +460,6 @@ const orderStatusColor = (status) => {
             return 'success';
         case 'Cancelled':
             return 'error';
-        case 'Refund Requested':
-            return 'error';
-        case 'Refund Successful':
-            return 'error';
         case 'Shipped':
             return 'primary';
         default:
@@ -410,7 +492,7 @@ const refund = async (order, item) => {
         snackbar.success("退款申请成功");
         item.is_cancelled = true;
         if (order.items.every(item => item.is_cancelled)) {
-            order.status = 'Refund Requested';
+            order.status = 'Cancelled';
         }
     } else {
         snackbar.error("退款申请失败" + response.message);
@@ -489,10 +571,6 @@ const formatStatus = (status) => {
             return '已完成';
         case 'Cancelled':
             return '已取消';
-        case 'Refund Requested':
-            return '退款申请中';
-        case 'Refund Successful':
-            return '退款成功';
         case 'Shipped':
             return '商家已发货';
         default:
@@ -500,9 +578,17 @@ const formatStatus = (status) => {
     }
 }
 
-const fetchShopInfo = async () => {
-    for (let i = 0; i < orders.value.length; i++) {
-        await shopInfo(orders.value[i].shop_id);
+const fetchShopInfo = async (shopIdArray) => {
+    console.log("Trying to get shop info");
+    console.log(shopIdArray[0]);
+    if (shopIdArray.length === 0) {
+        return;
+    } else if (shopIdArray[0].shop_id!== undefined) {
+        
+        shopIdArray = shopIdArray.map(item => item.shop_id);
+    }
+    for (let i = 0; i < shopIdArray.length; i++) {
+        await shopInfo(shopIdArray[i]);
     }
 }
 
