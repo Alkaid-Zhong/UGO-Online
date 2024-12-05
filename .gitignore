@@ -2,3 +2,5 @@
 /Ugo_Online/db.sqlite3
 __pycache__/
 Ugo_Online/media/
+Ugo_Online/staticfiles
+Ugo_Online-frontend/package-lock.json

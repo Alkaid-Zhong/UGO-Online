@@ -45,7 +45,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { getAllProductList, getCategories } from '@/api/product';
-import ProductCard from '@/components/ProductCard';
+import productCard from '@/components/productCard';
 
 const latestProductList = ref(null)
 const categoryList = ref(null)

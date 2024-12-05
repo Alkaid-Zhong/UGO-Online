@@ -1,0 +1,6 @@
+pkill gunicorn
+git pull
+cd Ugo_Online
+python manage.py migrate
+gunicorn Ugo_Online.wsgi:application --bind 127.0.0.1:8001 --daemon
+ps aux | grep gunicorn
