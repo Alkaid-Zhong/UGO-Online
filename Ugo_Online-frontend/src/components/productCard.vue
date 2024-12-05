@@ -1,5 +1,5 @@
 <template>
-	<v-card height="100%" @click="showDetail = true">
+	<v-card height="100%" @click="onclickShowDetail">
 		<div class="d-flex flex-column justify-space-between" style="height: 100%">
 			<v-img :src="product.image" aspect-ratio="1" />
 			<v-divider></v-divider>
@@ -143,12 +143,10 @@
 				<v-row>
 					<v-col cols="12" md="6">
 						<v-img :src="product.image" aspect-ratio="1" />
-					</v-col>
-					<v-divider vertical></v-divider>
-					<v-col cols="12" md="6">
-						<p class="text-h5 font-weight-bold">{{ product.name }}
+						<v-divider class="my-4"></v-divider>
+						<p class="text-h5 font-weight-bold mt-2">{{ product.name }}
 							<v-chip size="x-small" color="primary" class="mb-1">{{ product.category_name }}</v-chip></p>
-						<p class="ml-2">
+						<p class="ml-2 mt-2">
 							<span style="font-size: 16px; color: red; font-weight: bold">￥</span>
 							<span class="font-weight-bold text-h5" style="color: red;">
 								{{ product.price }}
@@ -165,8 +163,36 @@
 						<p class="ml-2">库存：{{ product.stock_quantity }}</p>
 						<p class="ml-2">销量：{{ product.sales_volume }}</p>
 						<p class="ml-2">发布时间：{{ new Date(product.create_date).toLocaleString() }}</p>
-						<v-divider class="my-2"></v-divider>
-						<p>{{ product.description }}</p>
+						<p class="mt-2" style="font-size: 14px; color: #aaa">{{ product.description }}</p>
+					</v-col>
+					<v-divider vertical></v-divider>
+					<v-col cols="12" md="6">
+            <v-sheet
+              v-for="review in reviews"
+              :key="review.id"
+              class="mb-2 pa-4 rounded-lg"
+              elevation="2"
+            >
+              <p class="text-h6 font-weight-bold">
+                {{ review.user.name }}
+                <span class="ml-2 text-caption font-weight-regular">发布于{{ new Date(review.create_date).toLocaleString() }}</span>
+              </p>
+              <p class="ml-2 mt-2" style="font-size: 14px; color: #aaa">{{ review.comment }}</p>
+              <v-rating
+                class="mt-2"
+                readonly
+                density="compact"
+                half-increments
+                active-color="amber"
+                color="amber-darken-1"
+                :model-value="review.rating"
+              ></v-rating>
+            </v-sheet>
+            <v-pagination
+              v-if="reviews"
+              v-model="reviewsPage"
+              :length="reviewsTotalPage"
+            ></v-pagination>
 					</v-col>
 				</v-row>
 			</v-card-item>
@@ -174,11 +200,11 @@
 	</v-dialog>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { addToCart } from '@/api/cart';
 import snackbar from '@/api/snackbar';
 import { user } from '@/store/user';
-import { deleteProduct, updateProduct } from '@/api/product';
+import { deleteProduct, getReview, updateProduct } from '@/api/product';
 import router from '@/router';
 
 const props = defineProps({
@@ -211,6 +237,30 @@ const productPrice = ref(product.price)
 const productCategory = ref(product.category)
 const productStock = ref(product.stock_quantity)
 const productImage = ref(null)
+
+const reviews = ref(null)
+const reviewsPage = ref(1)
+const reviewsTotalPage = ref(1)
+
+watch(reviewsPage, async () => {
+  await fetchReviews()
+})
+
+const onclickShowDetail = async () => {
+  reviews.value = null
+  reviewsPage.value = 1
+  reviewsTotalPage.value = 1
+  showDetail.value = true
+  await fetchReviews()
+}
+
+const fetchReviews = async () => {
+  const res = await getReview(product.id, reviewsPage.value)
+  if (res.success) {
+    reviews.value = res.data.reviews
+    reviewsTotalPage.value = res.data.total_page
+  }
+}
 
 const onclickGotoShopPage = () => {
 	router.push(`/shop/${shopId}`)
