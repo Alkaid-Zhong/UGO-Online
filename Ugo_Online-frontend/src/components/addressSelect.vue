@@ -107,7 +107,7 @@
     </template> -->
 
     <template v-slot:default="{ isActive }">
-        <v-card title="新建地址">
+        <v-card :title="showFor ==='添加'? '新建地址':'编辑地址'">
         <v-card-actions>
             <v-form style="width: 100%;">
             <v-text-field width="100%"

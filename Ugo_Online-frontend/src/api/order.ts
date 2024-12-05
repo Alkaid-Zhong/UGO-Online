@@ -38,10 +38,11 @@ export const userRefund = async (order_id: Number, item_ids: Array<Number>) => {
 }
 
 export const userCreateReview = async (order: Number, product: Number, rating: Number, comment: string) => {
-    return await server.post({
+    const response = await server.post({
         url: "/shop/review/create/",
         data: { order, product, rating, comment }
     });
+    return response;
 }
 
 export const getReview = async (order_item_id: Number) => {

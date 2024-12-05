@@ -111,7 +111,8 @@
                 </v-list>
             </v-col>
             <v-col cols="12" v-else>
-                <v-alert type="info" outlined>该商铺暂无订单</v-alert>
+                <v-alert type="info" outlined>{{ emptyOrderCaption }}</v-alert>
+                
                 <br><br><br>
             </v-col>
         </v-row>
@@ -228,7 +229,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { user } from '@/store/user';
 import snackbar from '@/api/snackbar';
 import { getReview, sellerGetOrders, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userCreateReview, userGetOrders, userPayOrders, userRefund } from '@/api/order';
@@ -374,7 +375,8 @@ const submitReview = async (isActive) => {
         snackbar.error("请给商品评分");
         return;
     }
-    const response = await userCreateReview(curItem.value.id, curItem.value.product.id, reviewRating.value, reviewContent.value).response;
+    const response = await userCreateReview(curItem.value.id, curItem.value.product.id, reviewRating.value, reviewContent.value);
+    console.log(response);
     if (response.success) {
         snackbar.success("评价成功");
         
@@ -488,6 +490,8 @@ const refund = async (order, item) => {
     console.log(order_id, item);
 
     const response = await userRefund(order_id, [item.id]);
+    // console.log("退款ing");
+    // console.log(response);
     if (response.success) {
         snackbar.success("退款申请成功");
         item.is_cancelled = true;
@@ -574,13 +578,14 @@ const formatStatus = (status) => {
         case 'Shipped':
             return '商家已发货';
         default:
-            return status;
+            return "";
     }
 }
 
 const fetchShopInfo = async (shopIdArray) => {
-    console.log("Trying to get shop info");
-    console.log(shopIdArray[0]);
+
+    // console.log("Trying to get shop info");
+    // console.log(shopIdArray[0]);
     if (shopIdArray.length === 0) {
         return;
     } else if (shopIdArray[0].shop_id!== undefined) {
@@ -607,6 +612,20 @@ const ShopInfo = (shop_id) => {
     return shopInfoCache.value[shop_id];
 }
 
+const emptyOrderCaption = computed(() => {
+    if (isCustomer.value){
+        if (selectedStatus.value === undefined || selectedStatus.value === ''){
+            return "您还没有下单，快去逛逛吧";
+        }
+        return "没有符合条件的订单  (筛选条件： " + formatStatus(selectedStatus.value) + ")";
+    } else {
+        if(selectedStatus.value === undefined || selectedStatus.value === ''){
+            return "该商铺暂无订单";
+        }
+        
+        return "该商铺暂无符合要求的订单 (筛选条件： " + formatStatus(selectedStatus.value) + ")";
+    }
+});
 
 </script>
 
