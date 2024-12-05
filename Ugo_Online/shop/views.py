@@ -29,7 +29,7 @@ class ShopCreateView(APIView):
         if serializer.is_valid():
             shop = serializer.save()
             SellerShop.objects.create(shop=shop, seller=request.user)
-            return api_response(True, code=0)
+            return api_response(True, code=0, data=serializer.data)
         else:
             return api_response(False, code=1, message='商铺创建失败', data=serializer.errors,
                                 status_code=status.HTTP_400_BAD_REQUEST)
