@@ -112,7 +112,9 @@ class JoinShopByCodeView(APIView):
             SellerShop.objects.create(shop=shop, seller=user)
 
             invitation_code.save()
-            return api_response(True, code=0, message='加入商铺成功')
+
+            serializer = ShopSerializer(shop)
+            return api_response(True, code=0, message='加入商铺成功', data=serializer.data)
 
         except InvitationCode.DoesNotExist:
             return api_response(False, code=302, message='邀请码不存在')
