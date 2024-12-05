@@ -25,9 +25,6 @@ class ShopCreateView(APIView):
 
     def post(self, request):
 
-        if SellerShop.objects.filter(seller=request.user).exists():
-            return api_response(False, code=300, message='用户已经拥有商店', status_code=status.HTTP_403_FORBIDDEN)
-
         serializer = ShopSerializer(data=request.data)
         if serializer.is_valid():
             shop = serializer.save()

@@ -107,7 +107,7 @@ class Review(models.Model):
     reply_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = ('user', 'product')
+        unique_together = ('user', 'order')
 
     def __str__(self):
         return f"Review of {self.product.name} by {self.user.name}"
