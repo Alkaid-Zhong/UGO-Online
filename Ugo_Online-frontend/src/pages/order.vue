@@ -88,6 +88,10 @@
                                         <v-btn text="查看评价" color="info"
                                             v-if="isCustomer && order.status ==='Completed' && item.has_reviewed"
                                             @click="seeReview(order,item)"></v-btn>
+                                        <v-btn text="查看/回复评价" color="warning" 
+                                            v-if="isSeller && order.status === 'Completed' && item.has_reviewed"
+                                            @click="reply(order,item)">
+                                        </v-btn>
                                         <!-- v-if="showRefuncButton(order)"  bug？-->
 
                                     </v-col>
@@ -122,15 +126,6 @@
                                     </div>
                                 </v-col>
                             </v-row>
-                            <!-- <div>
-                                <div class="text-h5">地址信息：</div>
-                                <div class="ml-2">
-                                    <div><strong>收件人姓名:</strong> {{ order.address.recipient_name }}</div>
-                                    <div><strong>电话:</strong> {{ order.address.phone }}</div>
-                                    <div><strong>省份:</strong> {{ order.address.province }}<strong> 城市:</strong>{{ order.address.city }}</div>
-                                    <div><strong>具体地址:</strong> {{ order.address.address }}</div>
-                                </div>
-                            </div> -->
                         </v-card-text>
                         <v-card-actions v-if="isCustomer && (order.status === 'Pending Payment' || showChangeAddressButton(order.status) || order.status === 'Shipped') || isSeller && order.status === 'Payment Received'">
                             <v-spacer></v-spacer>
@@ -169,30 +164,35 @@
             </v-col>
         </v-row> -->
 
-        <v-dialog v-model="showReview" width="50%">
+        <v-dialog v-model="showReview" :width="$vuetify.display.smAndDown?'90%':'50%'">
             <template v-slot:default="{isActive}">
                 <v-card>
                     <v-card-title class="font-weight-bold">{{createReview?"":"查看"}}评价</v-card-title>
                     <v-card-text class="d-flex flex-column">
-                        <div class="d-flex align-center">
-                            {{createReview?'综合':'您的'}}评分:<v-rating v-model="reviewRating" label="评分" color="amber" :disabled="!createReview"></v-rating>
+                        <div >
+                            {{replying ? "买家":(createReview?'综合':'您的')}}评分:<br> 
+                            <v-rating v-model="reviewRating" label="评分" color="amber" :disabled="!createReview"></v-rating>
                         </div>
                         <br>
                         <div>
-                            <v-textarea v-model="reviewContent" label="评价内容" rows="3" :readonly="!createReview"></v-textarea>
+                            <v-textarea prepend-inner-icon="mdi-comment" v-model="reviewContent" label="评价内容" rows="3" :readonly="!createReview"></v-textarea>
+                        </div>
+                        <div v-if="replying">
+                            <v-textarea v-model="replyContent" label="商家回复" rows="3" :readonly="alreadyReply"></v-textarea>
                         </div>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn text @click="isActive.value = false">{{createReview?'取消':'关闭'}}</v-btn>
+                        <v-btn text @click="isActive.value = false">{{(createReview || replying && !alreadyReply)?'取消':'关闭'}}</v-btn>
                         <v-btn color="primary" v-if="createReview" class="font-weight-bold" text="确认评价"
                             @click="submitReview(isActive)"></v-btn>
-                        
+                        <v-btn color="primay" v-if="replying && !alreadyReply" class="font-weight-bold" text="回复评价"
+                            @click="submitReply(isActive)"></v-btn>
                     </v-card-actions>
                 </v-card>
             </template>
         </v-dialog>
-        <v-dialog width="50%" v-model="showDialog">
+        <v-dialog :width="$vuetify.display.smAndDown?'90%':'50%'" v-model="showDialog">
 
             <template v-if="dialogContent === 'pay'" v-slot:default="{ isActive }">
                 <v-card title="支付确认">
@@ -276,7 +276,7 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { user } from '@/store/user';
 import snackbar from '@/api/snackbar';
-import { getReview, sellerGetOrders, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userCreateReview, userGetOrders, userPayOrders, userRefund } from '@/api/order';
+import { getReview, sellerGetOrders, sellerReplyComment, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userCreateReview, userGetOrders, userPayOrders, userRefund } from '@/api/order';
 import { getShopInfo } from '@/api/shop';
 import router from '@/router';
 import { profile } from '@/api/user';
@@ -421,8 +421,11 @@ Cancelled, Shipped
 const curOrder = ref();
 const showReview = ref(false);
 const createReview = ref(false);
+const replying = ref(false);
 const reviewContent = ref('');
+const review_id = ref();
 const reviewRating = ref(0);
+const replyContent = ref('');
 const curItem = ref();
 const submitReview = async (isActive) => {
     console.log("评价内容：" + reviewContent, "评分：" + reviewRating);
@@ -448,6 +451,7 @@ const submitReview = async (isActive) => {
     }
 }
 const review = (order, item) => {
+    replying.value = false;
     curOrder.value = order;
     curItem.value = item;
     createReview.value = !item.has_reviewed;
@@ -458,16 +462,58 @@ const review = (order, item) => {
 const seeReview = async (order, item) => {
     // `/shop/order_item/<int:order_item_id>/review/`
     const response = await getReview(item.id);
+    replying.value=false;
     if (response.success) {
-        showReview.value = true;
         createReview.value = false;
         reviewContent.value = response.data.comment;
         reviewRating.value = response.data.rating;
+        showReview.value = true;
         //snackbar.success("评价内容：" + response.data.comment + " 评分：" + response.data.rating);
     } else {
         snackbar.error("获取评价失败：" + response.message);
     }
     //snackbar.info("评价内容：" + item.review.content + " 评分：" + item.review.rating);
+}
+const alreadyReply = ref(false);
+const reply = async(order, item) => {
+    curOrder.value = order;
+    curItem.value = item;
+    const response = await getReview(item.id);
+    if (response.success) {
+        console.log(response.data);
+        review_id.value = response.data.id;
+        reviewContent.value = response.data.comment;
+        reviewRating.value = response.data.rating;
+        createReview.value = false;
+        if (response.data.merchant_reply !== null) {
+            replyContent.value = response.data.merchant_reply;
+            alreadyReply.value = true;
+        } else {
+            replyContent.value = '';
+            alreadyReply.value = false;
+        }
+        // reviewContent.value = item.review.content;
+        // reviewRating.value = item.review.rating;
+        replying.value = true;
+        showReview.value = true;
+    } else {
+        snackbar.error("获取评价失败：" + response.message);
+    }
+}
+
+const submitReply = async (isActive) => {
+    //console.log("回复内容：" + reviewContent, "评分：" + reviewRating);
+    console.log(curItem.value);
+    const response = await sellerReply(review_id.value, replyContent.value);
+    console.log(response);
+    if (response.success) {
+        snackbar.success("回复成功");
+        replyContent.value = '';
+        isActive.value = false;
+    } else {
+        console.log(response);
+        snackbar.error("回复失败：" + response.message);
+    }
 }
 
 
@@ -623,6 +669,17 @@ const ship = async (order) => {
     } else {
         snackbar.error("发货失败：" + response.message);
     }
+}
+
+
+const sellerReply = async (review_id, reply) => {
+    const response = await sellerReplyComment(review_id, reply);
+    if (response.success) {
+        snackbar.success("回复成功");
+    } else {
+        snackbar.error("回复失败：" + response.message);
+    }
+    return response;
 }
 
 const formatStatus = (status) => {
