@@ -2,7 +2,7 @@
 	<v-container>
 		<v-infinite-scroll :items="items" :onLoad="fetchProducts">
 			<template v-for="(item, index) in items" :key="item.id">
-				<div v-if="$vuetify.display.md">
+				<div v-if="$vuetify.display.md || $vuetify.display.lg || $vuetify.display.xl || $vuetify.display.xxl">
 					<v-row v-if="index % 3 === 0" style="width: 100%;" class="mt-2">
 						<v-col cols="4">
 							<product-card
