@@ -2,14 +2,14 @@
   <v-container>
     <v-row>
       <v-col cols="12" md="8">
-        <v-list v-if="!loading" class="pt-4 rounded-lg">
+        <v-list v-if="!loading" class="pt-4 rounded-lg">  
           <v-list-item>
             <template v-slot:prepend>
               <v-icon icon="mdi-cart" size="x-large"></v-icon>
             </template>
             <v-list-item-title class="text-h4 font-weight-bold">购物车</v-list-item-title>
           </v-list-item>
-
+          
           <v-list-item class="mb-2">
             <template #prepend>
               <v-list-item-action start>
@@ -30,7 +30,8 @@
           
           <transition-group name="list">
             <v-list-item v-if="shopLists.length === 0">
-              <v-list-item-title>购物车空空如也，快去逛逛吧</v-list-item-title>
+              <br>
+              <v-alert type="info" outlined>购物车空空如也，快去逛逛吧</v-alert>
             </v-list-item>
           
             <v-list-item v-for="shop in shopLists" v-else>

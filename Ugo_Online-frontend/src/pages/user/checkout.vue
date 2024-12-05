@@ -106,14 +106,15 @@
           <v-card-text class="text-left" style="color:orangered">
             <div>
               <span class="text-h5">应付：￥{{ cart.actualSum }}元</span><br />
-              <span class="text-h5">当前余额：￥{{ user.money }}元 </span><br />
+              <span class="text-h5">当前余额：￥{{ user.money }}元 </span>
+                <v-btn @click="router.push('/user/profile/')" outlined class="text-primary" elevation="0">去充值</v-btn><br />
             </div>
             <br>
             <v-progress-linear indeterminate color="primary" v-if="waitingPayment"></v-progress-linear>
           </v-card-text>
           <v-card-actions>
             <v-btn block @click="pay" color="red-lighten-1" class="font-weight-bold text-body-1"
-              :disabled="user.money < cart.actualSum">确认支付</v-btn>
+              :disabled="user.money < cart.actualSum"> {{ user.money < cart.actualSum?'余额不足，请充值':'确认支付' }}</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>

@@ -2,10 +2,10 @@
 <v-card :elevation="cardElevator">
 
     <template #title>
-        <h3>{{ title }}</h3>
+        <h3>{{ !paying?title:'确认地址信息' }}</h3>
 
     </template>
-    <template #append>
+    <template #append v-if="editable && !paying">
         <v-icon @click="showDialog('修改')"> mdi-pencil</v-icon>
         <v-icon @click="showDialog('添加')"> mdi-plus</v-icon>
     </template>
@@ -172,7 +172,7 @@ import snackbar from '@/api/snackbar';
 
 
 
-const props = defineProps(['paying', 'addressPerPage','title','cardElevator','preSelect', 'mandatory']);
+const props = defineProps(['paying', 'addressPerPage','title','cardElevator','preSelect', 'mandatory','editable']);
 const emit = defineEmits(['updateSelectedAddress']);
 
 onMounted(() => {
@@ -196,6 +196,7 @@ watch(() => props.addressPerPage, (newVal) => {
 
 
 const showFor = ref(''); // 添加 or 修改
+const editable = props.editable !== undefined ? ref(props.editable): ref(true);
 const showAddAddress = ref(false);
 // const addressPerPage = 3;
 const paying = ref(props.paying);
