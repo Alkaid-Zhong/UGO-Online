@@ -49,8 +49,8 @@ export const getReview = async (order_item_id: Number) => {
     return await server.get({ url: "/shop/order_item/" + order_item_id + "/review/" });
 }
 
-export const sellerGetOrders = async (page = 1, status?: string) => {
-    return await server.get({ url: "/order/seller_orders/", showSnackbar: false, params: { page, status } });
+export const sellerGetOrders = async (shop_id: number, page = 1, status?: string) => {
+    return await server.get({ url: "/order/seller_orders/" + shop_id + '/', showSnackbar: false, params: { page, status } });
 }
 
 export const sellerShip = async (order_id: Number) => {
