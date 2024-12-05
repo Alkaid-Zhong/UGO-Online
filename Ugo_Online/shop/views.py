@@ -29,7 +29,8 @@ class ShopCreateView(APIView):
         if serializer.is_valid():
             shop = serializer.save()
             SellerShop.objects.create(shop=shop, seller=request.user)
-            return api_response(True, code=0)
+            serializer2 = ShopSerializer(shop)
+            return api_response(True, code=0, data=serializer2.data)
         else:
             return api_response(False, code=1, message='商铺创建失败', data=serializer.errors,
                                 status_code=status.HTTP_400_BAD_REQUEST)
@@ -111,7 +112,9 @@ class JoinShopByCodeView(APIView):
             SellerShop.objects.create(shop=shop, seller=user)
 
             invitation_code.save()
-            return api_response(True, code=0, message='加入商铺成功')
+
+            serializer = ShopSerializer(shop)
+            return api_response(True, code=0, message='加入商铺成功', data=serializer.data)
 
         except InvitationCode.DoesNotExist:
             return api_response(False, code=302, message='邀请码不存在')
