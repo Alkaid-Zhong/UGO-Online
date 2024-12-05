@@ -614,7 +614,10 @@ const ShopInfo = (shop_id) => {
 
 const emptyOrderCaption = computed(() => {
     if (isCustomer.value){
-        return "您还没有下单，快去逛逛吧";
+        if (selectedStatus.value === undefined || selectedStatus.value === ''){
+            return "您还没有下单，快去逛逛吧";
+        }
+        return "没有符合条件的订单  (筛选条件： " + formatStatus(selectedStatus.value) + ")";
     } else {
         if(selectedStatus.value === undefined || selectedStatus.value === ''){
             return "该商铺暂无订单";
