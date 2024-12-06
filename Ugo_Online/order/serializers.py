@@ -23,9 +23,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
     def get_has_reviewed(self, obj):
         return obj.review is not None
 
-    def get_review_has_reply(self, obj):
-        return obj.review is not None and obj.review.reply is not None
-
 
 class OrderSerializer(serializers.Serializer):
     items = OrderItemSerializer(many=True)
@@ -152,7 +149,7 @@ class OrderSerializer(serializers.Serializer):
                 try:
                     review = Review.objects.get(order=item.id)
                     has_reviewed = True
-                    review_has_reply = review.reply is not None
+                    review_has_reply = review.merchant_reply is not None
                 except Review.DoesNotExist:
                     has_reviewed = False
                     review_has_reply = False
