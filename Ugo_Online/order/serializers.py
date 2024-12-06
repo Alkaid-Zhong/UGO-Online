@@ -17,11 +17,14 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'product', 'product_id', 'quantity', 'unit_price', 'total_price', 'has_reviewed']
-        read_only_fields = ['id', 'product', 'unit_price', 'total_price', 'has_reviewed']
+        fields = ['id', 'product', 'product_id', 'quantity', 'unit_price', 'total_price', 'has_reviewed', 'review_has_reply']
+        read_only_fields = ['id', 'product', 'unit_price', 'total_price', 'has_reviewed', 'review_has_reply']
 
     def get_has_reviewed(self, obj):
         return obj.review is not None
+
+    def get_review_has_reply(self, obj):
+        return obj.review is not None and obj.review.reply is not None
 
 
 class OrderSerializer(serializers.Serializer):
