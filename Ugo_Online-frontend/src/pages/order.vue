@@ -70,13 +70,13 @@
                                         <strong>{{ item.product.name }}</strong>
                                     </v-col>
 
-                                    <v-col cols="3" style="color:orangered" class="text-h6  text-center">
-                                        {{ currency(item.product.price) }}
+                                    <v-col cols="3" :style="item.is_cancelled ? 'text-decoration: line-through; color: gray;' : 'color:orangered;'" class="text-h6  text-center">
+                                        {{ currency(item.unit_price) }}
                                     </v-col>
 
                                     <v-col cols="3" class="text-center">
 
-                                        <b>x {{ item.quantity }}</b><br><br>
+                                        <b>x {{ item.is_cancelled ? 0 :item.quantity }} <br>{{ item.is_cancelled?'（已退货）':'' }}</b><br><br>
                                         <!-- {{order.status}} {{  item.is_cancelled }} -->
                                         <v-btn text="退货" color="warning"
                                             v-if="isCustomer && showRefundButton(order.status, item.is_cancelled)"

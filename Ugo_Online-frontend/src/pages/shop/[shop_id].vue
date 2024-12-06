@@ -31,7 +31,7 @@
 				</v-card-actions>
 			</v-card>
 			<v-sheet
-				class="mb-4 px-4 pt-4 rounded-lg"
+				class="mb-4 px-4 pt-4 rounded-lg pb-1"
 				elevation="2"
 			>
 				<v-text-field class="mx-2" v-model="searchName" label="搜索商品" variant="solo" clearable></v-text-field>
@@ -43,30 +43,41 @@
 						<v-text-field class="mx-2" v-model="priceRange_high" label="最高价格" variant="solo" clearable type="number"></v-text-field>
 					</v-col>
 				</v-row>
-				<v-btn-toggle v-model="orderBy">
-          <v-btn prepend-icon="mdi-sort-ascending" value="price">价格</v-btn>
-          <v-btn prepend-icon="mdi-sort-descending" value="-price">价格</v-btn>
-          <v-btn prepend-icon="mdi-sort-ascending" value="name">名称</v-btn>
-          <v-btn prepend-icon="mdi-sort-descending" value="-name">名称</v-btn>
-          <v-btn prepend-icon="mdi-sort-ascending" value="create_date">上架时间</v-btn>
-          <v-btn prepend-icon="mdi-sort-descending" value="-create_date">上架时间</v-btn>
-          <v-btn prepend-icon="mdi-sort-ascending" value="average_rating">评分</v-btn>
-          <v-btn prepend-icon="mdi-sort-descending" value="-average_rating">评分</v-btn>
-        </v-btn-toggle>
+				<v-icon>mdi-filter-variant</v-icon>
+				<v-btn 
+					:prepend-icon="orderBy === 'price'? 'mdi-sort-descending' : orderBy === '-price' ? 'mdi-sort-ascending' : ''" 
+					@click="onclickOrderBy('price')"
+					variant="text"
+				>价格</v-btn>
+				<v-btn 
+					:prepend-icon="orderBy === 'name' ? 'mdi-sort-descending' : orderBy === '-name' ? 'mdi-sort-ascending' : ''" 
+					@click="onclickOrderBy('name')"
+					variant="text"
+				>名称</v-btn>
+				<v-btn 
+					:prepend-icon="orderBy === 'rating'? 'mdi-sort-descending' : orderBy === '-rating' ? 'mdi-sort-ascending' : ''" 
+					@click="onclickOrderBy('rating')"
+					variant="text"
+				>评分</v-btn>
+				<v-btn 
+					:prepend-icon="orderBy === 'created_at'? 'mdi-sort-descending' : orderBy === '-created_at' ? 'mdi-sort-ascending' : ''" 
+					@click="onclickOrderBy('created_at')"
+					variant="text"
+				>上架时间</v-btn>
+				<v-chip-group
+					class="my-2"
+					v-model="chosenCategory"
+					v-if="categoryList"
+					column
+				>
+					<v-chip
+						v-for="category in shopCategory"
+						:key="category.id"
+						filter
+						color="primary"
+					>{{ category.name }}</v-chip>
+				</v-chip-group>
 			</v-sheet>
-			<v-chip-group
-				class="mb-4"
-				v-model="chosenCategory"
-				v-if="categoryList"
-				column
-			>
-				<v-chip
-					v-for="category in shopCategory"
-					:key="category.id"
-					filter
-					color="primary"
-				>{{ category.name }}</v-chip>
-			</v-chip-group>
 			<v-row v-if="products">
 				<v-col cols="12" md="4" v-for="product in products.products">
 					<product-card 
@@ -321,6 +332,19 @@ const flowHeaders = [
 	{ title: '交易时间', key: 'date' },
 	{ title: '描述', key: 'description', sortable: false }
 ]
+
+const onclickOrderBy = ( option ) => {
+	const nowOption = orderBy.value
+	if (nowOption === null) {
+		orderBy.value = option
+	} else if (nowOption[0] === '-' && nowOption.slice(1) === option) {
+		orderBy.value = null
+	} else if (nowOption === option) {
+		orderBy.value = `-${option}`
+	} else {
+		orderBy.value = option
+	}
+}
 
 onMounted(async () => {
 	shopInfo.value = await getShopInfo(shop_id)

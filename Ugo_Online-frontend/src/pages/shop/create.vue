@@ -59,9 +59,9 @@
 import { ref } from 'vue'
 import snackbar from '@/api/snackbar';
 import { createShop, joinShop } from '@/api/shop';
-import router from '@/router';
 import { profile } from '@/api/user';
 import { user } from '@/store/user';
+import { useRouter } from 'vue-router';
 
 const joinMode = ref(false);
 
@@ -69,6 +69,8 @@ const name = ref('');
 const address = ref('');
 const description = ref('');
 const inviteCode = ref('');
+
+const router = useRouter();
 
 const onclickSubmitCreate = async () => {
 	if (!name.value) {
@@ -83,7 +85,7 @@ const onclickSubmitCreate = async () => {
 	if (res.success) {
 		snackbar.success('创建成功');
 		await profile();
-		router.replace(`/shop/${user.shops}`);
+		router.push(`/shop/${res.data.id}`);
 	}
 }
 
@@ -96,7 +98,7 @@ const onclickSubmitJoin = async () => {
 	if (res.success) {
 		snackbar.success('加入成功');
 		await profile();
-		router.replace(`/shop/${user.shops}`);
+		router.push(`/shop/${res.data.id}`);
 	}
 }
 

@@ -129,7 +129,7 @@
 						variant="text"
 						@click="onclickDeleteProduct"
 						prepend-icon="mdi-delete"
-					>删除商品</v-btn>
+					>下架商品</v-btn>
 					<v-btn
 						text="前往商店页"
 						variant="text"

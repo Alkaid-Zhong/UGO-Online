@@ -2,10 +2,10 @@
 	<v-container>
 		<v-alert type="info" variant="tonal" class="mb-4" v-if="user.role === 'SELLER'">
 			<template #text>
-				作为卖家，您可以创建自己的店铺，为顾客提供优质的服务。
+				作为卖家，您可以创建自己的店铺或加入店铺，为顾客提供优质的服务。
 			</template>
 			<template #append>
-				<v-btn to="/shop/create" color="primary">创建店铺</v-btn>
+				<v-btn to="/shop/create" color="primary">创建/加入店铺</v-btn>
 			</template>
 		</v-alert>
 		<v-row v-if="shops" lines="three">
