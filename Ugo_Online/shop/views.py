@@ -280,7 +280,7 @@ class CategoryListView(ListAPIView):
             except Shop.DoesNotExists:
                 api_response(False, code=300, message='商铺不存在')
 
-        query_set = self.get_queryset()
+        query_set = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(query_set, many=True)
         return api_response(True, code=0, data={'categories': serializer.data})
 
