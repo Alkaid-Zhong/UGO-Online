@@ -51,7 +51,7 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
     stock_quantity = models.IntegerField(default=0, null=False)
-    category = models.ForeignKey('shop.Category', on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    category = models.ForeignKey('shop.Category', on_delete=models.SET_NULL, related_name='products', default=11)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Available')
     create_date = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)

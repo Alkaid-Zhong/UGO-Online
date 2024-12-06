@@ -260,6 +260,10 @@ class CategoryListView(ListAPIView):
     serializer_class = CategorySerializer
     pagination_class = PageNumberPagination
 
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['id']
+    ordering = ['id']
+
     shop = None
 
     def get_queryset(self):
