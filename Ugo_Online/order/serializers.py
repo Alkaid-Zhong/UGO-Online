@@ -149,10 +149,14 @@ class OrderSerializer(serializers.Serializer):
             order_items = order.items.all()
             # order_total_price = 0
             for item in order_items:
-                if Review.objects.filter(order=item.id).exists():
+                try:
+                    review = Review.objects.get(order=item.id)
                     has_reviewed = True
-                else:
+                    review_has_reply = review.reply is not None
+                except Review.DoesNotExist:
                     has_reviewed = False
+                    review_has_reply = False
+
                 order_data['items'].append({
                     'id': item.id,
                     'product': ProductSerializer(item.product).data,
@@ -161,6 +165,7 @@ class OrderSerializer(serializers.Serializer):
                     'total_price': str(item.total_price),
                     'is_cancelled': item.is_cancelled,
                     'has_reviewed': has_reviewed,
+                    'review_has_reply': review_has_reply
                 })
                 # if not item.is_cancelled:
                 #     order_total_price += item.total_price
