@@ -77,7 +77,8 @@
 				<v-chip color="green" prepend-icon="mdi-store">我的商铺</v-chip>
 			</template>
 		</v-card>
-
+		
+		<div class="mt-5">
 		<AddressSelect v-if="user.role==='CUSTOMER'" class="mt-5"
 			:title=" '我的地址'"
 			:addressPerPage="$vuetify.display.smAndUp?3:1"
@@ -85,6 +86,7 @@
 			:preSelect="false"
 			:mandatory="false"
 		></AddressSelect>
+		</div>
 		<!-- <v-card v-if="user.role==='CUSTOMER'" class="mt-4">
 			<v-card-title class="text-h5 font-weight-bold">
 				我的地址
