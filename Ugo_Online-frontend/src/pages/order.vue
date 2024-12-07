@@ -88,7 +88,7 @@
                                         <v-btn text="查看评价" color="info"
                                             v-if="isCustomer && order.status ==='Completed' && item.has_reviewed"
                                             @click="seeReview(order,item)"></v-btn>
-                                        <v-btn text="查看/回复评价" color="warning" 
+                                        <v-btn :text="item.review_has_reply?'查看回复':'回复评价'" :color="item.review_has_reply?'primary':'warning'" 
                                             v-if="isSeller && order.status === 'Completed' && item.has_reviewed"
                                             @click="reply(order,item)">
                                         </v-btn>
