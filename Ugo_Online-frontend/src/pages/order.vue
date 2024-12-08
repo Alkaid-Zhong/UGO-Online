@@ -177,7 +177,7 @@
                         <div>
                             <v-textarea prepend-inner-icon="mdi-comment" v-model="reviewContent" label="评价内容" rows="3" :readonly="!createReview"></v-textarea>
                         </div>
-                        <div v-if="replying">
+                        <div v-if="replying || alreadyReply">
                             <v-textarea v-model="replyContent" label="商家回复" rows="3" :readonly="alreadyReply"></v-textarea>
                         </div>
                     </v-card-text>
@@ -467,6 +467,12 @@ const seeReview = async (order, item) => {
         createReview.value = false;
         reviewContent.value = response.data.comment;
         reviewRating.value = response.data.rating;
+        alreadyReply.value = response.data.merchant_reply !== null;
+        if (alreadyReply.value) {
+            replyContent.value = response.data.merchant_reply;
+        } else {
+            replyContent.value = '';
+        }
         showReview.value = true;
         //snackbar.success("评价内容：" + response.data.comment + " 评分：" + response.data.rating);
     } else {

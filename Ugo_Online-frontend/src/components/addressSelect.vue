@@ -251,20 +251,31 @@ const showDialog = (use) => {
     // console.log(selectedAddress.value);
     showFor.value = use;
     if (use ==='修改') {
-        curAddrId.value = selectedAddress.value.id;
-        if (curAddrId.value === undefined) {
+        
+        if (selectedAddress.value === undefined) {
             snackbar.error("请先选择一个地址");
             return;
         }
+        curAddrId.value = selectedAddress.value.id;
+        newAddress.value = {
+            recipient_name: selectedAddress.value.recipient_name,
+            phone: selectedAddress.value.phone,
+            province: selectedAddress.value.province,
+            city: selectedAddress.value.city,
+            address: selectedAddress.value.address,
+            is_default: selectedAddress.value.is_default
+        };
+    } else {
+        newAddress.value = {
+            recipient_name: '',
+            phone: '',
+            province: '',
+            city: '',
+            address: '',
+            is_default: false
+        };
     }
-    newAddress.value = {
-        recipient_name: selectedAddress.value.recipient_name,
-        phone: selectedAddress.value.phone,
-        province: selectedAddress.value.province,
-        city: selectedAddress.value.city,
-        address: selectedAddress.value.address,
-        is_default: selectedAddress.value.is_default
-    };
+    
     showAddAddress.value = true;
 };
 
