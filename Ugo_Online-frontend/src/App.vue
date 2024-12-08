@@ -2,10 +2,49 @@
   <v-app :theme="theme">
     <v-app-bar title="UGO Online">
       <template v-slot:append>
+        <!-- <v-btn icon="mdi-bell" @click="showNotify"> -->
+        <v-menu
+          
+          :close-on-content-click="false"
+          location="bottom"
+        > 
+          <template v-slot:activator="{ props }">
+            <v-btn
+              icon="mdi-bell"
+              v-bind="props"
+              @click="showNotify"
+            ></v-btn>
+          </template>
+          <v-card>
+            <v-card-title class="text-h5">
+              通知
+            </v-card-title>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-chip-group filter v-model="selectedNotifyStatus">
+                <v-chip value="readed" selected-class="text-success">已读消息</v-chip>
+                <v-chip value="unread" selected-class="text-warning">未读消息</v-chip>
+              </v-chip-group>
+            </v-card-actions>
+            
+            <v-list>
+              <v-list-item>
+                  <v-list-item-title>Notification 1</v-list-item-title>
+                  placeHolder
+              </v-list-item>
+              <v-divider></v-divider>
+              <v-list-item>
+                  <v-list-item-title>Notification 2</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </v-menu>
+        <!-- </v-btn> -->
         <v-btn 
           :icon="theme ==='light' ? 'mdi-weather-sunny' :'mdi-weather-night'" 
           @click="toggleTheme"
         ></v-btn>
+        
       </template>
     </v-app-bar>
     <v-main>
@@ -102,6 +141,19 @@ watch(user, async (newVal) => {
   } else {
     router.replace('/user/login');
   }
+});
+
+const selectedNotifyStatus = ref('');
+
+const showNotify = () => {
+  // snackbar.show = true;
+  // snackbar.text = 'UGO Online';
+  // snackbar.color = 'primary';
+  // snackbar.timeout = 2000;
+};
+
+watch(selectedNotifyStatus, (newVal) => {
+  console.log(newVal);
 });
 
 </script>
