@@ -135,10 +135,14 @@ export const changePassword = async (old_password: string, new_password: string)
 	return response;
 }
 
-export const getMessage = async (is_read: boolean) => {
-	return server.get({ url: "/message/", params: { is_read: is_read } });
+export const getMessage = async (is_read: boolean, page = 1) => {
+	return server.get({ url: "/message/", params: { is_read: is_read, page: page } });
 }
 
 export const readMessage = async (message_id: number) => {
 	return server.get({ url: "/message/" + message_id + "/" });
+}
+
+export const readAllMessage = async () => {
+	return server.post({ url: "/message/read_all/" });
 }
