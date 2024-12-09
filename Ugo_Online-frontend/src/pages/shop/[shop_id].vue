@@ -77,6 +77,28 @@
 						color="primary"
 					>{{ category.name }}</v-chip>
 				</v-chip-group>
+				<v-chip-group
+					class="my-2"
+					v-model="availableOnly"
+					v-if="user.shops.includes(Number(shop_id))"
+					column
+				>
+					<v-chip
+						key="unavaliableOnly"
+						filter
+						color="red"
+					>只看已下架</v-chip>
+					<v-chip
+						key="avaliableOnly"
+						filter
+						color="primary"
+					>只看未下架</v-chip>
+					<v-chip
+						key="stockOnly"
+						filter
+						color="orange"
+					>只看无库存</v-chip>
+				</v-chip-group>
 			</v-sheet>
 			<v-row v-if="products">
 				<v-col cols="12" md="4" v-for="product in products.products">
@@ -270,6 +292,7 @@
 					</template>
 				</v-data-table-server>
 				<v-pagination
+					class="mt-4"
 					v-model="flowPage"
 					:length="shopFlow.total_page"
 				></v-pagination>
@@ -304,6 +327,8 @@ const priceRange_low = ref(null)
 const priceRange_high = ref(null)
 const searchName = ref('')
 const orderBy = ref(null)
+
+const availableOnly = ref(null)
 
 const productName = ref('')
 const productDescription = ref('')
@@ -362,7 +387,7 @@ watch(flowPage, async () => {
 	await fetchFlow()
 })
 
-watch([chosenCategory, priceRange_low, priceRange_high, searchName, orderBy], async () => {
+watch([chosenCategory, priceRange_low, priceRange_high, searchName, orderBy, availableOnly], async () => {
   page.value = 1
 	await fetchProductList()
 })
@@ -383,7 +408,9 @@ const fetchProductList = async () => {
 		price__gte: priceRange_low.value ? priceRange_low.value : null,
 		price__lte: priceRange_high.value ? priceRange_high.value : null,
 		search: searchName.value ? searchName.value : null,
-		ordering: orderBy.value ? orderBy.value : null
+		ordering: orderBy.value ? orderBy.value : null,
+		status: availableOnly.value === null ? null : (availableOnly.value === 0 ? 'Unavailable' : availableOnly.value === 1 ? 'Available' : null),
+		stock_quantity: availableOnly.value === 2 ? 0 : null
 	}
 	products.value = await getProductList(shop_id, options)
 }

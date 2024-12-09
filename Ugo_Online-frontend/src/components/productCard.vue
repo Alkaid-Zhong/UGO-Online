@@ -7,6 +7,7 @@
 				<span style="font-size: 16px; color: red; font-weight: bold">￥</span>
 				<span class="font-weight-bold text-h5" style="color: red;">
 					{{ product.price }}
+					<v-chip v-if="product.status === 'Unavailable'" size="x-small" color="red" class="mb-1">已下架</v-chip>
 				</span>
 			</v-card-item>
 			<v-card-title class="py-0">
@@ -124,12 +125,19 @@
             color="primary"
 					>编辑商品</v-btn>
 					<v-btn
-						v-if="user.role === 'SELLER' && removeProductCallback !== null"
+						v-if="user.role === 'SELLER' && removeProductCallback !== null && product.status !== 'Unavailable'"
 						color="red"
 						variant="text"
 						@click="onclickDeleteProduct"
 						prepend-icon="mdi-delete"
 					>下架商品</v-btn>
+					<v-btn
+						v-if="user.role === 'SELLER' && removeProductCallback !== null && product.status === 'Unavailable'"
+						color="green"
+						variant="text"
+						@click="onclickOnsaleProduct"
+						prepend-icon="mdi-upload"
+					>重新上架商品</v-btn>
 					<v-btn
 						text="前往商店页"
 						variant="text"
@@ -273,7 +281,7 @@ const onclickGotoShopPage = () => {
 const onclickDeleteProduct = async () => {
 	if((await deleteProduct(shopId, product.id)).success) {
 		removeProductCallback(product.id)
-		snackbar.success('商品删除成功');
+		snackbar.success('商品下架成功');
 	}
 }
 
@@ -283,6 +291,19 @@ const onclickAdd2Card = async () => {
 		snackbar.success(`${product.name} 已加入购物车`);
 	} else {
 		snackbar.error('添加失败');
+	}
+}
+
+const onclickOnsaleProduct = async () => {
+	const formData = new FormData();
+	formData.append('product_id', product.id);
+	formData.append('status', 'Available');
+	const res = await updateProduct(shopId, formData);
+	if (res.success) {
+		snackbar.success('商品上架成功');
+		removeProductCallback(product.id)
+	} else {
+		snackbar.error('商品上架失败');
 	}
 }
 
