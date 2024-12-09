@@ -14,12 +14,12 @@ const server = axios.create({
 	withCredentials: true,
 });
 
-const get = async ({ url, params, showSnackbar = true }: { url: string, params?: any, showSnackbar?: boolean }): Promise<Response> => {
+const get = async ({ url, params, showSnackbar = true, jump = true }: { url: string, params?: any, showSnackbar?: boolean, jump?: boolean }): Promise<Response> => {
 	try {
 		const res = await server.get(url, { params })
 		return res.data
 	} catch (error) {
-		errorHandler(error, showSnackbar);
+		errorHandler(error, showSnackbar, jump);
 		console.error(error);
 		return {
 			success: false,
@@ -108,13 +108,13 @@ const _delete = async ({ url, data, showSnackbar = true }: { url: string, data?:
 	}
 }
 
-const errorHandler = (error: any, showSnackbar = true) => {
+const errorHandler = (error: any, showSnackbar = true, jump = true) => {
 	if (error.response) {
 		const { code, message } = error.response.data;
 		if (showSnackbar) {
 			snackbar.error(message);
 		}
-		if (code === 401) {
+		if (code === 401 && jump) {
 			router.push("/user/login");
 		}
 	} else {

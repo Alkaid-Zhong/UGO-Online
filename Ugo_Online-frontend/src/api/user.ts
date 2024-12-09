@@ -43,9 +43,9 @@ export const registerSeller = async (name: string, phone: string, email: string,
 	});
 };
 
-export const profile = async (showSnackbar = true) => {
+export const profile = async (showSnackbar = true, jump = true) => {
 
-	const response = await server.get({ url: "/user/profile/", showSnackbar: showSnackbar });
+	const response = await server.get({ url: "/user/profile/", showSnackbar: showSnackbar, jump: jump });
 	if (response.success) {
 		user.login = true;
 		user.name = response.data.name;

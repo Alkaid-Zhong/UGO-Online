@@ -175,23 +175,23 @@ const toggleTheme = () => {
 }
 
 onMounted(async () => {
-  const showSnackbar = route.path !== '/user/login';
+  //const showSnackbar = route.path !== '/user/login';
   if (localStorage.getItem('oo_theme')) {
     theme.value = localStorage.getItem('oo_theme');
   } else {
     setSystemTheme();
   }
-  await profile(showSnackbar);
+  await profile(false, false);
 });
 
 watch(user, async (newVal) => {
-  if (newVal.login) {
+  if (newVal.login) { 
     if (route.path === '/user/login') {
       router.replace('/user/profile');
     }
-  } else {
+  } /*else {
     router.replace('/user/login');
-  }
+  }*/
 });
 
 const showMessage = ref(false);
