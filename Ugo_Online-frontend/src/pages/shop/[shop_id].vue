@@ -262,7 +262,7 @@
 				<v-spacer></v-spacer>
 			</v-toolbar>
 			<v-card-item>
-				<p class="mt-2 font-weight-bold text-h5">总营业额：
+				<p class="mt-2 font-weight-bold text-h5">商店资金：
 					<span class="text-h6" style="color: red;">￥</span>
 					<span style="color: red;">{{ shopInfo.total_income }}</span>
 				</p>
@@ -435,9 +435,8 @@ const onclickSplit = async () => {
 		showSplitDialog.value = false
 		splitAmount.value = 0
 		splitSeller.value = null
-	} else {
-		snackbar.error(res.message)
 	}
+	shopInfo.value = await getShopInfo(shop_id)
 	await fetchFlow()
 	splitLoading.value = false
 }
