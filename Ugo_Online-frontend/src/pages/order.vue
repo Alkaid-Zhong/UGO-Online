@@ -509,6 +509,9 @@ const review = (order, item) => {
     curOrder.value = order;
     curItem.value = item;
     createReview.value = !item.has_reviewed;
+    reviewContent.value = '';
+    reviewRating.value = 0;
+    alreadyReply.value = false;
     console.log(createReview.value);
     showReview.value = true;
 }
