@@ -1,7 +1,7 @@
 <template>
 	<v-container>
 		<v-carousel
-			height="400"
+			:height="'calc(30vh - 64px)'"
 			show-arrows="hover"
 			cycle
 			interval="5000"
@@ -17,9 +17,7 @@
 					height="100%"
 				>
 					<div class="d-flex fill-height justify-center align-center">
-						<div class="text-h2">
-							{{ slide }}
-						</div>
+						<p :style="$vuetify.display.sm || $vuetify.display.md || $vuetify.display.lg || $vuetify.display.xl || $vuetify.display.xxl ? {fontSize: '3.6rem', fontWeight: 'lighter'} : { fontSize: '2.5rem', fontWeight: 'bold' }">{{ slide }}</p>
 					</div>
 				</v-sheet>
 			</v-carousel-item>
