@@ -420,7 +420,7 @@
 - 权限要求：需要认证，且用户角色为商家，并且是商铺的现有管理者
 - 查询参数
   - page 整数，请求的页码
-  - transaction_type 交易类型，Income/Refund
+  - transaction_type 交易类型，Income/Refund/Divide
   - date 日期，格式为YYYY-MM-DD
   - ordering 排序字段，可选：'date', 'amount'，在前面加‘-’表示降序
   - 默认按照最近到最远排序
@@ -462,6 +462,98 @@
         "total_page": 1,
         "cur_page": 1
     }
+}
+```
+
+### 获取商店的拥有者列表
+
+- url: `shop/<int:shop_id>/owners/`
+- get
+- 权限要求：需要认证
+- 返回结果格式
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": [
+        {
+            "name": "31",
+            "email": "seller@seller.com",
+            "role": "SELLER",
+            "shop": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                8,
+                12
+            ],
+            "money": "0.00",
+            "phone": "21321313"
+        },
+        {
+            "name": "UGO Online 官方",
+            "email": "ugo@on.line",
+            "role": "SELLER",
+            "shop": [
+                6,
+                9,
+                10,
+                19,
+                34
+            ],
+            "money": "0.00",
+            "phone": "119"
+        },
+        {
+            "name": "1231",
+            "email": "haha@haha.com",
+            "role": "SELLER",
+            "shop": [
+                6
+            ],
+            "money": "0.00",
+            "phone": "4444"
+        },
+        {
+            "name": "seller1",
+            "email": "seller1@buaa.edu.cn",
+            "role": "SELLER",
+            "shop": [
+                5,
+                6,
+                23
+            ],
+            "money": "0.00",
+            "phone": "13066668888"
+        },
+        {
+            "name": "UUQ_test",
+            "email": "123@321.123",
+            "role": "SELLER",
+            "shop": [
+                6
+            ],
+            "money": "0.00",
+            "phone": "321"
+        }
+    ]
+}
+```
+
+### 分成
+
+- url: `shop/<int:shop_id>/split/`
+- post
+- 权限要求：需要认证
+- 请求数据格式
+```json
+{
+  "given_id": 1,
+  "money": 100
 }
 ```
 

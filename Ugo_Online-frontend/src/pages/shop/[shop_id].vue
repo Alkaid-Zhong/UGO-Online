@@ -48,21 +48,25 @@
 					:prepend-icon="orderBy === 'price'? 'mdi-sort-descending' : orderBy === '-price' ? 'mdi-sort-ascending' : ''" 
 					@click="onclickOrderBy('price')"
 					variant="text"
+					:color="orderBy === 'price' || orderBy === '-price' ? 'green' : ''"
 				>价格</v-btn>
 				<v-btn 
 					:prepend-icon="orderBy === 'name' ? 'mdi-sort-descending' : orderBy === '-name' ? 'mdi-sort-ascending' : ''" 
 					@click="onclickOrderBy('name')"
 					variant="text"
+					:color="orderBy === 'name' || orderBy === '-name' ? 'green' : ''"
 				>名称</v-btn>
 				<v-btn 
 					:prepend-icon="orderBy === 'rating'? 'mdi-sort-descending' : orderBy === '-rating' ? 'mdi-sort-ascending' : ''" 
 					@click="onclickOrderBy('rating')"
 					variant="text"
+					:color="orderBy === 'rating' || orderBy === '-rating' ? 'green' : ''"
 				>评分</v-btn>
 				<v-btn 
 					:prepend-icon="orderBy === 'created_at'? 'mdi-sort-descending' : orderBy === '-created_at' ? 'mdi-sort-ascending' : ''" 
 					@click="onclickOrderBy('created_at')"
 					variant="text"
+					:color="orderBy === 'created_at' || orderBy === '-created_at' ? 'green' : ''"
 				>上架时间</v-btn>
 				<v-chip-group
 					class="my-2"
@@ -76,6 +80,28 @@
 						filter
 						color="primary"
 					>{{ category.name }}</v-chip>
+				</v-chip-group>
+				<v-chip-group
+					class="my-2"
+					v-model="availableOnly"
+					v-if="user.shops.includes(Number(shop_id))"
+					column
+				>
+					<v-chip
+						key="unavaliableOnly"
+						filter
+						color="red"
+					>只看已下架</v-chip>
+					<v-chip
+						key="avaliableOnly"
+						filter
+						color="primary"
+					>只看未下架</v-chip>
+					<v-chip
+						key="stockOnly"
+						filter
+						color="orange"
+					>只看无库存</v-chip>
 				</v-chip-group>
 			</v-sheet>
 			<v-row v-if="products">
@@ -91,6 +117,7 @@
 		</div>
     <v-pagination
       v-if="products"
+			class="mt-4"
       v-model="page"
       :length="products.total_page"
     ></v-pagination>
@@ -235,6 +262,17 @@
 				<v-spacer></v-spacer>
 			</v-toolbar>
 			<v-card-item>
+				<p class="mt-2 font-weight-bold text-h5">商店资金：
+					<span class="text-h6" style="color: red;">￥</span>
+					<span style="color: red;">{{ shopInfo.total_income }}</span>
+				</p>
+			</v-card-item>
+			<v-card-item>
+				<v-btn
+					color="orange"
+					@click="showSplitDialog = true"
+					:prepend-icon="'mdi-cash-multiple'"
+				>为商家分成</v-btn>
 				<div class="d-flex align-center justify-space-between mb-4">
 					<v-icon class="mr-4">mdi-filter</v-icon>
 					<v-chip-group
@@ -243,6 +281,7 @@
 					>
 						<v-chip color="green">只看收入</v-chip>
 						<v-chip color="red">只看退款</v-chip>
+						<v-chip color="purple">只看分成</v-chip>
 					</v-chip-group>
 					<v-text-field
 						class="mt-4"
@@ -266,13 +305,53 @@
 					</template>
 					<template v-slot:item.transaction_type="{ item }">
 						<v-chip v-if="item.transaction_type === 'Income'" color="green" small>收入</v-chip>
-						<v-chip v-else color="red" small>退款</v-chip>
+						<v-chip v-else-if="item.transaction_type === 'Refund'" color="red" small>退款</v-chip>
+						<v-chip v-else color="purple" small>分成</v-chip>
 					</template>
 				</v-data-table-server>
 				<v-pagination
+					class="mt-4"
 					v-model="flowPage"
 					:length="shopFlow.total_page"
 				></v-pagination>
+			</v-card-item>
+		</v-card>
+	</v-dialog>
+
+	<v-dialog
+		v-model="showSplitDialog"
+		transition="dialog-bottom-transition"
+		max-width="600px"
+	>
+		<v-card>
+			<v-toolbar>
+				<v-btn
+					icon="mdi-close"
+					@click="showSplitDialog = false"
+				></v-btn>
+				<v-toolbar-title>分成商家</v-toolbar-title>
+			</v-toolbar>
+			<v-card-item>
+				<v-text-field
+					label="分成金额"
+					v-model="splitAmount"
+					type="number"
+					required
+				></v-text-field>
+				<v-select
+					label="分成商家"
+					v-model="splitSeller"
+					required
+					:items="shopInfo.sellers"
+					item-title="name"
+					item-value="id"
+				></v-select>
+				<v-btn
+					color="primary"
+					@click="onclickSplit"
+					text="确认分成"
+					:loading="splitLoading"
+				></v-btn>
 			</v-card-item>
 		</v-card>
 	</v-dialog>
@@ -282,7 +361,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { user } from '@/store/user';
-import { getInviteCode, getShopFlow, getShopInfo } from '@/api/shop';
+import { getInviteCode, getShopFlow, getShopInfo, splitToSeller } from '@/api/shop';
 import { addProduct, getCategories, getProductList, getShopCategories } from '@/api/product';
 import snackbar from '@/api/snackbar';
 import productCard from '@/components/productCard.vue';
@@ -305,6 +384,8 @@ const priceRange_high = ref(null)
 const searchName = ref('')
 const orderBy = ref(null)
 
+const availableOnly = ref(null)
+
 const productName = ref('')
 const productDescription = ref('')
 const productPrice = ref('')
@@ -324,6 +405,11 @@ const flowPage = ref(1)
 const flowChoices = ref(null)
 const flowDate = ref('')
 
+const showSplitDialog = ref(false)
+const splitAmount = ref(0)
+const splitSeller = ref(null)
+const splitLoading = ref(false)
+
 const flowHeaders = [
 	{ title: '流水号', key: 'id', sortable: false },
 	{ title: '订单号', key: 'order_id', sortable: false },
@@ -332,6 +418,28 @@ const flowHeaders = [
 	{ title: '交易时间', key: 'date' },
 	{ title: '描述', key: 'description', sortable: false }
 ]
+
+const onclickSplit = async () => {
+	if (!splitAmount.value || splitAmount.value <= 0) {
+		snackbar.error('分成金额必须大于0')
+		return
+	}
+	if (!splitSeller.value) {
+		snackbar.error('分成商家不能为空')
+		return
+	}
+	splitLoading.value = true
+	const res = await splitToSeller(shop_id, Number(splitSeller.value), Number(splitAmount.value))
+	if (res.success) {
+		snackbar.success('分成成功')
+		showSplitDialog.value = false
+		splitAmount.value = 0
+		splitSeller.value = null
+	}
+	shopInfo.value = await getShopInfo(shop_id)
+	await fetchFlow()
+	splitLoading.value = false
+}
 
 const onclickOrderBy = ( option ) => {
 	const nowOption = orderBy.value
@@ -362,7 +470,7 @@ watch(flowPage, async () => {
 	await fetchFlow()
 })
 
-watch([chosenCategory, priceRange_low, priceRange_high, searchName, orderBy], async () => {
+watch([chosenCategory, priceRange_low, priceRange_high, searchName, orderBy, availableOnly], async () => {
   page.value = 1
 	await fetchProductList()
 })
@@ -383,7 +491,9 @@ const fetchProductList = async () => {
 		price__gte: priceRange_low.value ? priceRange_low.value : null,
 		price__lte: priceRange_high.value ? priceRange_high.value : null,
 		search: searchName.value ? searchName.value : null,
-		ordering: orderBy.value ? orderBy.value : null
+		ordering: orderBy.value ? orderBy.value : null,
+		status: availableOnly.value === null ? null : (availableOnly.value === 0 ? 'Unavailable' : availableOnly.value === 1 ? 'Available' : null),
+		stock_quantity: availableOnly.value === 2 ? 0 : null
 	}
 	products.value = await getProductList(shop_id, options)
 }
@@ -417,6 +527,8 @@ const fetchFlow = async ( sortOptions = {} ) => {
 		options.transaction_type = 'Income'
 	} else if (flowChoices.value === 1) {
 		options.transaction_type = 'Refund'
+	} else if (flowChoices.value === 2) {
+		options.transaction_type = 'Divide'
 	}
 	if (flowDate.value && flowDate.value.trim() !== '') {
 		options.date = flowDate.value

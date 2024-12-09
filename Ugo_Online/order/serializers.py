@@ -17,7 +17,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'product', 'product_id', 'quantity', 'unit_price', 'total_price', 'has_reviewed', 'review_has_reply']
+        fields = ['id', 'product', 'product_id', 'quantity', 'unit_price', 'total_price', 'has_reviewed']
         read_only_fields = ['id', 'product', 'unit_price', 'total_price', 'has_reviewed', 'review_has_reply']
 
     def get_has_reviewed(self, obj):

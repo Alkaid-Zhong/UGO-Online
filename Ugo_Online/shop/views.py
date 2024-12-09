@@ -6,13 +6,17 @@ from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+
+from accounts.models import User
 from accounts.permissions import IsSeller, IsCustomer
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
+from accounts.serializers import ProfileSerializer
 from order.models import OrderItem
 from shop.filters import ShopTransactionFilter
+from shop.pagination import SmallResultsSetPagination
 from utils import get_error_message, new_message
 from Ugo_Online.utils import api_response, list_response
 from shop.models import SellerShop, Shop, InvitationCode, Product, Category, ShopTransaction, Review
@@ -107,7 +111,7 @@ class JoinShopByCodeView(APIView):
 
             sellers = shop.sellers.all()
             for seller in sellers:
-                new_message(seller, f"[{shop}] 用户 {user} 加入了您的商店。")
+                new_message(seller, f"[{shop}] 用户 {user} 加入了您的商店。", -1, shop.id)
 
             SellerShop.objects.create(shop=shop, seller=user)
 
@@ -325,9 +329,21 @@ class ReviewCreateView(APIView):
     permission_classes = [IsAuthenticated, IsCustomer]
 
     def post(self, request):
+        order_id = request.data.get('order')
+
+        try:
+            order = OrderItem.objects.get(id=order_id)
+        except OrderItem.DoesNotExist:
+            return api_response(False, code=404, message='订单不存在')
+
         serializer = ReviewSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
+
+            sellers = order.product.shop.sellers.all()
+            for seller in sellers:
+                new_message(seller, f"[{order.product.shop}] 您的商品 {order.product} 有新的评价，快去看看吧！", order.id, order.product.shop.id)
+
             return api_response(True, message='评价提交成功', data=serializer.data)
         else:
             return api_response(False, code=400, message=get_error_message(serializer.errors), data=serializer.errors)
@@ -345,6 +361,7 @@ class ReviewReplyView(APIView):
         serializer = ReviewReplySerializer(review, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
+            new_message(review.user, f"[{review.product.shop}] 您对商品 {review.product} 的评价已被商家回复，快去看看吧！", review.order.id, review.product.shop.id)
             return api_response(True, message='回复成功')
         else:
             return api_response(False, code=400, message=get_error_message(serializer.errors), data=serializer.errors)
@@ -365,7 +382,7 @@ class ProductDetailView(APIView):
 class ProductReviewListView(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ReviewListSerializer
-    pagination_class = PageNumberPagination  # 可选，添加分页功能
+    pagination_class = SmallResultsSetPagination    # 可选，添加分页功能
 
     def get_queryset(self):
         product_id = self.kwargs.get('product_id')
@@ -399,4 +416,56 @@ class OrderItemReviewView(APIView):
             return api_response(True, data=serializer.data)
         except Review.DoesNotExist:
             return api_response(False, code=404, message='评论不存在')
+
+
+class ShopOwnersView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, shop_id):
+        try:
+            shop = Shop.objects.get(id=shop_id)
+        except Shop.DoesNotExist:
+            return api_response(False, code=404, message='店铺不存在')
+        shop_owners = shop.sellers.all()
+
+        serializer = ProfileSerializer(shop_owners, many=True, context={'request': request})
+        return api_response(True, data=serializer.data)
+
+
+# 商店分成
+class ShopCommissionView(APIView):
+    permission_classes = [IsAuthenticated, IsSeller]
+
+    def post(self, request, shop_id):
+        try:
+            shop = Shop.objects.get(id=shop_id)
+        except Shop.DoesNotExist:
+            return api_response(False, code=404, message='店铺不存在')
+
+        getter_id = request.data.get("given_id")
+
+        try :
+            getter = User.objects.get(id=getter_id)
+        except User.DoesNotExist:
+            return api_response(False, code=404, message='用户不存在')
+
+        money = request.data.get("money")
+        if shop.total_income < money:
+            return api_response(False, code=404, message='店铺余额不足')
+        shop.total_income -= money
+        shop.save()
+        getter.money += money
+        getter.save()
+
+        ShopTransaction.objects.create(
+            shop=shop,
+            order=None,
+            amount=-money,
+            transaction_type='Divide',
+            description=f"Divided {money} to {getter}"
+        )
+
+        new_message(getter, f'[{shop}] 您得到了 {money} 元的分成！', -1, shop.id)
+
+        return api_response(True, message='分成成功')
 

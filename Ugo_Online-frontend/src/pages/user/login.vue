@@ -1,7 +1,10 @@
 <template>
   <v-container>
     <v-sheet
-      class="pa-6 rounded-lg"
+      class="pa-6 rounded-lg mx-auto"
+      elevation="2"
+      :style="{ marginTop: register ? 'calc((100vh - 638px) / 3)' : 'calc((100vh - 388px) / 3)', transition: 'all 0.3s ease-in-out' }"
+      max-width="500"
     >
       <h2 class="headline mb-4">{{ register? `注册成为${registerRole === 'CUSTOMER' ? '顾客' : '商家'}` : '登录' }}</h2>
       <v-form>
@@ -97,6 +100,7 @@
 import { ref } from 'vue'
 import { login, registerCustomer, registerSeller } from '@/api/user'
 import snackbar from '@/api/snackbar';
+import { ca } from 'vuetify/locale';
 
 const name = ref('')
 const phone = ref('')

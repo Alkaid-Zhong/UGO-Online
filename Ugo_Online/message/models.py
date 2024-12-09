@@ -6,6 +6,8 @@ class Message(models.Model):
     content = models.TextField()
     created_time = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    order_id = models.IntegerField(default=-1)
+    shop_id = models.IntegerField(default=-1)
 
 
 

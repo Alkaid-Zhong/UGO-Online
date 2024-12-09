@@ -141,7 +141,7 @@ class OrderPaymentView(APIView):
                 sellers = shop.sellers.all()
 
                 for seller in sellers:
-                    new_message(seller, f'[{order.shop.name}] 用户 {order.user} 已支付订单 {order.id}，请尽快发货！')
+                    new_message(seller, f'[{order.shop.name}] 用户 {order.user} 已支付订单 {order.id}，请尽快发货！', order.id, order.shop.id)
 
             # 更新订单状态
             orders.update(status='Payment Received')
@@ -176,7 +176,7 @@ class CancelOrderView(APIView):
         sellers = order.shop.sellers.all()
 
         for seller in sellers:
-            new_message(seller, f'[{order.shop.name}] 用户 {order.user} 取消了订单 {order.id}！')
+            new_message(seller, f'[{order.shop.name}] 用户 {order.user} 取消了订单 {order.id}！', order.id, order.shop.id)
 
         return api_response(True, message='订单已取消')
 
@@ -224,7 +224,7 @@ class RefundOrderItemsView(APIView):
             product.save()
 
             for seller in sellers:
-                new_message(seller, f'[{order.shop.name}] 用户 {order.user} 退回了订单 {order.id} 中的商品项 {item.product}！')
+                new_message(seller, f'[{order.shop.name}] 用户 {order.user} 退回了订单 {order.id} 中的商品项 {item.product}！', order.id, order.shop.id)
 
             total_refund += item.total_price
 
@@ -271,7 +271,7 @@ class UpdateOrderStatus2ShippedView(APIView):
         order.status = 'Shipped'
         order.save()
 
-        new_message(order.user, f'您的订单 {order.id} 已发货，请在收到货后确认收货！')
+        new_message(order.user, f'您的订单 {order.id} 已发货，请在收到货后确认收货！', order.id, order.shop.id)
 
         return api_response(True, message='订单状态已更新为已发货')
 
@@ -325,7 +325,7 @@ class UpdateOrderAddressView(APIView):
             # print(sellers)
             for seller in sellers:
                 # print(seller)
-                new_message(seller, f'[{order.shop}] 订单 {order.id} 的地址已修改为 "{address}"！')
+                new_message(seller, f'[{order.shop}] 订单 {order.id} 的地址已修改为 "{address}"！', order.id, order.shop.id)
 
             return api_response(True, message='订单地址修改成功')
         else:

@@ -1,6 +1,10 @@
 <template>
   <v-app :theme="theme">
-    <v-app-bar title="UGO Online">
+    <v-app-bar>
+      <v-app-bar-title>
+        <v-icon class="mr-2">mdi-store</v-icon>
+        UGO Online
+      </v-app-bar-title>
       <template v-slot:append>
         <!-- <v-btn icon="mdi-bell" @click="showNotify"> -->
         <v-menu

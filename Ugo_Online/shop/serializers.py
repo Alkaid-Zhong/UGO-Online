@@ -16,8 +16,8 @@ class ShopSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Shop
-        fields = ['name', 'address', 'description', 'create_date', 'id']
-        read_only_fields = ['create_date', 'id']
+        fields = ['name', 'address', 'description', 'create_date', 'id', 'total_income']
+        read_only_fields = ['create_date', 'id', 'total_income']
 
 
 class ShopProfileSerializer(serializers.ModelSerializer):
@@ -156,7 +156,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         if not order.exists():
             raise serializers.ValidationError({'error': "该订单未完成，无法评价"})
 
-        print(order.first())
+        # print(order.first())
 
         if Review.objects.filter(user=user, order=order.first(), product=product).exists():
             raise serializers.ValidationError({'error': "您已评价过该订单，无法重复评价"})
