@@ -12,7 +12,7 @@
             <v-btn
               icon="mdi-bell"
               v-bind="props"
-              @click="showNotify"
+              @click="reloadMessage"
             ></v-btn>
           </template>
           <v-card>
@@ -22,20 +22,27 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-chip-group filter v-model="selectedNotifyStatus">
-                <v-chip value="readed" selected-class="text-success">已读消息</v-chip>
-                <v-chip value="unread" selected-class="text-warning">未读消息</v-chip>
+                <v-chip :value="true" selected-class="text-success">已读消息</v-chip>
+                <v-chip :value="false" selected-class="text-warning">未读消息</v-chip>
               </v-chip-group>
+                <v-tooltip
+                  text="全部标记为已读"
+                  location="bottom"
+                >
+                  <template  v-slot:activator="{ props }">
+                    <v-btn icon="mdi-check-all" v-bind="props">
+                    </v-btn>
+                  </template>
+                </v-tooltip> 
+
             </v-card-actions>
             
             <v-list>
-              <v-list-item>
-                  <v-list-item-title>Notification 1</v-list-item-title>
-                  placeHolder
+              <v-list-item v-for="message in messages">
+                  <v-list-item-title>{{ message.content }}</v-list-item-title>
+                  <v-list-item-subtitle>{{formatDate(message.created_time)}}</v-list-item-subtitle>
               </v-list-item>
               <v-divider></v-divider>
-              <v-list-item>
-                  <v-list-item-title>Notification 2</v-list-item-title>
-              </v-list-item>
             </v-list>
           </v-card>
         </v-menu>
@@ -103,7 +110,7 @@ import { ref, onMounted, watch } from 'vue';
 import router from './router';
 import { user } from './store/user'
 import { snackbar } from './store/app';
-import { profile, logout } from './api/user';
+import { profile, logout, getMessage, readMessage } from './api/user';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -143,17 +150,35 @@ watch(user, async (newVal) => {
   }
 });
 
-const selectedNotifyStatus = ref('');
-
-const showNotify = () => {
-  // snackbar.show = true;
-  // snackbar.text = 'UGO Online';
-  // snackbar.color = 'primary';
-  // snackbar.timeout = 2000;
+const selectedNotifyStatus = ref(null);
+const messages = ref([]);
+const reloadMessage = async() => {
+  console.log(selectedNotifyStatus.value);
+  const response = await getMessage(selectedNotifyStatus.value);
+  if (response.success) {
+    messages.value = response.data.messages;
+    console.log(messages.value);
+  } else {
+    snackbar.show = true;
+    snackbar.text = response.message;
+    snackbar.color = 'error';
+  }
 };
 
 watch(selectedNotifyStatus, (newVal) => {
   console.log(newVal);
+  reloadMessage();
 });
+
+const formatDate = (dateStr)=> {
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hour = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}年${month}月${day}日 ${hour}:${min}:${seconds}`;
+};
 
 </script>

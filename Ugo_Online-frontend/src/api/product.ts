@@ -69,7 +69,9 @@ export const getProductList = async (
         price__gte: number;
         price__lte: number;
         search: string;
-    } = {page: 1, category: null, price__gte: null, price__lte: null, search: null}
+        status: 'Available' | 'Unavailable';
+        stock_quantity: null | number;
+    } = {page: 1, category: null, price__gte: null, price__lte: null, search: null, status: null, stock_quantity: null}
 ) => { 
     return (await server.get({
         url: `/shop/${shopId}/products/`,
