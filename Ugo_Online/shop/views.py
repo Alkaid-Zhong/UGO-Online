@@ -201,7 +201,7 @@ class AddProductView(APIView):
             return api_response(False, code=300, message='商品不存在')
         if not SellerShop.objects.filter(seller=user, shop=shop).exists():
             return api_response(False, code=301, message='您不是该商铺的管理者')
-        product.status = False
+        product.status = 'Unavailable'
         product.save()
         return api_response(True, code=0, message='商品删除成功')
 
@@ -215,6 +215,7 @@ class ProductListView(ListAPIView):
         'category': ['exact'],
         'price': ['gte', 'lte'],
         'status': ['exact'],
+        'stock_quantity': ['exact']
     }
     search_fields = ['name', 'description', 'shop__name']
     ordering_fields = ['average_rating', 'name', 'create_date', 'price', 'sales_volume']
@@ -229,9 +230,9 @@ class ProductListView(ListAPIView):
             if self.request.user.is_authenticated and SellerShop.objects.filter(seller=self.request.user, shop=self.shop).exists():
                 queryset = Product.objects.filter(shop=self.shop)
             else:
-                queryset = Product.objects.filter(shop=self.shop, status='Available')
+                queryset = Product.objects.filter(shop=self.shop, status='Available', stock_quantity__gt=0)
         else:
-            queryset = Product.objects.filter(status='Available')
+            queryset = Product.objects.filter(status='Available', stock_quantity__gt=0)
         return queryset.annotate(
             average_rating=Avg('reviews__rating')
         )

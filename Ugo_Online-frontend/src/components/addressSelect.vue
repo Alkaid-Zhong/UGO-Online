@@ -251,8 +251,7 @@ const showDialog = (use) => {
     // console.log(selectedAddress.value);
     showFor.value = use;
     if (use ==='修改') {
-        
-        if (selectedAddress.value === undefined) {
+        if (selectedAddress.value === undefined || selectedAddress.value.id === undefined) {
             snackbar.error("请先选择一个地址");
             return;
         }
