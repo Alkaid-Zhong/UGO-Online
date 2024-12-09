@@ -257,6 +257,12 @@
 				<v-spacer></v-spacer>
 			</v-toolbar>
 			<v-card-item>
+				<p class="mt-2 font-weight-bold text-h5">总营业额：
+					<span class="text-h6" style="color: red;">￥</span>
+					<span style="color: red;">{{ shopInfo.total_income }}</span>
+				</p>
+			</v-card-item>
+			<v-card-item>
 				<div class="d-flex align-center justify-space-between mb-4">
 					<v-icon class="mr-4">mdi-filter</v-icon>
 					<v-chip-group
