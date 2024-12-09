@@ -108,7 +108,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['name', 'email', 'role', 'shop', 'money', 'phone']
+        fields = ['name', 'email', 'role', 'shop', 'money', 'phone', 'id']
 
     def get_shop(self, obj):
         return [shop.id for shop in obj.shops.all()]
