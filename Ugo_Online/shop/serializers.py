@@ -156,7 +156,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         if not order.exists():
             raise serializers.ValidationError({'error': "该订单未完成，无法评价"})
 
-        print(order.first())
+        # print(order.first())
 
         if Review.objects.filter(user=user, order=order.first(), product=product).exists():
             raise serializers.ValidationError({'error': "您已评价过该订单，无法重复评价"})
