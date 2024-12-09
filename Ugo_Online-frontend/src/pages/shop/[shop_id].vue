@@ -117,6 +117,7 @@
 		</div>
     <v-pagination
       v-if="products"
+			class="mt-4"
       v-model="page"
       :length="products.total_page"
     ></v-pagination>
