@@ -53,7 +53,7 @@
 			</v-chip-group>
 		</v-sheet>
 		<div v-if="!loading">
-			<v-infinite-scroll :items="items" :onLoad="fetchProducts" >
+			<v-infinite-scroll :items="items" :onLoad="fetchProducts" class="pa-1">
 				<template #empty>
 					<p class="text-h6 font-weight-bold mt-4">没有更多的商品了</p>
 				</template>

@@ -156,7 +156,6 @@ import { user } from './store/user'
 import { snackbar } from './store/app';
 import { profile, logout, getMessage, readMessage, readAllMessage } from './api/user';
 import { useRoute } from 'vue-router';
-import { id } from 'vuetify/locale';
 
 const route = useRoute();
 const theme = ref('dark')
