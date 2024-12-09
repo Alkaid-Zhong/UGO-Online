@@ -189,7 +189,7 @@ class AddMoneyView(APIView):
         serializer = AddMoneySerializer(instance=request.user, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            new_message(request.user, "充值成功，账户当前余额为 " + str(request.user.money) + " 元。")
+            new_message(request.user, "充值成功，账户当前余额为 " + str(request.user.money) + " 元。", -1)
             return api_response(True, message='充值成功', data=serializer.data)
         else:
             return api_response(False, code=500, message=get_error_message(serializer.errors), data=serializer.errors)
