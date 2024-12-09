@@ -268,6 +268,11 @@
 				</p>
 			</v-card-item>
 			<v-card-item>
+				<v-btn
+					color="orange"
+					@click="showSplitDialog = true"
+					:prepend-icon="'mdi-cash-multiple'"
+				>为商家分成</v-btn>
 				<div class="d-flex align-center justify-space-between mb-4">
 					<v-icon class="mr-4">mdi-filter</v-icon>
 					<v-chip-group
@@ -276,6 +281,7 @@
 					>
 						<v-chip color="green">只看收入</v-chip>
 						<v-chip color="red">只看退款</v-chip>
+						<v-chip color="purple">只看分成</v-chip>
 					</v-chip-group>
 					<v-text-field
 						class="mt-4"
@@ -299,7 +305,8 @@
 					</template>
 					<template v-slot:item.transaction_type="{ item }">
 						<v-chip v-if="item.transaction_type === 'Income'" color="green" small>收入</v-chip>
-						<v-chip v-else color="red" small>退款</v-chip>
+						<v-chip v-else-if="item.transaction_type === 'Refund'" color="red" small>退款</v-chip>
+						<v-chip v-else color="purple" small>分成</v-chip>
 					</template>
 				</v-data-table-server>
 				<v-pagination
@@ -310,13 +317,51 @@
 			</v-card-item>
 		</v-card>
 	</v-dialog>
+
+	<v-dialog
+		v-model="showSplitDialog"
+		transition="dialog-bottom-transition"
+		max-width="600px"
+	>
+		<v-card>
+			<v-toolbar>
+				<v-btn
+					icon="mdi-close"
+					@click="showSplitDialog = false"
+				></v-btn>
+				<v-toolbar-title>分成商家</v-toolbar-title>
+			</v-toolbar>
+			<v-card-item>
+				<v-text-field
+					label="分成金额"
+					v-model="splitAmount"
+					type="number"
+					required
+				></v-text-field>
+				<v-select
+					label="分成商家"
+					v-model="splitSeller"
+					required
+					:items="shopInfo.sellers"
+					item-title="name"
+					item-value="id"
+				></v-select>
+				<v-btn
+					color="primary"
+					@click="onclickSplit"
+					text="确认分成"
+					:loading="splitLoading"
+				></v-btn>
+			</v-card-item>
+		</v-card>
+	</v-dialog>
 	
 </template>
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { user } from '@/store/user';
-import { getInviteCode, getShopFlow, getShopInfo } from '@/api/shop';
+import { getInviteCode, getShopFlow, getShopInfo, splitToSeller } from '@/api/shop';
 import { addProduct, getCategories, getProductList, getShopCategories } from '@/api/product';
 import snackbar from '@/api/snackbar';
 import productCard from '@/components/productCard.vue';
@@ -360,6 +405,11 @@ const flowPage = ref(1)
 const flowChoices = ref(null)
 const flowDate = ref('')
 
+const showSplitDialog = ref(false)
+const splitAmount = ref(0)
+const splitSeller = ref(null)
+const splitLoading = ref(false)
+
 const flowHeaders = [
 	{ title: '流水号', key: 'id', sortable: false },
 	{ title: '订单号', key: 'order_id', sortable: false },
@@ -368,6 +418,29 @@ const flowHeaders = [
 	{ title: '交易时间', key: 'date' },
 	{ title: '描述', key: 'description', sortable: false }
 ]
+
+const onclickSplit = async () => {
+	if (!splitAmount.value || splitAmount.value <= 0) {
+		snackbar.error('分成金额必须大于0')
+		return
+	}
+	if (!splitSeller.value) {
+		snackbar.error('分成商家不能为空')
+		return
+	}
+	splitLoading.value = true
+	const res = await splitToSeller(shop_id, Number(splitSeller.value), Number(splitAmount.value))
+	if (res.success) {
+		snackbar.success('分成成功')
+		showSplitDialog.value = false
+		splitAmount.value = 0
+		splitSeller.value = null
+	} else {
+		snackbar.error(res.message)
+	}
+	await fetchFlow()
+	splitLoading.value = false
+}
 
 const onclickOrderBy = ( option ) => {
 	const nowOption = orderBy.value
@@ -455,6 +528,8 @@ const fetchFlow = async ( sortOptions = {} ) => {
 		options.transaction_type = 'Income'
 	} else if (flowChoices.value === 1) {
 		options.transaction_type = 'Refund'
+	} else if (flowChoices.value === 2) {
+		options.transaction_type = 'Divide'
 	}
 	if (flowDate.value && flowDate.value.trim() !== '') {
 		options.date = flowDate.value

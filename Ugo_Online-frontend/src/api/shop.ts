@@ -97,3 +97,10 @@ export const getShopFlow = async (
         }
     });
 }
+
+export const splitToSeller = async (shop_id: number, given_id: number, money: number) => {
+    return await server.post({
+        url: `/shop/${shop_id}/split/`,    
+        data: { given_id, money }
+    });
+}
