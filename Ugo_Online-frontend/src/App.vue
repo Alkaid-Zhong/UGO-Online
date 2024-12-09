@@ -11,7 +11,6 @@
           v-model="showMessage"
           :close-on-content-click="false"
           location="bottom"
-          
         > 
           <template v-slot:activator="{ props }">
             <v-btn
@@ -19,7 +18,7 @@
               v-bind="props"
             ></v-btn>
           </template>
-          <v-card :min-width="minw===0?'420px':minw" max-height="400" id="first-card">
+          <v-card :min-width="minw===0?'420px':minw" max-width="500px" max-height="400" id="first-card">
             <v-card-title class="text-h5">
               通知
             </v-card-title>
@@ -43,7 +42,7 @@
             
             <v-divider></v-divider>
             <!-- <transition-group mode="out-in"> -->
-            <v-list v-if="!messageLoading" class="text-center" key="messages">
+            <v-list v-if="!messageLoading" key="messages">
               <transition-group name="list" mode="out-in">
                 <div v-for="message in messages" :key="message.id">
                 <v-list-item lines="two" @click="messageClick(message)">
@@ -51,11 +50,11 @@
                     <v-list-item-text>{{ message.content }}</v-list-item-text>
                     <v-list-item-subtitle>{{formatDate(message.created_time)}}</v-list-item-subtitle>
                     <template #append v-if="message.is_read === false">
-                        <v-btn icon="mdi-check" @click="readNotify(message)" class="rounded-0" elevation="0"></v-btn>
-                    </template>
-                </v-list-item>
-                </div>
-              </transition-group>
+                        <v-btn icon="mdi-check" @click.stop="readNotify(message)" class="rounded-0" elevation="0"></v-btn>
+                      </template>
+                    </v-list-item>
+                    </div>
+                    </transition-group>
               
                 <v-card-text v-if="messages.length===0" class="text-center">
                 还没有{{selectedNotifyStatus === undefined? "":(selectedNotifyStatus===true?"已读":"未读")}}消息噢
@@ -63,7 +62,6 @@
             </v-list>
             <v-skeleton-loader key="messageLoading" boilerplate v-else type="paragraph"></v-skeleton-loader>
             <!-- </transition-group> -->
-            
           </v-card>
         </v-menu>
         <!-- </v-btn> -->
@@ -190,6 +188,8 @@ const messageClick = async(message)=> {
       router.push({path: `/order`,query:{id:message.order_id, shop:message.shop_id}});
     }
     
+  } else if (message.shop_id !== -1) {
+    router.push({path: `/shop/${message.shop_id}`});
   }
 }
 

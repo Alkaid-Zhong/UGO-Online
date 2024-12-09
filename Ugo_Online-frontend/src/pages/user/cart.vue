@@ -81,7 +81,7 @@
                                   <v-col cols="3" class="pa-0">
                                     <v-responsive aspect-ratio="1" width="100%">
                                       <v-btn @click="decreaseQuantity(item)" class="w-100 h-100" block tile 
-                                      style=" border: 1px solid #d6d6d6">
+                                      style=" border: 1px solid #d6d6d6" :disabled="item.product_status === 'Unavailable'">
                                       <v-icon size="midium">mdi-minus</v-icon>
                                     </v-btn>
                                     </v-responsive>
@@ -93,13 +93,13 @@
                                     style="text-align: center; border-top: 1px solid #d6d6d6;
                                     border-bottom: 1px solid #d6d6d6;
                                     border-left: 0;
-                                    border-right: 0;"></input>
+                                    border-right: 0;" :disabled="item.product_status === 'Unavailable'"></input>
                               </v-responsive>
                                   </v-col>
                                   <v-col cols="3" class="pa-0">
                                   <v-responsive aspect-ratio="1" width="100%">
                                     <v-btn @click="increaseQuantity(item)" block class="w-100 h-100" tile
-                                    style=" border: 1px solid #d6d6d6">
+                                    style=" border: 1px solid #d6d6d6" :disabled="item.product_status === 'Unavailable'">
                                   <v-icon>mdi-plus</v-icon>
                                 </v-btn>
                               </v-responsive>
@@ -329,7 +329,22 @@ const deleteSelectedItem = async() => {
 }
 
 const deleteDisabeldItem = async() => {
-
+  const items = shopLists.value.flatMap(shop => shop.items);
+  items.filter(item => disabledItem(item)).forEach(async item => {
+    const success = await deleteItem(item.item_id);
+    if (success) {
+      itemSelected.value = itemSelected.value.filter(i => i.item_id !== item.item_id);
+      const shop = shopLists.value.find(shop => shop.items.includes(item));
+      if (shop) {
+        shop.items = shop.items.filter(i => i.item_id !== item.item_id);
+        if (shop.items.length === 0) {
+          shopLists.value = shopLists.value.filter(s => s.shop_id !== shop.shop_id);
+        }
+      }
+    } else {
+      snackbar.error("网络不佳，请稍后再试");
+    }
+  });
 }
 
 const cartCount = computed(() => {
