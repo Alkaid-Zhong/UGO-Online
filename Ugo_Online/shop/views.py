@@ -16,6 +16,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from accounts.serializers import ProfileSerializer
 from order.models import OrderItem
 from shop.filters import ShopTransactionFilter
+from shop.pagination import SmallResultsSetPagination
 from utils import get_error_message, new_message
 from Ugo_Online.utils import api_response, list_response
 from shop.models import SellerShop, Shop, InvitationCode, Product, Category, ShopTransaction, Review
@@ -381,7 +382,7 @@ class ProductDetailView(APIView):
 class ProductReviewListView(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ReviewListSerializer
-    pagination_class = PageNumberPagination  # 可选，添加分页功能
+    pagination_class = SmallResultsSetPagination    # 可选，添加分页功能
 
     def get_queryset(self):
         product_id = self.kwargs.get('product_id')
