@@ -420,7 +420,7 @@
 - 权限要求：需要认证，且用户角色为商家，并且是商铺的现有管理者
 - 查询参数
   - page 整数，请求的页码
-  - transaction_type 交易类型，Income/Refund
+  - transaction_type 交易类型，Income/Refund/Divide
   - date 日期，格式为YYYY-MM-DD
   - ordering 排序字段，可选：'date', 'amount'，在前面加‘-’表示降序
   - 默认按照最近到最远排序
