@@ -107,7 +107,7 @@ class JoinShopByCodeView(APIView):
 
             sellers = shop.sellers.all()
             for seller in sellers:
-                new_message(seller, f"[{shop}] 用户 {user} 加入了您的商店。", shop.id)
+                new_message(seller, f"[{shop}] 用户 {user} 加入了您的商店。", -1, shop.id)
 
             SellerShop.objects.create(shop=shop, seller=user)
 
