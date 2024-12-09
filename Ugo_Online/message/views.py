@@ -45,3 +45,9 @@ class MessageView(APIView):
         return api_response(success=True, data=MessageSerializer(message).data)
 
 
+class ReadAllMessageView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        Message.objects.filter(user=request.user).update(is_read=True)
+        return api_response(success=True, message='All messages have been read')
