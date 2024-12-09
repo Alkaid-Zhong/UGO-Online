@@ -15,9 +15,10 @@ def get_error_message(errors):
             return str(error_list)
 
 
-def new_message(user, message):
+def new_message(user, message, order_id):
     # print(user, message)
     return Message.objects.create(
         user=user,
         content=message,
+        order_id=order_id
     )
