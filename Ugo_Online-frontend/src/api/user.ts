@@ -140,5 +140,5 @@ export const getMessage = async (is_read: boolean) => {
 }
 
 export const readMessage = async (message_id: number) => {
-	return server.post({ url: "/message/" + message_id + "/" });
+	return server.get({ url: "/message/" + message_id + "/" });
 }

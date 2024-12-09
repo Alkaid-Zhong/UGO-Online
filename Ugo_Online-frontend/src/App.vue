@@ -4,18 +4,18 @@
       <template v-slot:append>
         <!-- <v-btn icon="mdi-bell" @click="showNotify"> -->
         <v-menu
-          
+          v-model="showMessage"
           :close-on-content-click="false"
           location="bottom"
+          
         > 
           <template v-slot:activator="{ props }">
             <v-btn
               icon="mdi-bell"
               v-bind="props"
-              @click="reloadMessage"
             ></v-btn>
           </template>
-          <v-card>
+          <v-card :min-width="minw===0?'420px':minw" max-height="400" id="first-card">
             <v-card-title class="text-h5">
               通知
             </v-card-title>
@@ -37,13 +37,29 @@
 
             </v-card-actions>
             
-            <v-list>
-              <v-list-item v-for="message in messages">
-                  <v-list-item-title>{{ message.content }}</v-list-item-title>
-                  <v-list-item-subtitle>{{formatDate(message.created_time)}}</v-list-item-subtitle>
-              </v-list-item>
-              <v-divider></v-divider>
+            <v-divider></v-divider>
+            <!-- <transition-group mode="out-in"> -->
+            <v-list v-if="!messageLoading" class="text-center" key="messages">
+              <transition-group name="list" mode="out-in">
+                <div v-for="message in messages" :key="message.id">
+                <v-list-item lines="two" @click="messageClick(message)">
+                    
+                    <v-list-item-text>{{ message.content }}</v-list-item-text>
+                    <v-list-item-subtitle>{{formatDate(message.created_time)}}</v-list-item-subtitle>
+                    <template #append v-if="message.is_read === false">
+                        <v-btn icon="mdi-check" @click="readNotify(message)" class="rounded-0" elevation="0"></v-btn>
+                    </template>
+                </v-list-item>
+                </div>
+              </transition-group>
+              
+                <v-card-text v-if="messages.length===0" class="text-center">
+                还没有{{selectedNotifyStatus === undefined? "":(selectedNotifyStatus===true?"已读":"未读")}}消息噢
+              </v-card-text>
             </v-list>
+            <v-skeleton-loader key="messageLoading" boilerplate v-else type="paragraph"></v-skeleton-loader>
+            <!-- </transition-group> -->
+            
           </v-card>
         </v-menu>
         <!-- </v-btn> -->
@@ -112,6 +128,7 @@ import { user } from './store/user'
 import { snackbar } from './store/app';
 import { profile, logout, getMessage, readMessage } from './api/user';
 import { useRoute } from 'vue-router';
+import { id } from 'vuetify/locale';
 
 const route = useRoute();
 const theme = ref('dark')
@@ -128,7 +145,6 @@ const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
   localStorage.setItem('oo_theme', theme.value)
 }
-
 
 onMounted(async () => {
   const showSnackbar = route.path !== '/user/login';
@@ -150,14 +166,46 @@ watch(user, async (newVal) => {
   }
 });
 
-const selectedNotifyStatus = ref(null);
+const showMessage = ref(false);
+const messageLoading = ref(true);
+const selectedNotifyStatus = ref(undefined);
 const messages = ref([]);
+const minw = ref(0);
+const messageClick = async(message)=> {
+  // console.log(message.order_id);
+  if (message.is_read === false) {
+    await readNotify(message);
+  }
+  if (message.order_id !== -1) {
+    // console.log(route.fullPath);
+    if(route.path === '/order' && route.fullPath !== '/order?id='+message.order_id + '&shop='+message.shop_id) {
+      router.push({path: `/order`,query:{id:message.order_id, shop:message.shop_id}}).then(() => {
+        router.go(0);
+      });
+    } else {
+      router.push({path: `/order`,query:{id:message.order_id, shop:message.shop_id}});
+    }
+    
+  }
+}
+
+
 const reloadMessage = async() => {
-  console.log(selectedNotifyStatus.value);
+  
+  // const oneNotify = document.getElementById('first-card');
+  // if (oneNotify!==null) {
+  //   console.log(oneNotify.offsetWidth);
+  //   minw.value = minw.value > oneNotify.offsetWidth ? minw.value: oneNotify.offsetWidth;
+  // }
+  messageLoading.value = true;
+  // console.log(selectedNotifyStatus.value);
   const response = await getMessage(selectedNotifyStatus.value);
   if (response.success) {
     messages.value = response.data.messages;
-    console.log(messages.value);
+    messageLoading.value = false;
+    
+    // console.log();
+    
   } else {
     snackbar.show = true;
     snackbar.text = response.message;
@@ -166,9 +214,23 @@ const reloadMessage = async() => {
 };
 
 watch(selectedNotifyStatus, (newVal) => {
-  console.log(newVal);
+  // console.log(newVal);
   reloadMessage();
 });
+
+watch(showMessage, (newVal)=> {
+  if (newVal === true) {
+    reloadMessage();
+  }
+})
+
+const readNotify = async(message)=>{
+  const res = await readMessage(message.id);
+  if (res.success) {
+    messages.value = messages.value.filter(tmessage=> tmessage.id !== message.id);
+    //message.is_read = true;
+  }
+}
 
 const formatDate = (dateStr)=> {
   const date = new Date(dateStr);
@@ -182,3 +244,20 @@ const formatDate = (dateStr)=> {
 };
 
 </script>
+
+<style scoped>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(0);
+}
+
+.animate_07s {
+  transition: all 0.7s ease-in-out;
+}
+
+</style>

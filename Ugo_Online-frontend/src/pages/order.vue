@@ -306,7 +306,7 @@ const currentPage = ref(1);
 const selectedShop = ref({});
 const sellerShops = ref([]);
 const orderStatuses = ['Pending Payment', 'Payment Received', 'Shipped', 'Completed', 'Cancelled'];
-const selectedStatus = ref('');
+const selectedStatus = ref(undefined);
 
 watch(currentPage, (newVal, oldVal) => {
     //console.log();
@@ -314,6 +314,9 @@ watch(currentPage, (newVal, oldVal) => {
     fetchOrders(newVal, selectedStatus.value);
 });
 watch(selectedShop, (newVal, oldVal) => {
+    if (loading.value === true) {
+        return;
+    }
     orderLoading.value = true;
     if (currentPage.value !== 1) {
         currentPage.value = 1;
@@ -329,22 +332,27 @@ watch(selectedShop, (newVal, oldVal) => {
     }
 });
 watch(selectedStatus, (newVal, oldVal) => {
+    if(orderLoading.value === false){
+        return;
+    } 
     orderLoading.value = true;
-    console.log("筛选条件：" + newVal);
     if (currentPage.value !== 1 ){
         currentPage.value = 1;
     }else {
+       
         fetchOrders(currentPage.value, selectedStatus.value);
     } 
     //fetchOrders(currentPage.value,selectedStatus.value);
 });
 const route = useRoute();
-const queryId = ref(-1);
+const queryOrderId = ref(-1);
+const queryShopId = ref(-1);
 onMounted(() => {
     if (route.query.id) {
-        console.log("want a specific order");
-        queryId.value = route.query.id;
-        console.log(queryId.value);
+        queryOrderId.value = route.query.id;
+    }
+    if (route.query.shop) {
+        queryShopId.value = route.query.shop;
     }
     profile().then(() => {
         
@@ -352,38 +360,59 @@ onMounted(() => {
             loading.value = false;
             isCustomer.value = true;
             isSeller.value = false;
-            userGetOrders().then(res => {
-                //console.log(res.data.orders);
-                orders.value = res.data.orders;
-                totalPages.value = res.data.total_page;
-                fetchShopInfo(orders.value).then(() => {
-                    
-                    orderLoading.value = false;
-                });
-            }).catch(err => {
-                console.log(err);
-            })
+            if (queryOrderId.value === -1) {
+                userGetOrders().then(res => {
+                    //console.log(res.data.orders);
+                    orders.value = res.data.orders;
+                    totalPages.value = res.data.total_page;
+                    fetchShopInfo(orders.value).then(() => {
+                        orderLoading.value = false;
+                    });
+                }).catch(err => {
+                    console.log(err);
+                })
+            } else {
+                console.log("test new page");
+                getSpecificOrder(queryOrderId.value).then(()=> {
+                    fetchShopInfo(orders.value).then(() => {
+                        orderLoading.value = false;
+                    });
+                })
+            }
+            
         } else {
             isCustomer.value = false;
             isSeller.value = true;
             shopIds.value = user.shops;
             // console.log("获取商家管理的店铺ID：");
             // console.log(shopIds.value);
+            
             if (shopIds.value.length !== 0) {
                 fetchShopInfo(shopIds.value).then(() => {
-                    selectedShop.value = shopIds.value[0];
+                    
                     sellerShops.value = shopIds.value.map(id => shopInfoCache.value[id]).filter(shop => shop !== undefined);
-                    console.log(sellerShops.value);
-
-                    loading.value = false;
-                    sellerGetOrders(selectedShop.value).then(res => {
-                        orders.value = res.data.orders;
-                        // loading.value = false;
-                        totalPages.value = res.data.total_page;
-                        orderLoading.value = false;
-                    }).catch(err => {
-                        console.log(err);
-                    })
+                    
+                    //loading.value = false;
+                    if (queryShopId.value !== -1) {
+                        selectedShop.value = sellerShops.value.filter(shop=> shop.id == queryShopId.value);
+                        //console.log("商家order specify");
+                        getSpecificOrder(queryOrderId.value).then(()=> {
+                            orderLoading.value = false;
+                            totalPages.value = 1;
+                            loading.value=false;
+                        })
+                    } else {
+                        selectedShop.value = shopIds.value[0];
+                        sellerGetOrders(selectedShop.value).then(res => {
+                            orders.value = res.data.orders;
+                            totalPages.value = res.data.total_page;
+                            orderLoading.value = false;
+                            loading.value = false;
+                        }).catch(err => {
+                            console.log(err);
+                        })
+                    }
+                    
                 });
                 
             } else {
@@ -391,10 +420,6 @@ onMounted(() => {
                 orderLoading.value = false;
             }
         }
-        // if (queryId.value !== -1) {
-        //     getSpecificOrder(queryId.value);
-        //     return ;
-        // }
     });
 
 
@@ -403,8 +428,15 @@ const getSpecificOrder = async(order_id) => {
     const response = await getOrder(order_id);
     if (response.success) {
         orders.value = [response.data];
-        loading.value = false;
-        orderLoading.value = false;
+        totalPages.value = 1;
+    } else if (response.response.data.message === '订单不存在' || 
+        response.response.data.message === '您无权查看该订单'
+    ) {
+        router.push('/order').then(() => {
+            router.go(0);
+        });
+    } else {
+        console.log(response.response.data.message);
     }
 }
 
@@ -536,6 +568,7 @@ const submitReply = async (isActive) => {
     console.log(response);
     if (response.success) {
         snackbar.success("回复成功");
+        curItem.value.review_has_reply = true;
         replyContent.value = '';
         isActive.value = false;
     } else {
