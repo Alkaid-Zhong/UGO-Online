@@ -201,7 +201,7 @@ class AddProductView(APIView):
             return api_response(False, code=300, message='商品不存在')
         if not SellerShop.objects.filter(seller=user, shop=shop).exists():
             return api_response(False, code=301, message='您不是该商铺的管理者')
-        product.status = False
+        product.status = 'Unavailable'
         product.save()
         return api_response(True, code=0, message='商品删除成功')
 
