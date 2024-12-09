@@ -464,5 +464,7 @@ class ShopCommissionView(APIView):
             description=f"Divided {money} to {getter}"
         )
 
+        new_message(getter, f'[{shop}] 您得到了 {money} 元的分成！', -1, shop.id)
+
         return api_response(True, message='分成成功')
 
