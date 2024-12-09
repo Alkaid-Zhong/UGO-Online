@@ -101,7 +101,7 @@
 	</v-dialog>
 	
 	<v-dialog v-model="showDetail" transition="dialog-bottom-transition">
-		<v-card>
+		<v-card height="90vh">
 			<v-toolbar>
 				<v-btn
 					icon="mdi-close"
@@ -175,6 +175,13 @@
 					</v-col>
 					<v-divider vertical></v-divider>
 					<v-col cols="12" md="8">
+						<v-alert
+							v-if="reviews && reviews.length === 0"
+							type="info"
+							class="mb-4"
+							elevation="2"
+							dismissible
+						>暂无评论</v-alert>
             <v-sheet
               v-for="review in reviews"
               :key="review.id"
