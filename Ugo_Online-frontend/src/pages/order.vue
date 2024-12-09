@@ -276,11 +276,14 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { user } from '@/store/user';
 import snackbar from '@/api/snackbar';
-import { getReview, sellerGetOrders, sellerReplyComment, sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, userCreateReview, userGetOrders, userPayOrders, userRefund } from '@/api/order';
+import { getOrder,getReview, sellerGetOrders, sellerReplyComment, 
+    sellerShip, userCancelOrder, userChangeAddress, userConfirmOrder, 
+    userCreateReview, userGetOrders, userPayOrders, userRefund } from '@/api/order';
 import { getShopInfo } from '@/api/shop';
 import router from '@/router';
 import { profile } from '@/api/user';
 import AddressSelect from '@/components/addressSelect.vue';
+import { useRoute } from 'vue-router';
 
 const currency = (value) => {
     let val = parseFloat(value);
@@ -335,9 +338,16 @@ watch(selectedStatus, (newVal, oldVal) => {
     } 
     //fetchOrders(currentPage.value,selectedStatus.value);
 });
-
+const route = useRoute();
+const queryId = ref(-1);
 onMounted(() => {
+    if (route.query.id) {
+        console.log("want a specific order");
+        queryId.value = route.query.id;
+        console.log(queryId.value);
+    }
     profile().then(() => {
+        
         if (user.role === 'CUSTOMER') {
             loading.value = false;
             isCustomer.value = true;
@@ -357,8 +367,8 @@ onMounted(() => {
             isCustomer.value = false;
             isSeller.value = true;
             shopIds.value = user.shops;
-            console.log("获取商家管理的店铺ID：");
-            console.log(shopIds.value);
+            // console.log("获取商家管理的店铺ID：");
+            // console.log(shopIds.value);
             if (shopIds.value.length !== 0) {
                 fetchShopInfo(shopIds.value).then(() => {
                     selectedShop.value = shopIds.value[0];
@@ -381,10 +391,22 @@ onMounted(() => {
                 orderLoading.value = false;
             }
         }
+        // if (queryId.value !== -1) {
+        //     getSpecificOrder(queryId.value);
+        //     return ;
+        // }
     });
 
 
 })
+const getSpecificOrder = async(order_id) => {
+    const response = await getOrder(order_id);
+    if (response.success) {
+        orders.value = [response.data];
+        loading.value = false;
+        orderLoading.value = false;
+    }
+}
 
 const fetchOrders = async (page, status) => {
     // console.log(page);
