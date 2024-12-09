@@ -77,6 +77,7 @@ class ShopTransaction(models.Model):
     TRANSACTION_TYPE_CHOICES = (
         ('Income', 'Income'),
         ('Refund', 'Refund'),
+        ('Divide', 'Divide')
     )
 
     shop = models.ForeignKey('shop.Shop', on_delete=models.CASCADE, related_name='transactions')

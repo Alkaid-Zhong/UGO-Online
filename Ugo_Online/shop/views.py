@@ -6,11 +6,14 @@ from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+
+from accounts.models import User
 from accounts.permissions import IsSeller, IsCustomer
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
+from accounts.serializers import ProfileSerializer
 from order.models import OrderItem
 from shop.filters import ShopTransactionFilter
 from utils import get_error_message, new_message
@@ -412,4 +415,54 @@ class OrderItemReviewView(APIView):
             return api_response(True, data=serializer.data)
         except Review.DoesNotExist:
             return api_response(False, code=404, message='评论不存在')
+
+
+class ShopOwnersView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, shop_id):
+        try:
+            shop = Shop.objects.get(id=shop_id)
+        except Shop.DoesNotExist:
+            return api_response(False, code=404, message='店铺不存在')
+        shop_owners = shop.sellers.all()
+
+        serializer = ProfileSerializer(shop_owners, many=True, context={'request': request})
+        return api_response(True, data=serializer.data)
+
+
+# 商店分成
+class ShopCommissionView(APIView):
+    permission_classes = [IsAuthenticated, IsSeller]
+
+    def post(self, request, shop_id):
+        try:
+            shop = Shop.objects.get(id=shop_id)
+        except Shop.DoesNotExist:
+            return api_response(False, code=404, message='店铺不存在')
+
+        getter_id = request.data.get("given_id")
+
+        try :
+            getter = User.objects.get(id=getter_id)
+        except User.DoesNotExist:
+            return api_response(False, code=404, message='用户不存在')
+
+        money = request.data.get("money")
+        if shop.total_income < money:
+            return api_response(False, code=404, message='店铺余额不足')
+        shop.total_income -= money
+        shop.save()
+        getter.money += money
+        getter.save()
+
+        ShopTransaction.objects.create(
+            shop=shop,
+            order=None,
+            amount=-money,
+            transaction_type='Divide',
+            description=f"Divided {money} to {getter}"
+        )
+
+        return api_response(True, message='分成成功')
 
