@@ -336,9 +336,9 @@ class ReviewCreateView(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            sellers = order.shop.sellers.all()
+            sellers = order.product.shop.sellers.all()
             for seller in sellers:
-                new_message(seller.user, f"[{order.shop}] 您的商品 {order.product} 有新的评价，快去看看吧！", order.id, order.shop.id)
+                new_message(seller.user, f"[{order.shop}] 您的商品 {order.product} 有新的评价，快去看看吧！", order.id, order.product.shop.id)
 
             return api_response(True, message='评价提交成功', data=serializer.data)
         else:
