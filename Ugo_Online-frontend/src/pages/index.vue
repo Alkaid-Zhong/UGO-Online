@@ -18,21 +18,25 @@
 				:prepend-icon="orderBy === 'price'? 'mdi-sort-descending' : orderBy === '-price' ? 'mdi-sort-ascending' : ''" 
 				@click="onclickOrderBy('price')"
 				variant="text"
+				:color="orderBy === 'price' || orderBy === '-price' ? 'green' : ''"
 			>价格</v-btn>
 			<v-btn 
 				:prepend-icon="orderBy === 'name' ? 'mdi-sort-descending' : orderBy === '-name' ? 'mdi-sort-ascending' : ''" 
 				@click="onclickOrderBy('name')"
 				variant="text"
+				:color="orderBy === 'name' || orderBy === '-name' ? 'green' : ''"
 			>名称</v-btn>
 			<v-btn 
 				:prepend-icon="orderBy === 'rating'? 'mdi-sort-descending' : orderBy === '-rating' ? 'mdi-sort-ascending' : ''" 
 				@click="onclickOrderBy('rating')"
 				variant="text"
+				:color="orderBy === 'rating' || orderBy === '-rating' ? 'green' : ''"
 			>评分</v-btn>
 			<v-btn 
 				:prepend-icon="orderBy === 'created_at'? 'mdi-sort-descending' : orderBy === '-created_at' ? 'mdi-sort-ascending' : ''" 
 				@click="onclickOrderBy('created_at')"
 				variant="text"
+				:color="orderBy === 'created_at' || orderBy === '-created_at' ? 'green' : ''"
 			>上架时间</v-btn>
 			<v-chip-group
 				class="mb-2 mt-1"
