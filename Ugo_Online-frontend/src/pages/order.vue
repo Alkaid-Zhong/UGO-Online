@@ -332,17 +332,15 @@ watch(selectedShop, (newVal, oldVal) => {
     }
 });
 watch(selectedStatus, (newVal, oldVal) => {
-    if(orderLoading.value === false){
+    if(orderLoading.value === true){
         return;
     } 
     orderLoading.value = true;
     if (currentPage.value !== 1 ){
         currentPage.value = 1;
     }else {
-       
         fetchOrders(currentPage.value, selectedStatus.value);
     } 
-    //fetchOrders(currentPage.value,selectedStatus.value);
 });
 const route = useRoute();
 const queryOrderId = ref(-1);
