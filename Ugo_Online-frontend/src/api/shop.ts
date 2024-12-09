@@ -1,5 +1,6 @@
 import { options } from "node_modules/axios/index.cjs";
 import server from "./server";
+import { tr } from "vuetify/locale";
 
 export const createShop = async (data: { name: string, address?: string, description?: string}) => {
     return await server.post({
@@ -101,6 +102,7 @@ export const getShopFlow = async (
 export const splitToSeller = async (shop_id: number, given_id: number, money: number) => {
     return await server.post({
         url: `/shop/${shop_id}/split/`,    
-        data: { given_id, money }
+        data: { given_id, money },
+        showSnackbar: true
     });
 }
