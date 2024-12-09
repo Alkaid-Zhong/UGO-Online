@@ -1604,6 +1604,109 @@ product_id是必须要传的，其它内容选传。
 - 请求方法：GET
 - 其余和上面用户那个一样
 
+### 查看订单详情
+
+- 请求路径：`/order/<int:order_id>/`
+- 请求方法：GET
+- 权限要求：需要认证，且用户角色为该订单的 **买家** 或 **商家**
+- 响应：
+```json
+{
+    "success": true,
+    "code": 0,
+    "message": "",
+    "data": {
+        "order_id": 88,
+        "user": 18,
+        "shop_id": 6,
+        "total_price": "334618.44",
+        "order_date": "2024-12-02T07:45:40.086820+00:00",
+        "status": "Pending Payment",
+        "address": {
+            "recipient_name": "Zhixin Cai is god",
+            "address": "bj",
+            "city": "Ganzhou",
+            "province": "Jiangxi",
+            "phone": "13021173406"
+        },
+        "items": [
+            {
+                "id": 127,
+                "product": {
+                    "id": 7,
+                    "shop": 6,
+                    "name": "【孤独摇滚】 喜多郁代 色纸",
+                    "description": "【ぼっち・ざ・ろっく】 喜多 郁代   色紙",
+                    "price": "15.00",
+                    "stock_quantity": 935,
+                    "category": 6,
+                    "status": "Available",
+                    "create_date": "2024-11-24T21:58:51.432201+08:00",
+                    "image": "http://8.152.218.70:8000/media/product_images/%E8%89%B2%E7%BA%B8.jpg",
+                    "category_name": "玩具",
+                    "average_rating": 4.71,
+                    "sales_volume": 64
+                },
+                "quantity": 8,
+                "unit_price": "15.00",
+                "total_price": "120.00",
+                "is_cancelled": false,
+                "has_reviewed": false,
+                "review_has_reply": false
+            },
+            {
+                "id": 128,
+                "product": {
+                    "id": 22,
+                    "shop": 6,
+                    "name": "『我是UUQ』书画作品 独家限量",
+                    "description": "由15-427特邀书法家aiou创作。“我是UUQ”几个字，苍白无力却结构紧凑，处处体现出427的张弛有度。这这幅作品内涵深厚，“我是UUQ”体现出作者的自信风采。\"Q\"采取未封口结构，展现出一种不被定义、不被限制的愿望和期许。U与Q相连，同时展现出人的差异性但又彼此互联互通的社会特点。",
+                    "price": "1.88",
+                    "stock_quantity": 99970,
+                    "category": 6,
+                    "status": "Available",
+                    "create_date": "2024-11-28T13:38:55.658167+08:00",
+                    "image": "http://8.152.218.70:8000/media/product_images/1000216726.jpg",
+                    "category_name": "玩具",
+                    "average_rating": 3.67,
+                    "sales_volume": 29
+                },
+                "quantity": 13,
+                "unit_price": "1.88",
+                "total_price": "24.44",
+                "is_cancelled": false,
+                "has_reviewed": false,
+                "review_has_reply": false
+            },
+            {
+                "id": 130,
+                "product": {
+                    "id": 24,
+                    "shop": 6,
+                    "name": "uuuuqqqqqq",
+                    "description": "辛勤工作",
+                    "price": "66666.00",
+                    "stock_quantity": 55555548,
+                    "category": 3,
+                    "status": "Unavailable",
+                    "create_date": "2024-11-29T00:27:14.752801+08:00",
+                    "image": "http://8.152.218.70:8000/media/product_images/IMG20241129002553.jpg",
+                    "category_name": "家居用品",
+                    "average_rating": 5.0,
+                    "sales_volume": 7
+                },
+                "quantity": 5,
+                "unit_price": "66666.00",
+                "total_price": "333330.00",
+                "is_cancelled": false,
+                "has_reviewed": false,
+                "review_has_reply": false
+            }
+        ]
+    }
+}
+```
+
 ### 用户支付订单
 
 刚下单的时候是多个order杂糅在一起的（此时是传列表），如果刚下单的时候没有支付，那么之后就只能在订单界面浏览订单列表，一个一个支付（传列表大小为1即可）。
