@@ -16,8 +16,8 @@ class ShopSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Shop
-        fields = ['name', 'address', 'description', 'create_date', 'id']
-        read_only_fields = ['create_date', 'id']
+        fields = ['name', 'address', 'description', 'create_date', 'id', 'total_income']
+        read_only_fields = ['create_date', 'id', 'total_income']
 
 
 class ShopProfileSerializer(serializers.ModelSerializer):
