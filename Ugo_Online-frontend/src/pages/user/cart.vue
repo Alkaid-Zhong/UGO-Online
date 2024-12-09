@@ -22,40 +22,52 @@
             </template>
             <template v-slot:append>
                 <v-btn @click="deleteSelectedItem()" class="mr-2"> 删除所选 </v-btn>
-                <v-btn @click="deleteDisabeldItem()"> 一键删除无货/失效商品 </v-btn>
-            </template>
-          </v-list-item>
+                <v-btn @click="deleteDisabeldItem()"> 一键删除失效商品 </v-btn>
+              </template>
+              </v-list-item>
 
-          <v-divider></v-divider>
-          
-          <transition-group name="list">
-            <v-list-item v-if="shopLists.length === 0">
-              <br>
-              <v-alert type="info" outlined>购物车空空如也，快去逛逛吧</v-alert>
-            </v-list-item>
-          
-            <v-list-item v-for="shop in shopLists" v-else>
-              <v-card elevation="0">
+              <v-divider></v-divider>
+              
+              <transition-group name="list">
+              <v-list-item v-if="shopLists.length === 0">
+                <br>
+                <v-alert type="info" outlined>购物车空空如也，快去逛逛吧</v-alert>
+              </v-list-item>
+              
+              <v-list-item v-for="shop in shopLists" v-else>
+                <v-card elevation="0">
                 <v-card-title class="mt-2 pa-2">
                   <v-btn
-                    class="text-h5 font-weight-bold"
-                    variant="text"
-                    prepend-icon="mdi-store"
-                    append-icon="mdi-chevron-right"
-                    @click="router.push(`/shop/${shop.shop_id}`)"
+                  class="text-h5 font-weight-bold"
+                  variant="text"
+                  prepend-icon="mdi-store"
+                  append-icon="mdi-chevron-right"
+                  @click="router.push(`/shop/${shop.shop_id}`)"
                   >{{ shop.shop_name }}</v-btn>
                 </v-card-title>
                 <v-card-text class="px-0">
                   
                   <v-list lines="2">
                   <transition-group name="list">
-                    
-                    <v-list-item class="pl-0 pt-2 pb-3 pr-0" v-for="item in shop.items" :key="item.item_id">
+                    <!-- <div > -->
+                    <v-list-item :style="{ opacity: disabledItem(item) ? 0.6 : 1,
+                       'background-image': bgImage(item),
+                       'background-position': 'center',
+                       'background-size': 'auto 90%',
+                       'background-repeat': 'no-repeat' }" 
+                      class="pl-0 pt-2 pb-3 pr-0" v-for="item in shop.items" :key="item.item_id">
 
                         <v-list-item-action class="d-inline-flex" style="width:100%">
                           <v-checkbox v-model="itemSelected" :value="item" class="d-flex" :disabled="disabledItem(item)"></v-checkbox>
                         
                           <v-img :src="item.image" height="96" width="96"></v-img>
+                          <!-- <v-overlay activator="parent"  class="align-center justify-center" contained :model-value="disabledItem(item)">
+                            
+                              <span>无货</span>
+                          </v-overlay> -->
+                          
+
+
                           <v-container width="100%" style="margin-left: auto;">
                             <v-row>
                               <v-col cols="4" class="pt-0">
@@ -104,6 +116,7 @@
                         </v-list-item-action>
                         
                     </v-list-item>
+                    <!-- </div> -->
                   </transition-group>
                 </v-list>
               </v-card-text>
@@ -214,6 +227,15 @@ const disabledItem = (item) => {
   return item.product_stock_quantity < item.quantity || item.product_status === 'Unavailable';
 }
 
+const bgImage = (item) => {
+  if (item.product_status === 'Unavailable') {
+    return 'url(/unavailable.png)';
+  } else {
+    return item.product_stock_quantity < item.quantity ? 'url(/nostock.png)' : 'none';
+  }
+}
+
+
 
 const increaseQuantity = async(item) => {
   if (item.quantity >= item.product_stock_quantity) {
@@ -304,6 +326,10 @@ const deleteSelectedItem = async() => {
       snackbar.error("网络不佳，请稍后再试");
     }
   });
+}
+
+const deleteDisabeldItem = async() => {
+
 }
 
 const cartCount = computed(() => {

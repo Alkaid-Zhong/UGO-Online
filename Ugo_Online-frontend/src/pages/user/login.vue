@@ -28,12 +28,16 @@
           v-model="email"
           required
           type="email"
+          name="email"
+          autocomplete="email"
         ></v-text-field>
         <v-text-field
           label="密码"
           v-model="password"
           type="password"
+          name="password"
           required
+          autocomplete="password"
         ></v-text-field>
         <v-expand-transition>
           <v-text-field
