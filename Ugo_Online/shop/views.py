@@ -225,7 +225,7 @@ class ProductListView(ListAPIView):
     }
     search_fields = ['name', 'description', 'shop__name']
     ordering_fields = ['average_rating', 'name', 'create_date', 'price', 'sales_volume']
-    ordering = ['name']  # 默认按照平均评分降序排列
+    # ordering = ['name']  # 默认按照平均评分降序排列
 
     shop = None
 
@@ -242,8 +242,8 @@ class ProductListView(ListAPIView):
 
         # 权重分配
         weight_average_rating = 0.4
-        weight_price = 0.1
-        weight_sales_volume = 0.2
+        # weight_price = 0.1
+        weight_sales_volume = 0.3
         weight_name_hash = 0.3
 
         queryset = queryset.annotate(
@@ -256,7 +256,7 @@ class ProductListView(ListAPIView):
             weighted_score=ExpressionWrapper(
                 (
                         ExpressionWrapper(F('average_rating') * weight_average_rating, output_field=FloatField()) +
-                        ExpressionWrapper(F('price') * weight_price, output_field=FloatField()) +
+                        # ExpressionWrapper(F('price') * weight_price, output_field=FloatField()) +
                         ExpressionWrapper(F('sales_volume') * weight_sales_volume, output_field=FloatField()) +
                         ExpressionWrapper(F('name_hash_mod_100') * weight_name_hash, output_field=FloatField())
                 ),
@@ -264,7 +264,7 @@ class ProductListView(ListAPIView):
             )
         )
 
-        return queryset
+        return queryset.order_by('weighted_score')
 
     def list(self, request, *args, **kwargs):
         shop_id = self.kwargs.get('shop_id')
