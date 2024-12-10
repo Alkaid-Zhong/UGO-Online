@@ -283,6 +283,7 @@ const fetchReviews = async () => {
 
 const onclickGotoShopPage = () => {
 	router.push(`/shop/${shopId}`)
+	showDetail.value = false
 }
 
 const onclickDeleteProduct = async () => {
