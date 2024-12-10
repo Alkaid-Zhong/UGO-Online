@@ -456,9 +456,9 @@ const onclickOrderBy = ( option ) => {
 
 onMounted(async () => {
 	shopInfo.value = await getShopInfo(shop_id)
-	products.value = await getProductList(shop_id)
 	categoryList.value = (await getCategories()).data.categories
 	shopCategory.value = (await getShopCategories(shop_id)).data.categories
+	products.value = await getProductList(shop_id)
 })
 
 watch([flowChoices, flowDate], async () => {
