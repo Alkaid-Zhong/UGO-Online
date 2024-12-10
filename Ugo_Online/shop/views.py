@@ -342,7 +342,7 @@ class ReviewCreateView(APIView):
 
             sellers = order.product.shop.sellers.all()
             for seller in sellers:
-                new_message(seller, f"[{order.product.shop}] 您的商品 {order.product} 有新的评价，快去看看吧！", order.id, order.product.shop.id)
+                new_message(seller, f"[{order.product.shop}] 您的商品 {order.product} 有新的评价，快去看看吧！", order.order.id, order.product.shop.id)
 
             return api_response(True, message='评价提交成功', data=serializer.data)
         else:
@@ -361,7 +361,7 @@ class ReviewReplyView(APIView):
         serializer = ReviewReplySerializer(review, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            new_message(review.user, f"[{review.product.shop}] 您对商品 {review.product} 的评价已被商家回复，快去看看吧！", review.order.id, review.product.shop.id)
+            new_message(review.user, f"[{review.product.shop}] 您对商品 {review.product} 的评价已被商家回复，快去看看吧！", review.order.order.id, review.product.shop.id)
             return api_response(True, message='回复成功')
         else:
             return api_response(False, code=400, message=get_error_message(serializer.errors), data=serializer.errors)
