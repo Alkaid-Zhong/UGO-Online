@@ -142,7 +142,7 @@
 							</v-col>
 						</v-row>
 					</div>
-					<div v-else>
+					<div v-else-if="$vuetify.display.sm">
 						<v-row v-if="index % 2 === 0" style="width: 100%;" class="mt-2">
 							<v-col cols="6">
 								<product-card
@@ -160,6 +160,14 @@
 								></product-card>
 							</v-col>
 						</v-row>
+					</div>
+					<div v-else>
+						<div class="mb-2"></div>
+						<product-card
+							:product="item" 
+							:shop-id="item.shop"
+							:category-list="categoryList"
+						></product-card>
 					</div>
 				</template>
 			</v-infinite-scroll>
