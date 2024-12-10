@@ -10,12 +10,16 @@
 					<v-chip v-if="product.status === 'Unavailable'" size="x-small" color="red" class="mb-1">已下架</v-chip>
 				</span>
 			</v-card-item>
-			<v-card-title class="py-0">
-				{{ product.name }}
-				<v-chip size="x-small" color="primary" class="mb-1">{{ product.category_name }}</v-chip>
-			</v-card-title>
+			<v-card-text class="py-0">
+				<p class="text-h6 font-weight-bold mb-1">
+					{{ product.name }}
+					<v-chip size="x-small" color="primary" class="mb-1">{{ product.category_name }}</v-chip>
+				</p>
+			</v-card-text>
 			<v-card-subtitle class="py-0">库存：{{ product.stock_quantity }}</v-card-subtitle>
-			<v-card-text class="pt-2 pb-6">{{ product.description }}</v-card-text>
+			<v-card-text class="pt-2 pb-6">
+				{{ product.description }}
+			</v-card-text>
 			<!-- <v-card-actions>
 				<v-btn
 					v-if="user.role === 'CUSTOMER'"
@@ -283,6 +287,7 @@ const fetchReviews = async () => {
 
 const onclickGotoShopPage = () => {
 	router.push(`/shop/${shopId}`)
+	showDetail.value = false
 }
 
 const onclickDeleteProduct = async () => {

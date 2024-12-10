@@ -63,10 +63,10 @@
 					:color="orderBy === 'rating' || orderBy === '-rating' ? 'green' : ''"
 				>评分</v-btn>
 				<v-btn 
-					:prepend-icon="orderBy === 'created_at'? 'mdi-sort-descending' : orderBy === '-created_at' ? 'mdi-sort-ascending' : ''" 
-					@click="onclickOrderBy('created_at')"
+					:prepend-icon="orderBy === 'create_date'? 'mdi-sort-descending' : orderBy === '-create_date' ? 'mdi-sort-ascending' : ''" 
+					@click="onclickOrderBy('create_date')"
 					variant="text"
-					:color="orderBy === 'created_at' || orderBy === '-created_at' ? 'green' : ''"
+					:color="orderBy === 'create_date' || orderBy === '-create_date' ? 'green' : ''"
 				>上架时间</v-btn>
 				<v-chip-group
 					class="my-2"
@@ -235,7 +235,7 @@
 						<v-icon size="36px" color="white" class="mr-2 my-2">mdi-check</v-icon>
 						<span class="font-weight-bold text-h5">邀请码：{{ inviteInfo.code }}</span>
 					</v-sheet>
-					<v-card-text>创建日期：{{ new Date(inviteInfo.created_at).toLocaleString() }}</v-card-text>
+					<v-card-text>创建日期：{{ new Date(inviteInfo.create_date).toLocaleString() }}</v-card-text>
 					<v-card-text>有效期至：{{ inviteInfo.expires_at ? new Date(inviteInfo.expires_at).toLocaleString() : '永久' }}</v-card-text>
 					<v-card-text>已用次数：{{ inviteInfo.usage_count }}</v-card-text>
 					<v-card-text>剩余次数：{{ inviteInfo.usage_limit - inviteInfo.usage_count }}</v-card-text>
@@ -481,13 +481,14 @@ watch(page, async () => {
 
 const removeProductCallback = async (product_id) => {
   await fetchProductList()
+	page.value = products.value.total_page;
 }
 
 const fetchProductList = async () => {
 	products.value = null
 	const options = {
     page: page.value,
-		category: chosenCategory.value && chosenCategory.value !== 0 ? shopCategory.value[chosenCategory.value].id : null,
+		category: chosenCategory.value !== null && chosenCategory.value !== undefined ? categoryList.value[chosenCategory.value].id : null,
 		price__gte: priceRange_low.value ? priceRange_low.value : null,
 		price__lte: priceRange_high.value ? priceRange_high.value : null,
 		search: searchName.value ? searchName.value : null,
@@ -595,14 +596,7 @@ const onclickAddProduct = async () => {
 	})
 	if (res.success) {
 		snackbar.success('添加成功')
-		products.value = await getProductList(shop_id)
-		showAddProduct.value = false
-		productName.value = ''
-		productDescription.value = ''
-		productPrice.value = ''
-		productCategory.value = ''
-		productStock.value = ''
-		productImage.value = null
+		window.location.reload()
 	}
 }
 
