@@ -1,4 +1,5 @@
 from django.db.models import Avg, ExpressionWrapper, F, FloatField, Func, IntegerField
+from django.db.models.expressions import RawSQL
 from django.db.models.functions import Cast
 from django.shortcuts import render
 from django.utils import timezone
@@ -239,20 +240,19 @@ class ProductListView(ListAPIView):
         else:
             queryset = Product.objects.filter(status='Available', stock_quantity__gt=0)
 
-            # 权重分配
+        # 权重分配
         weight_average_rating = 0.4
         weight_price = 0.3
         weight_sales_volume = 0.2
         weight_name_hash = 0.1
 
-        # Annotate each product with a weighted score and name hash value as part of the score
         queryset = queryset.annotate(
             average_rating=Avg('reviews__rating'),
-            name_hash_mod_100=ExpressionWrapper(
-                Cast(Func(F('name'), function='conv', template="%(function)s(md5(%(expressions)s), 16, 10) %% 100"),
-                     output_field=IntegerField()),
-                output_field=IntegerField()
-            ),
+            name_hash_mod_100=RawSQL(
+                "CAST(CONV(SUBSTRING(MD5(name), 1, 8), 16, 10) %% 100 AS SIGNED)",
+                []
+            )
+        ).annotate(
             weighted_score=ExpressionWrapper(
                 (
                         ExpressionWrapper(F('average_rating') * weight_average_rating, output_field=FloatField()) +
@@ -262,7 +262,7 @@ class ProductListView(ListAPIView):
                 ),
                 output_field=FloatField()
             )
-        ).order_by('-weighted_score')
+        )
 
         return queryset
 
