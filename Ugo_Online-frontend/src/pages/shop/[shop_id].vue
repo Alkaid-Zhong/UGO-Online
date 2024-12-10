@@ -68,6 +68,12 @@
 					variant="text"
 					:color="orderBy === 'create_date' || orderBy === '-create_date' ? 'green' : ''"
 				>上架时间</v-btn>
+				<v-btn 
+					:prepend-icon="orderBy === 'sales_volume'? 'mdi-sort-descending' : orderBy === '-sales_volume' ? 'mdi-sort-ascending' : ''" 
+					@click="onclickOrderBy('sales_volume')"
+					variant="text"
+					:color="orderBy === 'sales_volume' || orderBy === '-sales_volume' ? 'green' : ''"
+				>销量</v-btn>
 				<v-chip-group
 					class="my-2"
 					v-model="chosenCategory"
