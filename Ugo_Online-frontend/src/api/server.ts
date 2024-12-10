@@ -114,7 +114,7 @@ const errorHandler = (error: any, showSnackbar = true, jump = true) => {
 		if (showSnackbar) {
 			snackbar.error(message);
 		}
-		if (code === 401 && jump) {
+		if (code === 401 && jump && false) {
 			router.push("/user/login");
 		}
 	} else {

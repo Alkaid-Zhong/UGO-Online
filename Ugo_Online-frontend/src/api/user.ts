@@ -21,11 +21,13 @@ export const logout = async () => {
 		user.name = "";
 		user.email = "";
 		user.role = "CUSTOMER";
-		user.shops = null;
+		user.shops = [];
 		user.money = 0;
 		user.phone = "";
+		return true;
 	} else {
 		snackbar.error("退出失败了...");
+		return false;
 	}
 };
 
