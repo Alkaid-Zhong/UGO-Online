@@ -115,7 +115,7 @@
 					<product-card 
 						:product="product" 
 						:category-list="categoryList" 
-						:shop-id="shop_id"
+						:shop-id="Number(shop_id)"
 						:remove-product-callback="removeProductCallback"
 					/>
 				</v-col>
@@ -450,13 +450,13 @@ const onclickSplit = async () => {
 const onclickOrderBy = ( option ) => {
 	const nowOption = orderBy.value
 	if (nowOption === null) {
-		orderBy.value = option
-	} else if (nowOption[0] === '-' && nowOption.slice(1) === option) {
-		orderBy.value = null
-	} else if (nowOption === option) {
 		orderBy.value = `-${option}`
-	} else {
+	} else if (nowOption[0] === '-' && nowOption.slice(1) === option) {
 		orderBy.value = option
+	} else if (nowOption === option) {
+		orderBy.value = null
+	} else {
+		orderBy.value = `-${option}`
 	}
 }
 
