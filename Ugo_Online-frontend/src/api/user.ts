@@ -146,3 +146,7 @@ export const readMessage = async (message_id: number) => {
 export const readAllMessage = async () => {
 	return server.post({ url: "/message/read_all/" });
 }
+
+export const hasUnreadMessage = async () => {
+	return server.get({ url: "/message/has_unread/" });
+}

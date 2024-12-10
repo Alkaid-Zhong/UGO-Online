@@ -11,12 +11,26 @@
           v-model="showMessage"
           :close-on-content-click="false"
           location="bottom"
+          v-if="user.login"
         > 
           <template v-slot:activator="{ props }">
-            <v-btn
-              icon="mdi-bell"
-              v-bind="props"
-            ></v-btn>
+            <v-badge
+              bottom
+              
+              :content="unreadMessageNum"
+              left
+              color="red"
+              v-if="unreadMessageNum>0"
+              overlap
+              >
+              <v-icon icon="mdi-bell" v-bind="props" ripple>
+                
+              </v-icon>
+              
+            </v-badge>
+            <v-icon icon="mdi-bell" v-bind="props" ripple v-else>
+                
+            </v-icon>
           </template>
           <v-card :min-width="$vuetify.display.smAndDown?'300px' :(minw===0?'420px':minw)" max-width="500px" max-height="400" id="first-card">
             <v-card-title class="text-h5">
@@ -26,10 +40,10 @@
               <span class="text-h5 ml-2 font-weight-bold">消息</span>
               <v-spacer></v-spacer>
               <v-chip-group filter v-model="selectedNotifyStatus">
-                <v-chip :value="true" selected-class="text-success">已读消息</v-chip>
-                <v-chip :value="false" selected-class="text-warning">未读消息</v-chip>
+                <v-chip :value="true" selected-class="text-success">{{xs?'已读':'已读消息'}}</v-chip>
+                <v-chip :value="false" selected-class="text-warning">{{xs?'未读':'未读消息'}}</v-chip>
               </v-chip-group>
-                <v-tooltip
+                <v-tooltip  
                   text="全部标记为已读"
                   location="bottom"
                 >
@@ -154,8 +168,9 @@ import { ref, onMounted, watch } from 'vue';
 import router from './router';
 import { user } from './store/user'
 import { snackbar } from './store/app';
-import { profile, logout, getMessage, readMessage, readAllMessage } from './api/user';
+import { profile, logout, getMessage, readMessage, readAllMessage, hasUnreadMessage } from './api/user';
 import { useRoute } from 'vue-router';
+import { useDisplay } from 'vuetify';
 
 const route = useRoute();
 const theme = ref('dark')
@@ -180,7 +195,13 @@ onMounted(async () => {
   } else {
     setSystemTheme();
   }
-  await profile(false, false);
+  await profile(false, false).then((res) => {
+    if (res.success) {
+      checkUnread();
+    } else {
+      
+    }
+  });
 });
 
 watch(user, async (newVal) => {
@@ -193,11 +214,14 @@ watch(user, async (newVal) => {
   }*/
 });
 
+
+const {xs} = useDisplay();
 const showMessage = ref(false);
 const messageLoading = ref(true);
 const selectedNotifyStatus = ref(undefined);
 const messages = ref([]);
 const minw = ref(0);
+const unreadMessageNum = ref(0);
 const curMessagePage = ref(1);
 const maxMessagePages = ref(1);
 const messageClick = async(message)=> {
@@ -274,19 +298,36 @@ const nextPageMessage = async({ done }) => {
 
 watch(selectedNotifyStatus, (newVal) => {
   // console.log(newVal);
+  if (messageLoading.value === true) {
+    return;
+  }
   reloadMessage();
 });
 
 watch(showMessage, (newVal)=> {
   if (newVal === true) {
+    checkUnread();
     reloadMessage();
+  } else {
+    // 重新加载是否有未读消息
   }
 })
+
+const checkUnread = async()=>{
+  const  response = await hasUnreadMessage();
+  if (response.success) {
+    if (response.data.has_unread_message) {
+      unreadMessageNum.value = response.data.unread_num;
+
+    }
+  }
+}
 
 const readNotify = async(message)=>{
   const res = await readMessage(message.id);
   if (res.success) {
     messages.value = messages.value.filter(tmessage=> tmessage.id !== message.id);
+    unreadMessageNum.value --;
     //message.is_read = true;
   }
 }
@@ -294,6 +335,7 @@ const readNotify = async(message)=>{
 const readAll = async()=> {
   const res = await readAllMessage();
   if (res.success) {
+    unreadMessageNum.value = 0;
     if (selectedNotifyStatus.value === false) {
 
       messages.value = [];
