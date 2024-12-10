@@ -242,9 +242,9 @@ class ProductListView(ListAPIView):
 
         # 权重分配
         weight_average_rating = 0.4
-        weight_price = 0.3
+        weight_price = 0.1
         weight_sales_volume = 0.2
-        weight_name_hash = 0.1
+        weight_name_hash = 0.3
 
         queryset = queryset.annotate(
             average_rating=Avg('reviews__rating'),
