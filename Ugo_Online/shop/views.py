@@ -239,7 +239,7 @@ class ProductListView(ListAPIView):
         else:
             queryset = Product.objects.filter(status='Available', stock_quantity__gt=0)
 
-        # 权重分配
+            # 权重分配
         weight_average_rating = 0.4
         weight_price = 0.3
         weight_sales_volume = 0.2
@@ -250,14 +250,16 @@ class ProductListView(ListAPIView):
             average_rating=Avg('reviews__rating'),
             name_hash_mod_100=ExpressionWrapper(
                 Cast(Func(F('name'), function='conv', template="%(function)s(md5(%(expressions)s), 16, 10) %% 100"),
-                     IntegerField()),
+                     output_field=IntegerField()),
                 output_field=IntegerField()
             ),
             weighted_score=ExpressionWrapper(
-                F('average_rating') * weight_average_rating +
-                F('price') * weight_price +
-                F('sales_volume') * weight_sales_volume +
-                F('name_hash_mod_100') * weight_name_hash,
+                (
+                        ExpressionWrapper(F('average_rating') * weight_average_rating, output_field=FloatField()) +
+                        ExpressionWrapper(F('price') * weight_price, output_field=FloatField()) +
+                        ExpressionWrapper(F('sales_volume') * weight_sales_volume, output_field=FloatField()) +
+                        ExpressionWrapper(F('name_hash_mod_100') * weight_name_hash, output_field=FloatField())
+                ),
                 output_field=FloatField()
             )
         ).order_by('-weighted_score')
