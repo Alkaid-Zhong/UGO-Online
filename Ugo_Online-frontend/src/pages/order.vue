@@ -1,8 +1,9 @@
 <template>
     <v-container v-if="!loading">
         <v-row class="mt-3 mb-1">
-            <v-col cols="4" v-if="isSeller">
+            <v-col cols="4" v-if="isSeller ">
                 <v-select
+                    v-if="sellerShops.length !== 0"
                     :disabled="orderLoading"
                     v-model="selectedShop"
                     :items="sellerShops"
@@ -10,6 +11,7 @@
                     item-value="id"
                     label="选择商铺"
                 ></v-select>
+                
             </v-col>
             <v-col :cols="isSeller?8:12" class="d-flex align-center pt-0">
                 
@@ -149,7 +151,8 @@
                 </v-list>
             </v-col>
             <v-col cols="12" v-else>
-                <v-alert type="info" outlined>{{ emptyOrderCaption }}</v-alert>
+                <v-alert type="info" v-if="isSeller && sellerShops.length === 0" outlined>您还没有商铺呢 <v-btn class="ml-3 pt-0" color="yellow-lighten-3" @click="router.push('/shop/create')"> 立即创建 </v-btn></v-alert>
+                <v-alert type="info" v-else outlined>{{ emptyOrderCaption }} </v-alert>
                 
                 <br><br><br>
             </v-col>
@@ -804,6 +807,7 @@ const emptyOrderCaption = computed(() => {
         }
         return "没有符合条件的订单  (筛选条件： " + formatStatus(selectedStatus.value) + ")";
     } else {
+        
         if(selectedStatus.value === undefined || selectedStatus.value === ''){
             return "该商铺暂无订单";
         }
