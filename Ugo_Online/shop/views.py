@@ -1,6 +1,6 @@
 from django.db.models import Avg, ExpressionWrapper, F, FloatField, Func, IntegerField
 from django.db.models.expressions import RawSQL
-from django.db.models.functions import Cast
+from django.db.models.functions import Cast, Coalesce
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -241,13 +241,13 @@ class ProductListView(ListAPIView):
             queryset = Product.objects.filter(status='Available', stock_quantity__gt=0)
 
         # 权重分配
-        weight_average_rating = 0.4
-        # weight_price = 0.1
-        weight_sales_volume = 0.3
-        weight_name_hash = 0.3
+        weight_average_rating = 4
+        weight_price = 1
+        weight_sales_volume = 3
+        weight_name_hash = 3
 
         queryset = queryset.annotate(
-            average_rating=Avg('reviews__rating'),
+            average_rating=Coalesce(Avg('reviews__rating'), 0.0),
             name_hash_mod_100=RawSQL(
                 "CAST(CONV(SUBSTRING(MD5(name), 1, 8), 16, 10) %% 100 AS SIGNED)",
                 []
@@ -256,7 +256,7 @@ class ProductListView(ListAPIView):
             weighted_score=ExpressionWrapper(
                 (
                         ExpressionWrapper(F('average_rating') * weight_average_rating, output_field=FloatField()) +
-                        # ExpressionWrapper(F('price') * weight_price, output_field=FloatField()) +
+                        ExpressionWrapper(F('price') * weight_price, output_field=FloatField()) +
                         ExpressionWrapper(F('sales_volume') * weight_sales_volume, output_field=FloatField()) +
                         ExpressionWrapper(F('name_hash_mod_100') * weight_name_hash, output_field=FloatField())
                 ),
@@ -264,7 +264,10 @@ class ProductListView(ListAPIView):
             )
         )
 
-        return queryset.order_by('weighted_score')
+        # for product in queryset.values('id', 'weighted_score', 'average_rating', 'sales_volume', 'name_hash_mod_100'):
+        #     print(product)
+
+        return queryset.order_by('weighted_score', 'id')
 
     def list(self, request, *args, **kwargs):
         shop_id = self.kwargs.get('shop_id')
