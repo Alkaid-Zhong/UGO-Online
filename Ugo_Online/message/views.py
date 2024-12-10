@@ -51,3 +51,12 @@ class ReadAllMessageView(APIView):
     def post(self, request):
         Message.objects.filter(user=request.user).update(is_read=True)
         return api_response(success=True, message='All messages have been read')
+
+
+class HasUnreadMessageView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        has_unread_message = Message.objects.filter(user=request.user, is_read=False).exists()
+        unread_num = Message.objects.filter(user=request.user, is_read=False).count()
+        return api_response(success=True, data={'has_unread_message': has_unread_message, 'unread_num': unread_num})
