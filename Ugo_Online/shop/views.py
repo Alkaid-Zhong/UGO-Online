@@ -55,6 +55,19 @@ class ShopInfoView(APIView):
         except Shop.DoesNotExist:
             return api_response(False, code=300, message='商店不存在')
 
+    def put(self, request, id):
+        try:
+            shop = Shop.objects.get(id=id)
+            serializer = ShopSerializer(shop, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return api_response(True, code=0, data=serializer.data)
+            else:
+                return api_response(False, code=300, message=get_error_message(serializer.errors), data=serializer.errors)
+        except Shop.DoesNotExist:
+            return api_response(False, code=300, message='商店不存在')
+
+
 
 class CreateInvitationCodeView(APIView):
     permission_classes = [IsAuthenticated, IsSeller]

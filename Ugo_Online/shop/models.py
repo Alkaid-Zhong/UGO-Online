@@ -10,6 +10,7 @@ class Shop(models.Model):
     description = models.TextField(null=True)
     create_date = models.DateTimeField(auto_now_add=True)
     total_income = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    picture = models.ImageField(upload_to='shop_pictures/', null=True, blank=True)
 
     def __str__(self):
         return self.name
