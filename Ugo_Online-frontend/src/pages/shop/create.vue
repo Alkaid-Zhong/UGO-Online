@@ -2,6 +2,7 @@
 	<v-container>
 		<v-sheet
       class="pa-6 rounded-lg"
+			elevation="2"
     >
       <h2 class="headline mb-4">{{ joinMode? '加入店铺' : '创建店铺' }}</h2>
       <v-form>

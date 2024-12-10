@@ -1,7 +1,29 @@
 <template>
 	<v-container>
+		<v-carousel
+			:height="'calc(30vh - 64px)'"
+			show-arrows="hover"
+			cycle
+			interval="5000"
+			hide-delimiter-background
+			hide-delimiters
+		>
+			<v-carousel-item
+				v-for="(slide, i) in ['精选好物，尽在UGO', '价格实惠，值得信赖', '品质保证，放心选购', '全球直邮，轻松购物']"
+				:key="i"
+			>
+				<v-sheet
+					:color="['#4CAF50', '#2196F3', '#FF5722', '#9C27B0'][i]"
+					height="100%"
+				>
+					<div class="d-flex fill-height justify-center align-center">
+						<p :style="$vuetify.display.sm || $vuetify.display.md || $vuetify.display.lg || $vuetify.display.xl || $vuetify.display.xxl ? {fontSize: '3.6rem', fontWeight: 'lighter'} : { fontSize: '2.5rem', fontWeight: 'bold' }">{{ slide }}</p>
+					</div>
+				</v-sheet>
+			</v-carousel-item>
+		</v-carousel>
 		<v-sheet
-			class="mb-4 px-4 pt-4 rounded-lg pb-1"
+			class="mb-4 px-4 pt-6 rounded-lg pb-1"
 			elevation="2"
 		>
 			<v-text-field class="mx-2" v-model="searchName" label="搜索商品" variant="solo" clearable></v-text-field>
@@ -53,7 +75,7 @@
 			</v-chip-group>
 		</v-sheet>
 		<div v-if="!loading">
-			<v-infinite-scroll :items="items" :onLoad="fetchProducts" >
+			<v-infinite-scroll :items="items" :onLoad="fetchProducts" class="pa-1">
 				<template #empty>
 					<p class="text-h6 font-weight-bold mt-4">没有更多的商品了</p>
 				</template>

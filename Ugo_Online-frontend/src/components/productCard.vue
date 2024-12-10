@@ -1,5 +1,5 @@
 <template>
-	<v-card height="100%" @click="onclickShowDetail">
+	<v-card height="100%" @click="onclickShowDetail" elevation="2">
 		<div class="d-flex flex-column justify-space-between" style="height: 100%">
 			<v-img :src="product.image" aspect-ratio="1" />
 			<v-divider></v-divider>

@@ -13,6 +13,7 @@
 				<v-card
 					:to="`/shop/${shop.id}`"
 					style="height: 100%;"
+					elevation="2"
 				>
 					<v-card-text>
 						<p class="headline mt-2 font-weight-bold text-h5">{{ shop.name }}</p>
