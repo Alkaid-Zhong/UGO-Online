@@ -11,7 +11,7 @@
 				</span>
 			</v-card-item>
 			<v-card-text class="py-0">
-				<p class="text-h6 font-weight-bold mb-1">
+				<p class="font-weight-bold mb-1" style="font-size: 1rem;">
 					{{ product.name }}
 					<v-chip size="x-small" color="primary" class="mb-1">{{ product.category_name }}</v-chip>
 				</p>
