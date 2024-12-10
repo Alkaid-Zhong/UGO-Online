@@ -55,10 +55,10 @@
 				:color="orderBy === 'rating' || orderBy === '-rating' ? 'green' : ''"
 			>评分</v-btn>
 			<v-btn 
-				:prepend-icon="orderBy === 'created_at'? 'mdi-sort-descending' : orderBy === '-created_at' ? 'mdi-sort-ascending' : ''" 
-				@click="onclickOrderBy('created_at')"
+				:prepend-icon="orderBy === 'create_date'? 'mdi-sort-descending' : orderBy === '-create_date' ? 'mdi-sort-ascending' : ''" 
+				@click="onclickOrderBy('create_date')"
 				variant="text"
-				:color="orderBy === 'created_at' || orderBy === '-created_at' ? 'green' : ''"
+				:color="orderBy === 'create_date' || orderBy === '-create_date' ? 'green' : ''"
 			>上架时间</v-btn>
 			<v-chip-group
 				class="mb-2 mt-1"
