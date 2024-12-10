@@ -242,7 +242,7 @@ class ProductListView(ListAPIView):
 
         # 权重分配
         weight_average_rating = 4
-        weight_price = 1
+        # weight_price = 1
         weight_sales_volume = 3
         weight_name_hash = 3
 
@@ -256,7 +256,7 @@ class ProductListView(ListAPIView):
             weighted_score=ExpressionWrapper(
                 (
                         ExpressionWrapper(F('average_rating') * weight_average_rating, output_field=FloatField()) +
-                        ExpressionWrapper(F('price') * weight_price, output_field=FloatField()) +
+                        # ExpressionWrapper(F('price') * weight_price, output_field=FloatField()) +
                         ExpressionWrapper(F('sales_volume') * weight_sales_volume, output_field=FloatField()) +
                         ExpressionWrapper(F('name_hash_mod_100') * weight_name_hash, output_field=FloatField())
                 ),
