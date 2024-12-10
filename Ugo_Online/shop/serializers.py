@@ -13,14 +13,16 @@ from accounts.models import User
 
 
 class ShopSerializer(serializers.ModelSerializer):
+    picture = serializers.ImageField(use_url=True, required=False)
 
     class Meta:
         model = Shop
-        fields = ['name', 'address', 'description', 'create_date', 'id', 'total_income']
+        fields = ['name', 'address', 'description', 'create_date', 'id', 'total_income', 'picture']
         read_only_fields = ['create_date', 'id', 'total_income']
 
 
 class ShopProfileSerializer(serializers.ModelSerializer):
+    picture = serializers.ImageField(use_url=True, required=False)
     sellers = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
 
@@ -30,7 +32,7 @@ class ShopProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Shop
-        fields = ['id', 'name', 'address', 'description', 'create_date', 'sellers', 'total_income', 'average_rating']
+        fields = ['id', 'name', 'address', 'description', 'create_date', 'sellers', 'total_income', 'average_rating', 'picture']
         read_only_fields = ['id', 'create_date', 'sellers', 'total_income', 'average_rating']
 
     def get_sellers(self, obj):
