@@ -104,14 +104,14 @@
                         <v-divider></v-divider>
                         <v-card-text>
                             <v-row>
-                                <v-col cols="4">
-                                    <div class="text-h6">订单创建时间：</div>
+                                <v-col cols="3" sm="4" >
+                                    <div :class="infoTitleSizeClass">下单时间：</div>
                                     <div class="ml-2 mt-1">
                                         <div><strong>{{formatDate(order.order_date)}}</strong></div>
                                     </div>
                                 </v-col>
-                                <v-col cols="4">
-                                    <div class="text-h6">地址信息：</div>
+                                <v-col cols="6" sm="4" class="d-flex justify-center flex-column">
+                                    <div :class="infoTitleSizeClass">地址信息：</div>
                                     <div class="ml-2 mt-1">
                                         <div><strong>收件人姓名:</strong> {{ order.address.recipient_name }}</div>
                                         <div><strong>电话:</strong> {{ order.address.phone }}</div>
@@ -119,8 +119,8 @@
                                         <div><strong>具体地址:</strong> {{ order.address.address }}</div>
                                     </div>
                                 </v-col>
-                                <v-col cols="4">
-                                    <div class="text-h6">订单总价格：</div>
+                                <v-col cols="3" sm="4">
+                                    <div :class="infoTitleSizeClass">订单总价格：</div>
                                     <div class="ml-2 mt-1">
                                         <div style="color:orangered;" class="text-h5"><strong>￥{{ order.total_price }}</strong></div>
                                     </div>
@@ -259,8 +259,12 @@
             </template>
         </v-dialog>
         <v-row>
-            <v-col cols="12" class="d-flex justify-center">
-                <v-pagination v-model="currentPage" :length="totalPages" total-visible="5"></v-pagination>
+            <v-col cols="12" class="">
+                <v-pagination
+                    v-model="currentPage"
+                    :length="totalPages"
+                    :total-visible="$vuetify.display.smAndUp?5:3"
+                ></v-pagination>
                 <!--@input="fetchOrders(currentPage)"-->
             </v-col>
         </v-row>
@@ -274,6 +278,7 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
+import { useDisplay } from 'vuetify';
 import { user } from '@/store/user';
 import snackbar from '@/api/snackbar';
 import { getOrder,getReview, sellerGetOrders, sellerReplyComment, 
@@ -727,7 +732,7 @@ const ship = async (order) => {
     const response = await sellerShip(order.order_id);
     if (response.success) {
         snackbar.success("发货成功");
-        order.status = 'Completed';
+        order.status = 'Shipped';
     } else {
         snackbar.error("发货失败：" + response.message);
     }
@@ -738,6 +743,7 @@ const sellerReply = async (review_id, reply) => {
     const response = await sellerReplyComment(review_id, reply);
     if (response.success) {
         snackbar.success("回复成功");
+        
     } else {
         snackbar.error("回复失败：" + response.message);
     }
@@ -749,13 +755,13 @@ const formatStatus = (status) => {
         case 'Pending Payment':
             return '待支付';
         case 'Payment Received':
-            return '已支付，待发货';
+            return xs.value?'待发货':'已支付，待发货';
         case 'Completed':
             return '已完成';
         case 'Cancelled':
             return '已取消';
         case 'Shipped':
-            return '商家已发货';
+            return xs.value?'已发货':'商家已发货';
         default:
             return "";
     }
@@ -816,6 +822,10 @@ function formatDate(dateStr) {
   const seconds = String(date.getSeconds()).padStart(2, '0');
   return `${year}年${month}月${day}日 ${hour}:${min}:${seconds}`;
 }
+
+const { xs, mdAndUp } = useDisplay();
+const infoTitleSizeClass = computed(() => xs.value ? 'text-body-1' : 'text-h6');
+
 
 </script>
 
