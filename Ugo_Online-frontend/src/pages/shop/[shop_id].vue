@@ -105,7 +105,7 @@
 				</v-chip-group>
 			</v-sheet>
 			<v-row v-if="products">
-				<v-col cols="12" md="4" v-for="product in products.products">
+				<v-col cols="12" sm="6" md="4" lg="3" v-for="product in products.products">
 					<product-card 
 						:product="product" 
 						:category-list="categoryList" 

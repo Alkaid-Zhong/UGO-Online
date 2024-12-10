@@ -80,7 +80,42 @@
 					<p class="text-h6 font-weight-bold mt-4">没有更多的商品了</p>
 				</template>
 				<template v-for="(item, index) in items" :key="item.id">
-					<div v-if="$vuetify.display.md || $vuetify.display.lg || $vuetify.display.xl || $vuetify.display.xxl">
+					<div v-if="$vuetify.display.lg || $vuetify.display.xl || $vuetify.display.xxl">
+						<v-row v-if="index % 4 === 0" style="width: 100%;" class="mt-2">
+							<v-col cols="3">
+								<product-card
+									:product="item" 
+									:shop-id="item.shop"
+									:category-list="categoryList"
+								></product-card>
+							</v-col>
+							<v-col cols="3">
+								<product-card
+									v-if="index + 1 < items.length"
+									:product="items[index + 1]" 
+									:shop-id="items[index + 1].shop"
+									:category-list="categoryList"
+								></product-card>
+							</v-col>
+							<v-col cols="3">
+								<product-card
+									v-if="index + 2 < items.length"
+									:product="items[index + 2]" 
+									:shop-id="items[index + 2].shop"
+									:category-list="categoryList"
+								></product-card>
+							</v-col>
+							<v-col cols="3">
+								<product-card
+									v-if="index + 4 < items.length"
+									:product="items[index + 3]" 
+									:shop-id="items[index + 3].shop"
+									:category-list="categoryList"
+								></product-card>
+							</v-col>
+						</v-row>
+					</div>
+					<div v-else-if="$vuetify.display.md">
 						<v-row v-if="index % 3 === 0" style="width: 100%;" class="mt-2">
 							<v-col cols="4">
 								<product-card
@@ -107,8 +142,27 @@
 							</v-col>
 						</v-row>
 					</div>
+					<div v-else-if="$vuetify.display.sm">
+						<v-row v-if="index % 2 === 0" style="width: 100%;" class="mt-2">
+							<v-col cols="6">
+								<product-card
+									:product="item" 
+									:shop-id="item.shop"
+									:category-list="categoryList"
+								></product-card>
+							</v-col>
+							<v-col cols="6">
+								<product-card
+									v-if="index + 1 < items.length"
+									:product="items[index + 1]" 
+									:shop-id="items[index + 1].shop"
+									:category-list="categoryList"
+								></product-card>
+							</v-col>
+						</v-row>
+					</div>
 					<div v-else>
-						<div style="height: 8px;"></div>
+						<div class="mb-2"></div>
 						<product-card
 							:product="item" 
 							:shop-id="item.shop"
