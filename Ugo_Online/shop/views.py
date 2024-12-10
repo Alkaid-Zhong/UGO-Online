@@ -1,4 +1,5 @@
-from django.db.models import Avg
+from django.db.models import Avg, ExpressionWrapper, F, FloatField, Func, IntegerField
+from django.db.models.functions import Cast
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -223,7 +224,7 @@ class ProductListView(ListAPIView):
     }
     search_fields = ['name', 'description', 'shop__name']
     ordering_fields = ['average_rating', 'name', 'create_date', 'price', 'sales_volume']
-    ordering = ['-average_rating']  # 默认按照平均评分降序排列
+    ordering = ['name']  # 默认按照平均评分降序排列
 
     shop = None
 
@@ -237,9 +238,31 @@ class ProductListView(ListAPIView):
                 queryset = Product.objects.filter(shop=self.shop, status='Available', stock_quantity__gt=0)
         else:
             queryset = Product.objects.filter(status='Available', stock_quantity__gt=0)
-        return queryset.annotate(
-            average_rating=Avg('reviews__rating')
-        )
+
+        # 权重分配
+        weight_average_rating = 0.4
+        weight_price = 0.3
+        weight_sales_volume = 0.2
+        weight_name_hash = 0.1
+
+        # Annotate each product with a weighted score and name hash value as part of the score
+        queryset = queryset.annotate(
+            average_rating=Avg('reviews__rating'),
+            name_hash_mod_100=ExpressionWrapper(
+                Cast(Func(F('name'), function='conv', template="%(function)s(md5(%(expressions)s), 16, 10) %% 100"),
+                     IntegerField()),
+                output_field=IntegerField()
+            ),
+            weighted_score=ExpressionWrapper(
+                F('average_rating') * weight_average_rating +
+                F('price') * weight_price +
+                F('sales_volume') * weight_sales_volume +
+                F('name_hash_mod_100') * weight_name_hash,
+                output_field=FloatField()
+            )
+        ).order_by('-weighted_score')
+
+        return queryset
 
     def list(self, request, *args, **kwargs):
         shop_id = self.kwargs.get('shop_id')
