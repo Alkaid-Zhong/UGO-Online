@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="12" md="8">
-        <v-list v-if="!loading" class="pt-4 rounded-lg">  
+        <v-list v-if="!loading" class="pt-4 rounded-lg" elevation="2">  
           <v-list-item>
             <template v-slot:prepend>
               <v-icon icon="mdi-cart" size="x-large"></v-icon>
