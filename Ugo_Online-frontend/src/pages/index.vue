@@ -107,7 +107,7 @@
 							</v-col>
 							<v-col cols="3">
 								<product-card
-									v-if="index + 4 < items.length"
+									v-if="index + 3 < items.length"
 									:product="items[index + 3]" 
 									:shop-id="items[index + 3].shop"
 									:category-list="categoryList"
