@@ -125,14 +125,14 @@
             color="primary"
 					>编辑商品</v-btn>
 					<v-btn
-						v-if="user.role === 'SELLER' && removeProductCallback !== null && product.status !== 'Unavailable'"
+						v-if="user.role === 'SELLER' && removeProductCallback !== null && product.status !== 'Unavailable' && user.shops.includes(Number(shopId))"
 						color="red"
 						variant="text"
 						@click="onclickDeleteProduct"
 						prepend-icon="mdi-delete"
 					>下架商品</v-btn>
 					<v-btn
-						v-if="user.role === 'SELLER' && removeProductCallback !== null && product.status === 'Unavailable'"
+						v-if="user.role === 'SELLER' && removeProductCallback !== null && product.status === 'Unavailable'&& user.shops.includes(Number(shopId))"
 						color="green"
 						variant="text"
 						@click="onclickOnsaleProduct"
@@ -241,7 +241,7 @@ const props = defineProps({
 	},
 	removeProductCallback: {
 		type: Function,
-		required: true
+		required: false
 	}
 })
 
@@ -283,6 +283,7 @@ const fetchReviews = async () => {
 
 const onclickGotoShopPage = () => {
 	router.push(`/shop/${shopId}`)
+	showDetail.value = false
 }
 
 const onclickDeleteProduct = async () => {

@@ -145,6 +145,7 @@ import { addMoney, changePassword, logout, profile } from '@/api/user';
 import { getShopInfo } from '@/api/shop';
 import AddressSelect from '@/components/addressSelect.vue';
 import snackbar from '@/api/snackbar';
+import router from '@/router';
 
 const shopInfo = ref([])
 const loading = ref(false);
@@ -175,7 +176,9 @@ const onclickSubmitChangePassword = async () => {
 
 const submitLogout = async () => {
 	loading.value = true;
-	await logout();
+	if (await logout()) {
+		router.replace('/');
+	}
 	loading.value = false;
 };
 

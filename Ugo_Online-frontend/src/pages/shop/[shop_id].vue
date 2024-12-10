@@ -456,9 +456,9 @@ const onclickOrderBy = ( option ) => {
 
 onMounted(async () => {
 	shopInfo.value = await getShopInfo(shop_id)
-	products.value = await getProductList(shop_id)
 	categoryList.value = (await getCategories()).data.categories
 	shopCategory.value = (await getShopCategories(shop_id)).data.categories
+	products.value = await getProductList(shop_id)
 })
 
 watch([flowChoices, flowDate], async () => {
@@ -481,6 +481,7 @@ watch(page, async () => {
 
 const removeProductCallback = async (product_id) => {
   await fetchProductList()
+	page.value = products.value.total_page;
 }
 
 const fetchProductList = async () => {
@@ -595,14 +596,7 @@ const onclickAddProduct = async () => {
 	})
 	if (res.success) {
 		snackbar.success('添加成功')
-		products.value = await getProductList(shop_id)
-		showAddProduct.value = false
-		productName.value = ''
-		productDescription.value = ''
-		productPrice.value = ''
-		productCategory.value = ''
-		productStock.value = ''
-		productImage.value = null
+		window.location.reload()
 	}
 }
 

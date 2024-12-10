@@ -86,7 +86,7 @@
 								<product-card
 									:product="item" 
 									:shop-id="item.shop"
-									:remove-product-callback="null"
+									:category-list="categoryList"
 								></product-card>
 							</v-col>
 							<v-col cols="4">
@@ -94,7 +94,7 @@
 									v-if="index + 1 < items.length"
 									:product="items[index + 1]" 
 									:shop-id="items[index + 1].shop"
-									:remove-product-callback="null"
+									:category-list="categoryList"
 								></product-card>
 							</v-col>
 							<v-col cols="4">
@@ -102,7 +102,7 @@
 									v-if="index + 2 < items.length"
 									:product="items[index + 2]" 
 									:shop-id="items[index + 2].shop"
-									:remove-product-callback="null"
+									:category-list="categoryList"
 								></product-card>
 							</v-col>
 						</v-row>
@@ -112,7 +112,7 @@
 						<product-card
 							:product="item" 
 							:shop-id="item.shop"
-							:remove-product-callback="null"
+							:category-list="categoryList"
 						></product-card>
 					</div>
 				</template>
@@ -185,7 +185,9 @@ const fetchProducts = async ({ done }) => {
 }
 
 onMounted(async () => {
+	loading.value = true
 	categoryList.value = (await getCategories()).data.categories
+	loading.value = false
 })
 
 
