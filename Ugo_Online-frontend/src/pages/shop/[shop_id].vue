@@ -30,86 +30,98 @@
 					<v-btn color="primary" @click="onclickShowFlow" prepend-icon="mdi-chart-line" :loading="loadingFlow">查看商店流水</v-btn>
 				</v-card-actions>
 			</v-card>
-			<v-sheet
-				class="mb-4 px-4 pt-4 rounded-lg pb-1"
-				elevation="2"
+			<v-menu
+				:close-on-content-click="false"
 			>
-				<v-text-field class="mx-2" v-model="searchName" label="搜索商品" variant="solo" clearable></v-text-field>
-				<v-row no-gutters>
-					<v-col cols="6">
-						<v-text-field class="mx-2" v-model="priceRange_low" label="最低价格" variant="solo" clearable type="number"></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-text-field class="mx-2" v-model="priceRange_high" label="最高价格" variant="solo" clearable type="number"></v-text-field>
-					</v-col>
-				</v-row>
-				<v-icon>mdi-filter-variant</v-icon>
-				<v-btn 
-					:prepend-icon="orderBy === 'price'? 'mdi-sort-descending' : orderBy === '-price' ? 'mdi-sort-ascending' : ''" 
-					@click="onclickOrderBy('price')"
-					variant="text"
-					:color="orderBy === 'price' || orderBy === '-price' ? 'green' : ''"
-				>价格</v-btn>
-				<v-btn 
-					:prepend-icon="orderBy === 'name' ? 'mdi-sort-descending' : orderBy === '-name' ? 'mdi-sort-ascending' : ''" 
-					@click="onclickOrderBy('name')"
-					variant="text"
-					:color="orderBy === 'name' || orderBy === '-name' ? 'green' : ''"
-				>名称</v-btn>
-				<v-btn 
-					:prepend-icon="orderBy === 'rating'? 'mdi-sort-descending' : orderBy === '-rating' ? 'mdi-sort-ascending' : ''" 
-					@click="onclickOrderBy('rating')"
-					variant="text"
-					:color="orderBy === 'rating' || orderBy === '-rating' ? 'green' : ''"
-				>评分</v-btn>
-				<v-btn 
-					:prepend-icon="orderBy === 'create_date'? 'mdi-sort-descending' : orderBy === '-create_date' ? 'mdi-sort-ascending' : ''" 
-					@click="onclickOrderBy('create_date')"
-					variant="text"
-					:color="orderBy === 'create_date' || orderBy === '-create_date' ? 'green' : ''"
-				>上架时间</v-btn>
-				<v-btn 
-					:prepend-icon="orderBy === 'sales_volume'? 'mdi-sort-descending' : orderBy === '-sales_volume' ? 'mdi-sort-ascending' : ''" 
-					@click="onclickOrderBy('sales_volume')"
-					variant="text"
-					:color="orderBy === 'sales_volume' || orderBy === '-sales_volume' ? 'green' : ''"
-				>销量</v-btn>
-				<v-chip-group
-					class="my-2"
-					v-model="chosenCategory"
-					v-if="categoryList"
-					column
-				>
-					<v-chip
-						v-for="category in shopCategory"
-						:key="category.id"
-						filter
+				<template v-slot:activator="{ props }">
+					<v-btn
+						style="position: fixed; bottom: 120px; right:20px; z-index: 1000"
 						color="primary"
-					>{{ category.name }}</v-chip>
-				</v-chip-group>
-				<v-chip-group
-					class="my-2"
-					v-model="availableOnly"
-					v-if="user.shops.includes(Number(shop_id))"
-					column
+						icon="mdi-magnify"
+						v-bind="props"
+					></v-btn>
+				</template>
+				<v-sheet
+					class="mb-4 px-4 pt-4 rounded-lg pb-1"
+					elevation="2"
 				>
-					<v-chip
-						key="unavaliableOnly"
-						filter
-						color="red"
-					>只看已下架</v-chip>
-					<v-chip
-						key="avaliableOnly"
-						filter
-						color="primary"
-					>只看未下架</v-chip>
-					<v-chip
-						key="stockOnly"
-						filter
-						color="orange"
-					>只看无库存</v-chip>
-				</v-chip-group>
-			</v-sheet>
+					<v-text-field class="mx-2" v-model="searchName" label="搜索商品" variant="solo" clearable></v-text-field>
+					<v-row no-gutters>
+						<v-col cols="6">
+							<v-text-field class="mx-2" v-model="priceRange_low" label="最低价格" variant="solo" clearable type="number"></v-text-field>
+						</v-col>
+						<v-col cols="6">
+							<v-text-field class="mx-2" v-model="priceRange_high" label="最高价格" variant="solo" clearable type="number"></v-text-field>
+						</v-col>
+					</v-row>
+					<v-icon>mdi-filter-variant</v-icon>
+					<v-btn 
+						:prepend-icon="orderBy === 'price'? 'mdi-sort-descending' : orderBy === '-price' ? 'mdi-sort-ascending' : ''" 
+						@click="onclickOrderBy('price')"
+						variant="text"
+						:color="orderBy === 'price' || orderBy === '-price' ? 'green' : ''"
+					>价格</v-btn>
+					<v-btn 
+						:prepend-icon="orderBy === 'name' ? 'mdi-sort-descending' : orderBy === '-name' ? 'mdi-sort-ascending' : ''" 
+						@click="onclickOrderBy('name')"
+						variant="text"
+						:color="orderBy === 'name' || orderBy === '-name' ? 'green' : ''"
+					>名称</v-btn>
+					<v-btn 
+						:prepend-icon="orderBy === 'rating'? 'mdi-sort-descending' : orderBy === '-rating' ? 'mdi-sort-ascending' : ''" 
+						@click="onclickOrderBy('rating')"
+						variant="text"
+						:color="orderBy === 'rating' || orderBy === '-rating' ? 'green' : ''"
+					>评分</v-btn>
+					<v-btn 
+						:prepend-icon="orderBy === 'create_date'? 'mdi-sort-descending' : orderBy === '-create_date' ? 'mdi-sort-ascending' : ''" 
+						@click="onclickOrderBy('create_date')"
+						variant="text"
+						:color="orderBy === 'create_date' || orderBy === '-create_date' ? 'green' : ''"
+					>上架时间</v-btn>
+					<v-btn 
+						:prepend-icon="orderBy === 'sales_volume'? 'mdi-sort-descending' : orderBy === '-sales_volume' ? 'mdi-sort-ascending' : ''" 
+						@click="onclickOrderBy('sales_volume')"
+						variant="text"
+						:color="orderBy === 'sales_volume' || orderBy === '-sales_volume' ? 'green' : ''"
+					>销量</v-btn>
+					<v-chip-group
+						class="my-2"
+						v-model="chosenCategory"
+						v-if="categoryList"
+						column
+					>
+						<v-chip
+							v-for="category in shopCategory"
+							:key="category.id"
+							filter
+							color="primary"
+						>{{ category.name }}</v-chip>
+					</v-chip-group>
+					<v-chip-group
+						class="my-2"
+						v-model="availableOnly"
+						v-if="user.shops.includes(Number(shop_id))"
+						column
+					>
+						<v-chip
+							key="unavaliableOnly"
+							filter
+							color="red"
+						>只看已下架</v-chip>
+						<v-chip
+							key="avaliableOnly"
+							filter
+							color="primary"
+						>只看未下架</v-chip>
+						<v-chip
+							key="stockOnly"
+							filter
+							color="orange"
+						>只看无库存</v-chip>
+					</v-chip-group>
+				</v-sheet>
+			</v-menu>
 			<v-row v-if="products">
 				<v-col cols="12" sm="6" md="4" lg="3" v-for="product in products.products">
 					<product-card 
@@ -494,7 +506,7 @@ const fetchProductList = async () => {
 	products.value = null
 	const options = {
     page: page.value,
-		category: chosenCategory.value !== null && chosenCategory.value !== undefined ? categoryList.value[chosenCategory.value].id : null,
+		category: chosenCategory.value !== null && chosenCategory.value !== undefined ? shopCategory.value[chosenCategory.value].id : null,
 		price__gte: priceRange_low.value ? priceRange_low.value : null,
 		price__lte: priceRange_high.value ? priceRange_high.value : null,
 		search: searchName.value ? searchName.value : null,
