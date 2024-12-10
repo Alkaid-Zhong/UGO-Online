@@ -223,7 +223,7 @@ class ProductListView(ListAPIView):
     }
     search_fields = ['name', 'description', 'shop__name']
     ordering_fields = ['average_rating', 'name', 'create_date', 'price', 'sales_volume']
-    ordering = ['-average_rating']  # 默认按照平均评分降序排列
+    ordering = ['name']  # 默认按照平均评分降序排列
 
     shop = None
 
