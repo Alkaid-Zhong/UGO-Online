@@ -1,5 +1,6 @@
 <template>
     <v-container v-if="!loading">
+      <v-sheet elevation="2" class="pa-4">
         <v-row class="mt-3 mb-1">
             <v-col cols="4" v-if="isSeller ">
                 <v-select
@@ -271,6 +272,7 @@
                 <!--@input="fetchOrders(currentPage)"-->
             </v-col>
         </v-row>
+      </v-sheet>
     </v-container>
     <v-container v-else class="d-flex justify-center align-center">
         <v-progress-circular style="height: 80vh;" indeterminate color="primary"></v-progress-circular>
