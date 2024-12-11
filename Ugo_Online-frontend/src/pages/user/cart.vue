@@ -21,8 +21,8 @@
               </v-list-item-action>
             </template>
             <template v-slot:append>
-                <v-btn @click="deleteSelectedItem()" class="mr-2"> 删除所选 </v-btn>
-                <v-btn @click="deleteDisabeldItem()"> {{$vuetify.display.smAndDown?'删除失效':'一键删除失效商品'}} </v-btn>
+                <v-btn :disable="deleting" @click="deleteSelectedItem()" class="mr-2" icon="mdi-delete" size="small" elevation="0"> </v-btn>
+                <v-btn :disable="deleting" @click="deleteDisabeldItem()"> {{$vuetify.display.smAndDown?'删除失效':'一键删除失效商品'}} </v-btn>
               </template>
               </v-list-item>
 
@@ -418,7 +418,9 @@ const updateQuantity = async (id, newQuantity) => {
   return false;
 }
 
+const deleting = ref(false);
 const deleteSelectedItem = async() => {
+  deleting.value = true;
   itemSelected.value.forEach(async item => {
     const success = await deleteItem(item.item_id);
     if (success) {
@@ -430,6 +432,7 @@ const deleteSelectedItem = async() => {
           shopLists.value = shopLists.value.filter(s => s.shop_id !== shop.shop_id);
         }
       }
+      deleting.value = false;
     } else {
       snackbar.error("网络不佳，请稍后再试");
     }
@@ -437,6 +440,7 @@ const deleteSelectedItem = async() => {
 }
 
 const deleteDisabeldItem = async() => {
+  deleting.value = true;
   const items = shopLists.value.flatMap(shop => shop.items);
   items.filter(item => disabledItem(item)).forEach(async item => {
     const success = await deleteItem(item.item_id);
@@ -449,6 +453,7 @@ const deleteDisabeldItem = async() => {
           shopLists.value = shopLists.value.filter(s => s.shop_id !== shop.shop_id);
         }
       }
+      deleting.value = false;
     } else {
       snackbar.error("网络不佳，请稍后再试");
     }
