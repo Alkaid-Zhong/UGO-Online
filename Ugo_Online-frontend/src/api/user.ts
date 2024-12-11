@@ -150,5 +150,5 @@ export const readAllMessage = async () => {
 }
 
 export const hasUnreadMessage = async () => {
-	return server.get({ url: "/message/has_unread/" });
+	return server.get({ url: "/message/has_unread/", showSnackbar: false });
 }

@@ -1,8 +1,8 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" md="8">
-        <v-list v-if="!loading" class="pt-4 rounded-lg" elevation="2">  
+      <v-col cols="12" md="8" :class="$vuetify.display.xs?'px-1':''">
+        <v-list v-if="!loading" class="pt-4 rounded-lg" :elevation="$vuetify.display.xs?0:2">  
           <v-list-item>
             <template v-slot:prepend>
               <v-icon icon="mdi-cart" size="x-large"></v-icon>
@@ -34,7 +34,7 @@
                 <v-alert type="info" outlined>购物车空空如也，快去逛逛吧</v-alert>
               </v-list-item>
               
-              <v-list-item v-for="shop in shopLists" v-else>
+              <v-list-item v-for="shop in shopLists" v-else :class="$vuetify.display.xs?'px-1':''">
                 <v-card elevation="0">
                 <v-card-title class="mt-2 pa-2">
                   <v-btn
