@@ -81,7 +81,7 @@
 		<div class="mt-5">
 		<AddressSelect v-if="user.role==='CUSTOMER'" class="mt-5"
 			:title=" '我的地址'"
-			:addressPerPage="$vuetify.display.smAndUp?3:1"
+			:addressPerPage="$vuetify.display.mdAndUp?3:($vuetify.display.xs?1:2)"
 			:paying="false"
 			:preSelect="false"
 			:mandatory="false"

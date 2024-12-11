@@ -3,7 +3,7 @@
     <v-row v-if="!loading">
       <!-- <transition name="col-transition"> -->
       <v-col cols="12" :md="paying ? 6 : 8" key="left-col" class="animate_07s">
-        <AddressSelect :paying="paying" :addressPerPage="3" :title="paying ? '地址信息' : '选择地址'"
+        <AddressSelect :paying="paying" :addressPerPage="$vuetify.display.mdAndUp?3:($vuetify.display.xs?1:2)" :title="paying ? '地址信息' : '选择地址'"
           @updateSelectedAddress="updateSelectedAddress">
 
         </AddressSelect>
