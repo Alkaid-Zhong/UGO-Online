@@ -1,8 +1,8 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" md="8">
-        <v-list v-if="!loading" class="pt-4 rounded-lg" elevation="2">  
+      <v-col cols="12" md="8" :class="$vuetify.display.xs?'px-1':''">
+        <v-list v-if="!loading" class="pt-4 rounded-lg" :elevation="$vuetify.display.xs?0:2">  
           <v-list-item>
             <template v-slot:prepend>
               <v-icon icon="mdi-cart" size="x-large"></v-icon>
@@ -21,8 +21,8 @@
               </v-list-item-action>
             </template>
             <template v-slot:append>
-                <v-btn @click="deleteSelectedItem()" class="mr-2"> 删除所选 </v-btn>
-                <v-btn @click="deleteDisabeldItem()"> {{$vuetify.display.smAndDown?'删除失效':'一键删除失效商品'}} </v-btn>
+                <v-btn :disable="deleting" @click="deleteSelectedItem()" class="mr-2" icon="mdi-delete" size="small" elevation="0"> </v-btn>
+                <v-btn :disable="deleting" @click="deleteDisabeldItem()"> {{$vuetify.display.smAndDown?'删除失效':'一键删除失效商品'}} </v-btn>
               </template>
               </v-list-item>
 
@@ -34,7 +34,7 @@
                 <v-alert type="info" outlined>购物车空空如也，快去逛逛吧</v-alert>
               </v-list-item>
               
-              <v-list-item v-for="shop in shopLists" v-else>
+              <v-list-item v-for="shop in shopLists" v-else :class="$vuetify.display.xs?'px-1':''">
                 <v-card elevation="0">
                 <v-card-title class="mt-2 pa-2">
                   <v-btn
@@ -54,18 +54,15 @@
                        'background-position': 'center',
                        'background-size': 'auto 90%',
                        'background-repeat': 'no-repeat' }" 
+                       @click="showDetail(item.product_id)"
                       class="pl-0 pt-2 pb-3 pr-0" v-for="item in shop.items" :key="item.item_id">
+
+                      
 
                         <v-list-item-action class="d-inline-flex" style="width:100%">
                           <v-checkbox v-model="itemSelected" :value="item" class="d-flex" :disabled="disabledItem(item)"></v-checkbox>
                         
                           <v-img :src="item.image" :height="$vuetify.display.xs?'60':'96'" :width="$vuetify.display.xs?'60':'96'"></v-img>
-                          <!-- <v-overlay activator="parent"  class="align-center justify-center" contained :model-value="disabledItem(item)">
-                            
-                              <span>无货</span>
-                          </v-overlay> -->
-                          
-
 
                           <v-container width="100%" style="margin-left: auto;">
                             <v-row>
@@ -210,6 +207,13 @@
       </v-col>
     </v-row>
     <div v-if="$vuetify.display.smAndDown" style="height:64px">&nbsp;</div>
+    <product-card
+    :product="showedItem" 
+    :shop-id="showedShopId"
+    :category-list="[]"
+    :show="false"
+    ref="itemCard"
+  ></product-card>
   </v-container>
   
   
@@ -290,6 +294,8 @@ import { deleteItem, getCart, updateCart } from '@/api/cart';
 import snackbar from '@/api/snackbar';
 import router from '@/router';
 import { cart } from '@/store/cart';
+import { getProductDetail } from '@/api/product';
+import productCard from '@/components/productCard.vue';
 
 const loading = ref(true);
 const realQuantitys = ref({});
@@ -418,7 +424,9 @@ const updateQuantity = async (id, newQuantity) => {
   return false;
 }
 
+const deleting = ref(false);
 const deleteSelectedItem = async() => {
+  deleting.value = true;
   itemSelected.value.forEach(async item => {
     const success = await deleteItem(item.item_id);
     if (success) {
@@ -430,6 +438,7 @@ const deleteSelectedItem = async() => {
           shopLists.value = shopLists.value.filter(s => s.shop_id !== shop.shop_id);
         }
       }
+      deleting.value = false;
     } else {
       snackbar.error("网络不佳，请稍后再试");
     }
@@ -437,6 +446,7 @@ const deleteSelectedItem = async() => {
 }
 
 const deleteDisabeldItem = async() => {
+  deleting.value = true;
   const items = shopLists.value.flatMap(shop => shop.items);
   items.filter(item => disabledItem(item)).forEach(async item => {
     const success = await deleteItem(item.item_id);
@@ -449,6 +459,7 @@ const deleteDisabeldItem = async() => {
           shopLists.value = shopLists.value.filter(s => s.shop_id !== shop.shop_id);
         }
       }
+      deleting.value = false;
     } else {
       snackbar.error("网络不佳，请稍后再试");
     }
@@ -476,7 +487,18 @@ watch(selectAll, (value) => {
     itemSelected.value = [];
   }
 });
+// let itemCard=ref(null);
 
+const itemCard = ref(null);
+const showedItem = ref({});
+const showedShopId = ref(0);
+const showDetail = async(item_id) => {
+  const response = await getProductDetail(item_id);
+  if (response.success) {
+    showedItem.value = response.data;
+    showedShopId.value = response.data.shop;
+  }
+}
 
 const checkout = () => {
   if (selectedNotEmpty.value) {
