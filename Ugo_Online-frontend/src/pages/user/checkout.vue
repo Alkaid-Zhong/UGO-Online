@@ -187,70 +187,7 @@ const updateSelectedAddress = (newAddress) => {
   selectedAddress.value = newAddress;
 };
 
-// const addresses = ref([]);
 const selectedAddress = ref(null);
-// const currentPage = ref(0);
-// const addressPerPage = 3;
-// const newAddress = ref({
-//     recipient_name: '',
-//     phone: '',
-//     province: '',
-//     city: '',
-//     address: '',
-//     is_default: false
-// });
-
-// const createAddress = async (isActive) => {
-//   console.log(newAddress.value);
-//     const response = await addAddress(
-//       newAddress.value
-//     );
-//     if (response.success) {
-//         snackbar.success("添加成功");
-//         isActive.value = false;
-//         fetchAddresses();
-//     } else {
-//         snackbar.error("添加失败");
-//     }
-// };
-
-// const isLastPage = computed(() => {
-//     return currentPage.value === totalPages.value - 1;
-// });
-
-// const paginatedAddresses = computed(() => {
-//     const start = currentPage.value * addressPerPage;
-//     const end = start + addressPerPage;
-//     return addresses.value.slice(start, end);
-// });
-
-// const minheight = ref(0);
-// const transitionName = ref('slide-left');
-
-// const nextPage = () => {
-//   transitionName.value = 'slide-right';
-//   const firstAddressCard = document.getElementById('address-card');
-//   if (firstAddressCard) {
-//     minheight.value = firstAddressCard.offsetHeight;
-//     console.log("success", minheight.value);
-//   }
-//   currentPage.value++;
-// };
-
-// const prevPage = () => {
-//   transitionName.value = 'slide-left';
-//   currentPage.value--;
-// };
-
-// const totalPages = computed(() => {
-//     return Math.ceil((addresses.value.length + 1) / addressPerPage);
-// });
-
-// const fetchAddresses = async () => {
-//   const response = await getAddresses();
-//   addresses.value = response.data;
-//   selectedAddress.value = addresses.value[0];
-// };
 
 // shopInfo
 
@@ -304,17 +241,17 @@ const checkout = async () => {
     address_id: addressId,
     items: items
   };
-  console.log(data);
+  //console.log(data);
   const response = await createOrder(data);
   if (response.success) {
     snackbar.success("下单成功");
     await profile();
     paying.value = true;
-    console.log(response.data.orders);
+    //console.log(response.data.orders);
     orders.value = response.data.orders;
     cart.selectedItems = [];
     orderIdList.value = response.data.orders.map(order => order.order_id);
-    console.log(orderIdList.value);
+    //console.log(orderIdList.value);
   } else {
     snackbar.error("下单失败");
     console.log(addressId);

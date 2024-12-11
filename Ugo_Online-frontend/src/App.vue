@@ -227,12 +227,10 @@ const unreadMessageNum = ref(0);
 const curMessagePage = ref(1);
 const maxMessagePages = ref(1);
 const messageClick = async(message)=> {
-  // console.log(message.order_id);
   if (message.is_read === false) {
     await readNotify(message);
   }
   if (message.order_id !== -1) {
-    console.log(route.fullPath);
     if(route.path === '/order' && route.fullPath !== '/order?id='+message.order_id + '&shop='+message.shop_id) {
       router.push({path: `/order`,query:{id:message.order_id, shop:message.shop_id}}).then(() => {
         router.go(0);
@@ -242,7 +240,6 @@ const messageClick = async(message)=> {
     }
     
   } else if (message.shop_id !== -1) {
-    console.log(message.shop_id);
     if (route.fullPath !== '/shop/'+message.shop_id) {
       router.push({path: `/shop/${message.shop_id}`}).then(() => {
         router.go(0);
@@ -258,18 +255,15 @@ const reloadMessage = async() => {
   
   const oneNotify = document.getElementById('first-card');
   if (oneNotify!==null) {
-    console.log(oneNotify.offsetWidth);
     minw.value = minw.value > oneNotify.offsetWidth ? minw.value: oneNotify.offsetWidth;
   }
   messageLoading.value = true;
-  // console.log(selectedNotifyStatus.value);
   const response = await getMessage(selectedNotifyStatus.value);
   if (response.success) {
     messages.value = response.data.messages;
     messageLoading.value = false;
     curMessagePage.value = 1;
     maxMessagePages.value = response.data.total_page;
-    // console.log();
     
   } else {
     snackbar.show = true;
@@ -299,7 +293,6 @@ const nextPageMessage = async({ done }) => {
 }
 
 watch(selectedNotifyStatus, (newVal) => {
-  // console.log(newVal);
   if (messageLoading.value === true) {
     return;
   }
@@ -310,8 +303,6 @@ watch(showMessage, (newVal)=> {
   if (newVal === true) {
     checkUnread();
     reloadMessage();
-  } else {
-    // 重新加载是否有未读消息
   }
 })
 

@@ -323,7 +323,6 @@ const orderStatuses = ['Pending Payment', 'Payment Received', 'Shipped', 'Comple
 const selectedStatus = ref(undefined);
 
 watch(currentPage, (newVal, oldVal) => {
-    //console.log();
     orderLoading.value = true;
     fetchOrders(newVal, selectedStatus.value);
 });
@@ -336,13 +335,6 @@ watch(selectedShop, (newVal, oldVal) => {
         currentPage.value = 1;
     } else {
         fetchOrders(currentPage.value, selectedStatus.value);
-        // sellerGetOrders(newVal, currentPage.value).then(res => {
-        //     orders.value = res.data.orders;
-        //     orderLoading.value = false;
-        //     totalPages.value = res.data.total_page;
-        // }).catch(err => {
-        //     console.log(err);
-        // })
     }
 });
 watch(selectedStatus, (newVal, oldVal) => {
@@ -353,7 +345,6 @@ watch(selectedStatus, (newVal, oldVal) => {
     if (currentPage.value !== 1 ){
         currentPage.value = 1;
     }else {
-        console.log(currentPage.value, selectedStatus.value);
         fetchOrders(currentPage.value, selectedStatus.value);
     } 
 });
@@ -375,7 +366,6 @@ onMounted(() => {
             isSeller.value = false;
             if (queryOrderId.value === -1) {
                 userGetOrders().then(res => {
-                    //console.log(res.data.orders);
                     orders.value = res.data.orders;
                     totalPages.value = res.data.total_page;
                     fetchShopInfo(orders.value).then(() => {
@@ -385,7 +375,6 @@ onMounted(() => {
                     console.log(err);
                 })
             } else {
-                console.log("test new page");
                 getSpecificOrder(queryOrderId.value).then(()=> {
                     fetchShopInfo(orders.value).then(() => {
                         orderLoading.value = false;
@@ -397,18 +386,14 @@ onMounted(() => {
             isCustomer.value = false;
             isSeller.value = true;
             shopIds.value = user.shops;
-            // console.log("获取商家管理的店铺ID：");
-            // console.log(shopIds.value);
             
             if (shopIds.value.length !== 0) {
                 fetchShopInfo(shopIds.value).then(() => {
                     
                     sellerShops.value = shopIds.value.map(id => shopInfoCache.value[id]).filter(shop => shop !== undefined);
                     
-                    //loading.value = false;
                     if (queryShopId.value !== -1) {
                         selectedShop.value = sellerShops.value.filter(shop=> shop.id == queryShopId.value)[0].id;
-                        //console.log("商家order specify");
                         getSpecificOrder(queryOrderId.value).then(()=> {
                             orderLoading.value = false;
                             totalPages.value = 1;
@@ -454,7 +439,6 @@ const getSpecificOrder = async(order_id) => {
 }
 
 const fetchOrders = async (page, status) => {
-    // console.log(page);
     if (isCustomer.value) {
         userGetOrders(currentPage.value, status).then(res => {
             orders.value = res.data.orders;
@@ -467,11 +451,10 @@ const fetchOrders = async (page, status) => {
             console.log(err);
         })
     } else {
-        console.log(selectedShop.value, currentPage.value, status);
+        
         sellerGetOrders(selectedShop.value , currentPage.value, status).then(res => {
             orders.value = res.data.orders;
             totalPages.value = res.data.total_page;
-            console.log("获取到总页数"+totalPages.value);
             orderLoading.value = false;
         }).catch(err => {
             console.log(err);
@@ -496,14 +479,11 @@ const reviewRating = ref(0);
 const replyContent = ref('');
 const curItem = ref();
 const submitReview = async (isActive) => {
-    console.log("评价内容：" + reviewContent, "评分：" + reviewRating);
-    console.log(curItem.value);
     if (reviewRating.value === 0) {
         snackbar.error("请给商品评分");
         return;
     }
     const response = await userCreateReview(curItem.value.id, curItem.value.product.id, reviewRating.value, reviewContent.value);
-    console.log(response);
     if (response.success) {
         snackbar.success("评价成功");
         
@@ -526,7 +506,6 @@ const review = (order, item) => {
     reviewContent.value = '';
     reviewRating.value = 0;
     alreadyReply.value = false;
-    console.log(createReview.value);
     showReview.value = true;
 }
 
@@ -557,7 +536,6 @@ const reply = async(order, item) => {
     curItem.value = item;
     const response = await getReview(item.id);
     if (response.success) {
-        console.log(response.data);
         review_id.value = response.data.id;
         reviewContent.value = response.data.comment;
         reviewRating.value = response.data.rating;
@@ -579,10 +557,7 @@ const reply = async(order, item) => {
 }
 
 const submitReply = async (isActive) => {
-    //console.log("回复内容：" + reviewContent, "评分：" + reviewRating);
-    console.log(curItem.value);
     const response = await sellerReply(review_id.value, replyContent.value);
-    console.log(response);
     if (response.success) {
         snackbar.success("回复成功");
         curItem.value.review_has_reply = true;
@@ -605,8 +580,6 @@ const orderDialog = (content, order) => {
     switch (content) {
         case 'pay':
             profile().then(() => {
-                console.log(user);
-                console.log("订单价格：" + order.total_price, "用户余额：" + user.money);
                 if (parseInt(user.money) < parseInt(order.total_price)) {
                     snackbar.error("余额不足(当前余额 " + user.money + "元), 请充值");
                     return;
@@ -618,7 +591,6 @@ const orderDialog = (content, order) => {
             break;
         case 'change address':
             showDialog.value = true;
-            console.log("修改地址");
             //changeAddressDialog(order);
             break;
         case 'cancel':
@@ -633,7 +605,6 @@ const orderDialog = (content, order) => {
         default:
             break;
     }
-    //console.log(order);
 }
 
 const orderStatusColor = (status) => {
@@ -671,11 +642,8 @@ const showChangeAddressButton = ((status) => {
 
 const refund = async (order, item) => {
     const order_id = order.order_id;
-    console.log(order_id, item);
 
     const response = await userRefund(order_id, [item.id]);
-    // console.log("退款ing");
-    // console.log(response);
     if (response.success) {
         snackbar.success("退款申请成功");
         item.is_cancelled = true;
@@ -688,19 +656,16 @@ const refund = async (order, item) => {
 }
 
 const payOrder = async (order) => {
-    console.log(order);
     const response = await userPayOrders([order.order_id]);
     if (response.success) {
         snackbar.success("支付成功");
         order.status = 'Payment Received';
     } else {
-        // console.log(response);
         snackbar.error("支付失败：" + response.data.message);
     }
 }
 
 const userCancel = async (order) => {
-    console.log(order);
     const response = await userCancelOrder(order.order_id);
     if (response.success) {
         snackbar.success("订单取消成功");
@@ -711,7 +676,6 @@ const userCancel = async (order) => {
 }
 
 const userReceive = async (order) => {
-    console.log(order);
     const response = await userConfirmOrder(order.order_id);
     if (response.success) {
         snackbar.success("确认收货成功");
@@ -728,7 +692,6 @@ const updateSelectedAddress = (newAddress) => {
 };
 
 const changeAddress = (async () => {
-    //console.log("为订单" + curOrder.value.order_id + "修改地址为" + selectedAddress.value.id);
     const response = await userChangeAddress(curOrder.value.order_id, selectedAddress.value.id);
     if (response.success) {
         snackbar.success("地址修改成功");
@@ -739,7 +702,6 @@ const changeAddress = (async () => {
 });
 
 const ship = async (order) => {
-    console.log(order);
     const response = await sellerShip(order.order_id);
     if (response.success) {
         snackbar.success("发货成功");
@@ -779,9 +741,6 @@ const formatStatus = (status) => {
 }
 
 const fetchShopInfo = async (shopIdArray) => {
-
-    // console.log("Trying to get shop info");
-    // console.log(shopIdArray[0]);
     if (shopIdArray.length === 0) {
         return;
     } else if (shopIdArray[0].shop_id!== undefined) {
@@ -803,8 +762,6 @@ const shopInfo = async (shopId) => {
 };
 
 const ShopInfo = (shop_id) => {
-    // console.log(shop_id);
-    //console.log(shopInfoCache.value[shop_id]);
     return shopInfoCache.value[shop_id];
 }
 

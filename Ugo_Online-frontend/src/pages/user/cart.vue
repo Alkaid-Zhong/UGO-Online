@@ -182,9 +182,15 @@
             <span class="text-h5">实付：￥{{ actualSum }}</span>
           </v-card-text>
 
-          <v-card-actions>
-            <v-btn block border color="red-lighten-1" @click="checkout">结算</v-btn>
-          </v-card-actions>
+          <!-- <v-card-actions> -->
+            <v-card-text>
+
+              
+            <v-btn block  color="orange-darken-3" 
+              class="font-weight-bold text-body-1"
+              :disabled="!selectedNotEmpty" @click="checkout">结算</v-btn>
+            </v-card-text>
+          <!-- </v-card-actions> -->
         </v-card>
       </v-col>
     </v-row>
@@ -208,7 +214,7 @@ const fetchCartItems = async () => {
     acc[item.item_id] = item.quantity;
     return acc;
   }, {});
-  console.log(realQuantitys.value);
+  
   if (cart.selectedItems.length !== 0) {
     // itemSelected.value = cart.selectedItems.filter(selectedItem => 
     //   shopLists.value.some(shop => shop.items.some(item => item.item_id === selectedItem.item_id))
@@ -240,7 +246,6 @@ const queryRemove = (item) => {
 }
 
 const disabledItem = (item) => {
-  // console.log(item.product_status);
   return item.product_stock_quantity < item.quantity || item.product_status === 'Unavailable';
 }
 
@@ -248,8 +253,6 @@ const bgImage = (item) => {
   if (item.product_status === 'Unavailable') {
     return 'url(/unavailable.png)';
   } else {
-    console.log(item.product_stock_quantity);
-    console.log(realQuantitys.value);
     return item.product_stock_quantity < realQuantitys.value[item.item_id] ? 'url(/nostock.png)' : 'none';
   }
 }
@@ -316,12 +319,11 @@ const changeQuantity = (event, item) => {
 
 const updateQuantity = async (id, newQuantity) => {
   const response = await updateCart(id, newQuantity);
-  console.log(response);
   if (response.success) {
     const item = shopLists.value.flatMap(shop => shop.items).find(item => item.item_id === id);
     if (item) {
-      console.log(response.data.product);
       item.quantity = newQuantity;
+      realQuantitys.value[item.item_id] = newQuantity;
       item.product_stock_quantity = response.data.product.stock_quantity;
     }
     return true;
