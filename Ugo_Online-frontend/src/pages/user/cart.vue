@@ -60,7 +60,7 @@
                       
 
                         <v-list-item-action class="d-inline-flex" style="width:100%">
-                          <v-checkbox v-model="itemSelected" :value="item" class="d-flex" :disabled="disabledItem(item)"></v-checkbox>
+                          <v-checkbox @click.stop="" v-model="itemSelected" :value="item" class="d-flex" :disabled="disabledItem(item)"></v-checkbox>
                         
                           <v-img :src="item.image" :height="$vuetify.display.xs?'60':'96'" :width="$vuetify.display.xs?'60':'96'"></v-img>
 
@@ -208,12 +208,12 @@
     </v-row>
     <div v-if="$vuetify.display.smAndDown" style="height:64px">&nbsp;</div>
     <product-card
-    :product="showedItem" 
-    :shop-id="showedShopId"
-    :category-list="[]"
-    :show="false"
-    ref="itemCard"
-  ></product-card>
+      :product="showedItem" 
+      :shop-id="showedShopId"
+      :category-list="[]"
+      :show="false"
+      ref="itemCard"
+    ></product-card>
   </v-container>
   
   
