@@ -196,6 +196,7 @@
     </v-row>
     <div v-if="$vuetify.display.smAndDown" style="height:64px">&nbsp;</div>
   </v-container>
+  
   <div v-if="$vuetify.display.smAndDown" 
       style="position:fixed; bottom: 56px;z-index: 1000; width: 100vw;" class="p-0 m-0">
         <v-card rounded="0" elevation="0">
@@ -205,9 +206,6 @@
               <v-row class="mx-2">
                 <v-col cols="3" v-for="item in itemSelected.slice(0,4)" >
                   <v-img :src="item.image" aspect-ratio="">
-                    
-                    
-                
                   </v-img>
                 </v-col>
               </v-row>
