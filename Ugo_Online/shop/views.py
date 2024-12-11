@@ -63,10 +63,10 @@ class ShopInfoView(APIView):
                 serializer.save()
                 return api_response(True, code=0, data=serializer.data)
             else:
-                return api_response(False, code=300, message=get_error_message(serializer.errors), data=serializer.errors)
+                return api_response(False, code=300, message=get_error_message(serializer.errors),
+                                    data=serializer.errors)
         except Shop.DoesNotExist:
             return api_response(False, code=300, message='商店不存在')
-
 
 
 class CreateInvitationCodeView(APIView):
@@ -236,7 +236,7 @@ class ProductListView(ListAPIView):
         'status': ['exact'],
         'stock_quantity': ['exact']
     }
-    search_fields = ['name', 'description', 'shop__name']
+    search_fields = ['name', 'description', 'shop__name', 'shop__description']
     ordering_fields = ['average_rating', 'name', 'create_date', 'price', 'sales_volume']
     # ordering = ['name']  # 默认按照平均评分降序排列
 
@@ -246,7 +246,8 @@ class ProductListView(ListAPIView):
 
     def get_queryset(self):
         if self.shop is not None:
-            if self.request.user.is_authenticated and SellerShop.objects.filter(seller=self.request.user, shop=self.shop).exists():
+            if self.request.user.is_authenticated and SellerShop.objects.filter(seller=self.request.user,
+                                                                                shop=self.shop).exists():
                 queryset = Product.objects.filter(shop=self.shop)
             else:
                 queryset = Product.objects.filter(shop=self.shop, status='Available', stock_quantity__gt=0)
@@ -262,7 +263,7 @@ class ProductListView(ListAPIView):
         queryset = queryset.annotate(
             average_rating=Coalesce(Avg('reviews__rating'), 0.0),
             name_hash_mod_100=RawSQL(
-                "CAST(CONV(SUBSTRING(MD5(name), 1, 8), 16, 10) %% 100 AS SIGNED)",
+                "CAST(CONV(SUBSTRING(MD5(shop_product.name), 1, 8), 16, 10) %% 100 AS SIGNED)",
                 []
             )
         ).annotate(
@@ -383,7 +384,8 @@ class ReviewCreateView(APIView):
 
             sellers = order.product.shop.sellers.all()
             for seller in sellers:
-                new_message(seller, f"[{order.product.shop}] 您的商品 {order.product} 有新的评价，快去看看吧！", order.order.id, order.product.shop.id)
+                new_message(seller, f"[{order.product.shop}] 您的商品 {order.product} 有新的评价，快去看看吧！",
+                            order.order.id, order.product.shop.id)
 
             return api_response(True, message='评价提交成功', data=serializer.data)
         else:
@@ -402,7 +404,9 @@ class ReviewReplyView(APIView):
         serializer = ReviewReplySerializer(review, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            new_message(review.user, f"[{review.product.shop}] 您对商品 {review.product} 的评价已被商家回复，快去看看吧！", review.order.order.id, review.product.shop.id)
+            new_message(review.user,
+                        f"[{review.product.shop}] 您对商品 {review.product} 的评价已被商家回复，快去看看吧！",
+                        review.order.order.id, review.product.shop.id)
             return api_response(True, message='回复成功')
         else:
             return api_response(False, code=400, message=get_error_message(serializer.errors), data=serializer.errors)
@@ -423,7 +427,7 @@ class ProductDetailView(APIView):
 class ProductReviewListView(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ReviewListSerializer
-    pagination_class = SmallResultsSetPagination    # 可选，添加分页功能
+    pagination_class = SmallResultsSetPagination  # 可选，添加分页功能
 
     def get_queryset(self):
         product_id = self.kwargs.get('product_id')
@@ -485,7 +489,7 @@ class ShopCommissionView(APIView):
 
         getter_id = request.data.get("given_id")
 
-        try :
+        try:
             getter = User.objects.get(id=getter_id)
         except User.DoesNotExist:
             return api_response(False, code=404, message='用户不存在')
@@ -509,4 +513,3 @@ class ShopCommissionView(APIView):
         new_message(getter, f'[{shop}] 您得到了 {money} 元的分成！', -1, shop.id)
 
         return api_response(True, message='分成成功')
-
