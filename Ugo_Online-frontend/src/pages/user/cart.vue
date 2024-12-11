@@ -144,10 +144,10 @@
 
         
       </v-col>
-      <v-col cols="12" md="4">
+      <v-col v-if="$vuetify.display.mdAndUp" cols="12" md="4">
         <v-card style="position: sticky; top: 84px;">
           <v-card-title>
-            <span class="font-weight-bold">明细</span>
+            <span class="font-weight-bold">明细 ({{ itemSelected.length }})</span>
           </v-card-title>
           <v-container v-if="selectedNotEmpty">
             <v-row>
@@ -194,7 +194,57 @@
         </v-card>
       </v-col>
     </v-row>
+    <div v-if="$vuetify.display.smAndDown" style="height:64px">&nbsp;</div>
   </v-container>
+  <div v-if="$vuetify.display.smAndDown" 
+      style="position:fixed; bottom: 56px;z-index: 1000; width: 100vw;" class="p-0 m-0">
+        <v-card rounded="0" elevation="0">
+          <v-expand-transition>
+            <div v-show="showXsDetail" style="border-radius: 1%; background-color: #FAFAFA;">
+              <v-container>
+              <v-row class="mx-2">
+                <v-col cols="3" v-for="item in itemSelected.slice(0,4)" >
+                  <v-img :src="item.image" aspect-ratio="">
+                    
+                    
+                
+                  </v-img>
+                </v-col>
+              </v-row>
+              
+          </v-container>
+            </div>
+          </v-expand-transition>
+          <v-card-actions>
+            <v-checkbox 
+                  v-model="selectAll" 
+                  class="d-flex align-items-center" 
+                  label="全选"
+                ></v-checkbox>
+                
+            <span class="ml-3 font-weight-bold">明细({{ itemSelected.length }})</span>
+          <v-btn
+            icon
+            @click="showXsDetail = !showXsDetail"
+          >
+            <v-icon>{{ showXsDetail ? 'mdi-chevron-down' : 'mdi-chevron-up' }}</v-icon>
+          </v-btn>
+
+          <v-spacer></v-spacer>
+
+          <span style="color:orangered">￥{{ actualSum }}</span>
+          <v-btn
+            color="orange-lighten-2"
+            variant="elevated"
+            class="mr-4"
+          >
+            结算
+          </v-btn>
+        </v-card-actions>
+          
+        </v-card>
+        
+      </div>
 </template>
 
 <script setup>
@@ -375,6 +425,7 @@ const totalSum = computed(() => {
   return itemSelected.value.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2);
 });
 
+const showXsDetail = ref(false);
 const discount = ref(0);
 const actualSum = computed(() => totalSum.value - discount.value);
 const itemSelected = ref([]);

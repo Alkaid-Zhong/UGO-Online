@@ -22,8 +22,9 @@
               color="red"
               v-if="unreadMessageNum>0"
               overlap
+              v-bind="props"
               >
-              <v-icon icon="mdi-bell" v-bind="props" ripple>
+              <v-icon icon="mdi-bell"  ripple>
                 
               </v-icon>
               
