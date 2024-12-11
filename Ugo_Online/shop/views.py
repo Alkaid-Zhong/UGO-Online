@@ -499,8 +499,9 @@ class ShopCommissionView(APIView):
         money = request.data.get("money")
 
         try:
-            # 将 money 转换为 Decimal 类型
+            # 将 money 转换为 Decimal 类型，保留两位小数
             money = Decimal(money)
+            money = money.quantize(Decimal('0.00'))
         except (InvalidOperation, TypeError):
             return api_response(False, code=400, message='金额格式不正确')
 
