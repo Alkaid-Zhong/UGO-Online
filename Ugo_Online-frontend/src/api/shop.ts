@@ -106,3 +106,11 @@ export const splitToSeller = async (shop_id: number, given_id: number, money: nu
         showSnackbar: true
     });
 }
+
+export const modifyShopInfo = async (shop_id: number, data: FormData) => {
+    return await server.put({
+        url: `/shop/${shop_id}/info/`,
+        data,
+        showSnackbar: true
+    });
+}
