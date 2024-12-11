@@ -6,7 +6,7 @@ from .views import (ShopCreateView, ShopInfoView,
                     ShopTransactionListView, ReviewCreateView,
                     ReviewReplyView, ProductDetailView,
                     ProductReviewListView, OrderItemReviewView,
-                    ShopOwnersView, ShopCommissionView)
+                    ShopOwnersView, ShopCommissionView, GenerateProductIntroductionView)
 
 urlpatterns = [
     path('', ShopListView.as_view(), name='get_all_shop'),
@@ -28,5 +28,7 @@ urlpatterns = [
     path('product/<int:product_id>/reviews/', ProductReviewListView.as_view(), name='product_reviews'),
     path('order_item/<int:order_item_id>/review/', OrderItemReviewView.as_view(), name='order_item_review'),
     path('<int:shop_id>/owners/', ShopOwnersView.as_view(), name='shop_owners'),
-    path('<int:shop_id>/split/', ShopCommissionView.as_view(), name='shop_split')
+    path('<int:shop_id>/split/', ShopCommissionView.as_view(), name='shop_split'),
+    path('gen_intro/', GenerateProductIntroductionView.as_view(), name='product_introduction')
+
 ]
