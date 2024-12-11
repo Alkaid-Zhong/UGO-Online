@@ -177,15 +177,8 @@ const emit = defineEmits(['updateSelectedAddress']);
 
 onMounted(() => {
     fetchAddresses();
-    //console.log($vuetify.display.mdAndUp);
 });
 
-// const updateAddress = (newAddress) => {
-//     console.log("inside update to:");
-//     console.log(selectedAddress.value);
-//     // selectedAddress.value = newAddress;
-//     emit('updateSelectedAddress', selectedAddress.value);
-// };
 
 watch(() => props.paying, (newVal) => {
     paying.value = newVal;
@@ -237,7 +230,6 @@ const deleteAddr = async () => {
     if (response.success) {
         snackbar.success("删除成功");
         fetchAddresses().then(() => {
-            console.log(mandatory.value);
             selectedAddress.value = mandatory.value ? addresses.value[0] : null;
         });
     } else {
@@ -247,8 +239,6 @@ const deleteAddr = async () => {
 
 const curAddrId = ref(0);
 const showDialog = (use) => {
-    // console.log("editAddr");
-    // console.log(selectedAddress.value);
     showFor.value = use;
     if (use ==='修改') {
         if (selectedAddress.value === undefined || selectedAddress.value.id === undefined) {
@@ -279,8 +269,6 @@ const showDialog = (use) => {
 };
 
 const editAddress = async (isActive) => {
-    // console.log("editAddr");
-    // console.log(newAddress.value);
     const response = await updateAddress(curAddrId.value, newAddress.value);
     if (response.success) {
         snackbar.success("修改成功");
@@ -302,8 +290,6 @@ const editAddress = async (isActive) => {
 };
 
 const createAddress = async (isActive) => {
-    // console.log("newAddr");
-    // console.log(newAddress.value);
     const response = await addAddress(newAddress.value);
     if (response.success) {
         snackbar.success("添加成功");
@@ -337,7 +323,6 @@ const isLastPage = computed(() => {
 const paginatedAddresses = computed(() => {
     const start = currentPage.value * addressPerPage.value;
     const end = start + addressPerPage.value;
-    // console.log(addresses.value);
     return addresses.value.slice(start, end);
 });
 const loading = ref(true);
@@ -349,10 +334,7 @@ const nextPage = () => {
   const firstAddressCard = document.getElementById('address-card');
   if (firstAddressCard) {
     minheight.value = firstAddressCard.offsetHeight;
-    // console.log("success", minheight.value);
   }
-//   const tmp = currentPage.value*addressPerPage
-//   console.log(addresses.value.slice());
   currentPage.value++;
 };
 
@@ -367,21 +349,11 @@ const totalPages = computed(() => {
 
 const fetchAddresses = async () => {
   const response = await getAddresses();
-//   console.log(addresses.value.length, response.data.length);
   addresses.value = response.data;
   if (addresses.value.length !== 0) {
-    // console.log("hey: " + addresses.value);
     if (preSelect.value) {
-        console.log(preSelect.value);
-        console.warn(props.preSelect === undefined);
         selectedAddress.value = addresses.value[0];
-    } else {
-
-    }
-    //selectedAddress.value = addresses.value[0];
-    // console.log(selectedAddress.value);
-    // console.log("total pages:", addresses.value.length);
-    // emit('updateSelectedAddress', selectedAddress.value);
+    } 
   }
   loading.value = false;
 };

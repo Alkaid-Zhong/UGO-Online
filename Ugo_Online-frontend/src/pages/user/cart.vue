@@ -22,7 +22,7 @@
             </template>
             <template v-slot:append>
                 <v-btn @click="deleteSelectedItem()" class="mr-2"> 删除所选 </v-btn>
-                <v-btn @click="deleteDisabeldItem()"> 一键删除失效商品 </v-btn>
+                <v-btn @click="deleteDisabeldItem()"> {{$vuetify.display.smAndDown?'删除失效':'一键删除失效商品'}} </v-btn>
               </template>
               </v-list-item>
 
@@ -46,7 +46,6 @@
                   >{{ shop.shop_name }}</v-btn>
                 </v-card-title>
                 <v-card-text class="px-0">
-                  
                   <v-list lines="2">
                   <transition-group name="list">
                     <!-- <div > -->
@@ -60,7 +59,7 @@
                         <v-list-item-action class="d-inline-flex" style="width:100%">
                           <v-checkbox v-model="itemSelected" :value="item" class="d-flex" :disabled="disabledItem(item)"></v-checkbox>
                         
-                          <v-img :src="item.image" height="96" width="96"></v-img>
+                          <v-img :src="item.image" :height="$vuetify.display.xs?'60':'96'" :width="$vuetify.display.xs?'60':'96'"></v-img>
                           <!-- <v-overlay activator="parent"  class="align-center justify-center" contained :model-value="disabledItem(item)">
                             
                               <span>无货</span>
@@ -70,14 +69,23 @@
 
                           <v-container width="100%" style="margin-left: auto;">
                             <v-row>
-                              <v-col cols="4" class="pt-0">
+                              <v-col md="4" cols="7" :class="['pt-0',$vuetify.display.xs?'':'text-body-1']">
                                 <strong>{{ item.product_name }}</strong>
                               </v-col>
-                                <v-col cols="4" :style="{ color: disabledItem(item)? 'grey' : 'orangered' }" class="text-h6 pt-0">
+                                <v-col md="4" v-if="$vuetify.display.mdAndUp" :style="{ color: disabledItem(item)? 'grey' : 'orangered' }" class="text-h6 pt-0">
                                 {{ currency(item.price) }}
                                 </v-col>
-                              <v-col cols="4" class="d-flex">
-                                <v-row >
+                              <v-col cols="5" md="4" class="d-flex flex-column">
+                                <v-row v-if="$vuetify.display.smAndDown" >
+                                  <v-spacer></v-spacer>
+                                  <span :style="{ color: disabledItem(item)? 'grey' : 'orangered' }" 
+                                    :class="[$vuetify.display.xs?'text-body-1 font-weight-bold':'text-h5 mb-1','text-right']">
+                                    {{ currency(item.price) }}
+
+                                  </span>
+                                  <v-spacer></v-spacer>
+                                </v-row>
+                                <v-row>
                                   <v-col cols="3" class="pa-0">
                                     <v-responsive aspect-ratio="1" width="100%">
                                       <v-btn @click="decreaseQuantity(item)" class="w-100 h-100" block tile 
@@ -103,8 +111,11 @@
                                   <v-icon>mdi-plus</v-icon>
                                 </v-btn>
                               </v-responsive>
+                            
                                   </v-col>
+                                  
                                 </v-row>
+                                <v-row class="pt-2 justify-center" v-if="item.product_stock_quantity < item.quantity">当前库存:{{ item.product_stock_quantity }}</v-row>
                                 <!-- <v-btn @click="decreaseQuantity(item)" style="width: 40px; height: 40px;">
                                   <v-icon size="small">mdi-minus</v-icon>
                                 </v-btn> -->
@@ -133,15 +144,30 @@
 
         
       </v-col>
-      <v-col cols="12" md="4">
+      <v-col v-if="$vuetify.display.mdAndUp" cols="12" md="4">
         <v-card style="position: sticky; top: 84px;">
           <v-card-title>
-            <span class="font-weight-bold">明细</span>
+            <span class="font-weight-bold">明细 ({{ itemSelected.length }})</span>
           </v-card-title>
           <v-container v-if="selectedNotEmpty">
             <v-row>
               <v-hover v-slot:default="{ isHovering }">
-                <v-col cols="3" v-for="item in itemSelected.slice(0,4)" >
+                <v-slide-group
+                  show-arrows
+                >
+                  <v-slide-group-item
+                    v-for="item in itemSelected"
+                    :key="item.item_id"
+                  >
+                    <v-img
+                      class="ma-2"
+                      :src="item.image"
+                      width="64px"
+                    >
+                    </v-img>
+                  </v-slide-group-item>
+                </v-slide-group>
+                <!-- <v-col cols="3" v-for="item in itemSelected.slice(0,4)" >
                   <v-img :src="item.image" aspect-ratio="1">
                     
                     <v-overlay :value="isHovering" absolute opacity="0.7" @click="handleClick()" class="test">
@@ -151,7 +177,7 @@
                     </v-overlay>
                 
                   </v-img>
-                </v-col>
+                </v-col> -->
               </v-hover>
             </v-row>
           </v-container>
@@ -171,13 +197,91 @@
             <span class="text-h5">实付：￥{{ actualSum }}</span>
           </v-card-text>
 
-          <v-card-actions>
-            <v-btn block border color="red-lighten-1" @click="checkout">结算</v-btn>
-          </v-card-actions>
+          <!-- <v-card-actions> -->
+            <v-card-text>
+
+              
+            <v-btn block  color="orange-darken-3" 
+              class="font-weight-bold text-body-1"
+              :disabled="!selectedNotEmpty" @click="checkout">结算</v-btn>
+            </v-card-text>
+          <!-- </v-card-actions> -->
         </v-card>
       </v-col>
     </v-row>
+    <div v-if="$vuetify.display.smAndDown" style="height:64px">&nbsp;</div>
   </v-container>
+  
+  
+  
+  <div v-if="$vuetify.display.smAndDown" 
+      style="position:fixed; bottom: 56px;z-index: 1000; width: 100vw;" class="p-0 m-0">
+        <v-card rounded="0" elevation="0">
+          <v-expand-transition>
+            
+            <div v-show="showXsDetail" style="border-radius: 1%; background-color: #FAFAFA;">
+              <v-container>
+                <v-slide-group
+                  show-arrows
+                >
+                  <v-slide-group-item
+                    v-for="item in itemSelected"
+                    :key="item.item_id"
+                  >
+                    <v-img
+                      class="ma-2"
+                      :src="item.image"
+                      width="64px"
+                      style="max-width: 96px;"
+                    >
+
+                    <!-- <v-checkbox style="margin-right: auto;" color="orange" class="rounded-sm">
+                      
+                    </v-checkbox> -->
+                    </v-img>
+                  </v-slide-group-item>
+                </v-slide-group>
+              <!-- <v-row class="mx-2">
+                <v-col cols="3" v-for="item in itemSelected.slice(0,4)" >
+                  <v-img :src="item.image" aspect-ratio="">
+                  </v-img>
+                </v-col>  
+              </v-row> -->
+              <v-dialog v-model="showXsDetail" style="z-index: 999;"></v-dialog>
+          </v-container>
+            </div>
+            
+          </v-expand-transition>
+          <v-card-actions>
+            <v-checkbox 
+                  v-model="selectAll" 
+                  class="d-flex align-items-center" 
+                  label="全选"
+                ></v-checkbox>
+                
+            <span class="ml-3 font-weight-bold">明细({{ itemSelected.length }})</span>
+          <v-btn
+            icon
+            @click="showXsDetail = !showXsDetail"
+          >
+            <v-icon>{{ showXsDetail ? 'mdi-chevron-down' : 'mdi-chevron-up' }}</v-icon>
+          </v-btn>
+
+          <v-spacer></v-spacer>
+
+          <span style="color:orangered">￥{{ actualSum.toString().split('.')[0] }}{{ actualSum.toString().split('.')[1] ?'.':'' }}<small>{{ actualSum.toString().split('.')[1]  }}</small></span>
+          <v-btn
+            color="orange-lighten-2"
+            variant="elevated"
+            class="mr-4"
+          >
+            结算
+          </v-btn>
+        </v-card-actions>
+          
+        </v-card>
+        
+      </div>
 </template>
 
 <script setup>
@@ -188,11 +292,16 @@ import router from '@/router';
 import { cart } from '@/store/cart';
 
 const loading = ref(true);
-
+const realQuantitys = ref({});
 const fetchCartItems = async () => {
   const response = await getCart();
   shopLists.value = response.data.shops;
   cart.items = shopLists.value.flatMap(shop => shop.items);
+  realQuantitys.value = cart.items.reduce((acc, item) => {
+    acc[item.item_id] = item.quantity;
+    return acc;
+  }, {});
+  
   if (cart.selectedItems.length !== 0) {
     // itemSelected.value = cart.selectedItems.filter(selectedItem => 
     //   shopLists.value.some(shop => shop.items.some(item => item.item_id === selectedItem.item_id))
@@ -203,6 +312,7 @@ const fetchCartItems = async () => {
         itemSelected.value.push(item);
       }
     });
+
   }
   loading.value = false;
 };
@@ -223,7 +333,6 @@ const queryRemove = (item) => {
 }
 
 const disabledItem = (item) => {
-  // console.log(item.product_status);
   return item.product_stock_quantity < item.quantity || item.product_status === 'Unavailable';
 }
 
@@ -231,7 +340,7 @@ const bgImage = (item) => {
   if (item.product_status === 'Unavailable') {
     return 'url(/unavailable.png)';
   } else {
-    return item.product_stock_quantity < item.quantity ? 'url(/nostock.png)' : 'none';
+    return item.product_stock_quantity < realQuantitys.value[item.item_id] ? 'url(/nostock.png)' : 'none';
   }
 }
 
@@ -297,12 +406,11 @@ const changeQuantity = (event, item) => {
 
 const updateQuantity = async (id, newQuantity) => {
   const response = await updateCart(id, newQuantity);
-  console.log(response);
   if (response.success) {
     const item = shopLists.value.flatMap(shop => shop.items).find(item => item.item_id === id);
     if (item) {
-      console.log(response.data.product);
       item.quantity = newQuantity;
+      realQuantitys.value[item.item_id] = newQuantity;
       item.product_stock_quantity = response.data.product.stock_quantity;
     }
     return true;
@@ -354,6 +462,7 @@ const totalSum = computed(() => {
   return itemSelected.value.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2);
 });
 
+const showXsDetail = ref(false);
 const discount = ref(0);
 const actualSum = computed(() => totalSum.value - discount.value);
 const itemSelected = ref([]);
