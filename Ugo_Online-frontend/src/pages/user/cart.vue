@@ -152,7 +152,22 @@
           <v-container v-if="selectedNotEmpty">
             <v-row>
               <v-hover v-slot:default="{ isHovering }">
-                <v-col cols="3" v-for="item in itemSelected.slice(0,4)" >
+                <v-slide-group
+                  show-arrows
+                >
+                  <v-slide-group-item
+                    v-for="item in itemSelected"
+                    :key="item.item_id"
+                  >
+                    <v-img
+                      class="ma-2"
+                      :src="item.image"
+                      width="64px"
+                    >
+                    </v-img>
+                  </v-slide-group-item>
+                </v-slide-group>
+                <!-- <v-col cols="3" v-for="item in itemSelected.slice(0,4)" >
                   <v-img :src="item.image" aspect-ratio="1">
                     
                     <v-overlay :value="isHovering" absolute opacity="0.7" @click="handleClick()" class="test">
@@ -162,7 +177,7 @@
                     </v-overlay>
                 
                   </v-img>
-                </v-col>
+                </v-col> -->
               </v-hover>
             </v-row>
           </v-container>
@@ -197,21 +212,45 @@
     <div v-if="$vuetify.display.smAndDown" style="height:64px">&nbsp;</div>
   </v-container>
   
+  
+  
   <div v-if="$vuetify.display.smAndDown" 
       style="position:fixed; bottom: 56px;z-index: 1000; width: 100vw;" class="p-0 m-0">
         <v-card rounded="0" elevation="0">
           <v-expand-transition>
+            
             <div v-show="showXsDetail" style="border-radius: 1%; background-color: #FAFAFA;">
               <v-container>
-              <v-row class="mx-2">
+                <v-slide-group
+                  show-arrows
+                >
+                  <v-slide-group-item
+                    v-for="item in itemSelected"
+                    :key="item.item_id"
+                  >
+                    <v-img
+                      class="ma-2"
+                      :src="item.image"
+                      width="64px"
+                      style="max-width: 96px;"
+                    >
+
+                    <!-- <v-checkbox style="margin-right: auto;" color="orange" class="rounded-sm">
+                      
+                    </v-checkbox> -->
+                    </v-img>
+                  </v-slide-group-item>
+                </v-slide-group>
+              <!-- <v-row class="mx-2">
                 <v-col cols="3" v-for="item in itemSelected.slice(0,4)" >
                   <v-img :src="item.image" aspect-ratio="">
                   </v-img>
-                </v-col>
-              </v-row>
-              
+                </v-col>  
+              </v-row> -->
+              <v-dialog v-model="showXsDetail" style="z-index: 999;"></v-dialog>
           </v-container>
             </div>
+            
           </v-expand-transition>
           <v-card-actions>
             <v-checkbox 
@@ -230,7 +269,7 @@
 
           <v-spacer></v-spacer>
 
-          <span style="color:orangered">￥{{ actualSum }}</span>
+          <span style="color:orangered">￥{{ actualSum.toString().split('.')[0] }}{{ actualSum.toString().split('.')[1] ?'.':'' }}<small>{{ actualSum.toString().split('.')[1]  }}</small></span>
           <v-btn
             color="orange-lighten-2"
             variant="elevated"
