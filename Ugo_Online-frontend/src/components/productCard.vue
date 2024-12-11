@@ -1,5 +1,5 @@
 <template>
-	<v-card height="100%" @click="onclickShowDetail" elevation="2">
+	<v-card height="100%" @click="onclickShowDetail" elevation="2" v-if="showCard">
 		<div class="d-flex flex-column justify-space-between" style="height: 100%">
 			<v-img :src="product.image" aspect-ratio="1" />
 			<v-divider></v-divider>
@@ -122,21 +122,21 @@
             color="primary"
 					>加入购物车</v-btn>
 					<v-btn
-						v-if="user.role === 'SELLER' && user.shops.includes(Number(shopId))"
+						v-if="user.role === 'SELLER' && user.shops.includes(Number(shop_id))"
 						variant="text"
 						prepend-icon="mdi-pencil"
 						@click="showUpdateProduct = true"
             color="primary"
 					>编辑商品</v-btn>
 					<v-btn
-						v-if="user.role === 'SELLER' && removeProductCallback !== null && product.status !== 'Unavailable' && user.shops.includes(Number(shopId))"
+						v-if="user.role === 'SELLER' && removeProductCallback !== null && product.status !== 'Unavailable' && user.shops.includes(Number(shop_id))"
 						color="red"
 						variant="text"
 						@click="onclickDeleteProduct"
 						prepend-icon="mdi-delete"
 					>下架商品</v-btn>
 					<v-btn
-						v-if="user.role === 'SELLER' && removeProductCallback !== null && product.status === 'Unavailable'&& user.shops.includes(Number(shopId))"
+						v-if="user.role === 'SELLER' && removeProductCallback !== null && product.status === 'Unavailable'&& user.shops.includes(Number(shop_id))"
 						color="green"
 						variant="text"
 						@click="onclickOnsaleProduct"
@@ -246,11 +246,16 @@ const props = defineProps({
 	removeProductCallback: {
 		type: Function,
 		required: false
+	},
+	show: {
+		
 	}
 })
 
-const { product, shopId, removeProductCallback } = props
+const { product, shopId, removeProductCallback, show } = props
+const shop_id = ref(shopId);
 
+const showCard = show === undefined ? ref(true) : ref(show);
 const showUpdateProduct = ref(false)
 const showDetail = ref(false)
 
@@ -264,6 +269,29 @@ const productImage = ref(null)
 const reviews = ref(null)
 const reviewsPage = ref(1)
 const reviewsTotalPage = ref(1)
+
+watch(() => props.product, (newVal) => {
+	const keys = ["id",
+		"shop",
+		"name",
+		"description",
+		"price",
+		"stock_quantity",
+		"category",
+		"status",
+		"create_date",
+		"image","category_name",
+		"average_rating",
+		"sales_volume"];
+	for (let i of keys){
+		product[i] = ref(props.product[i]);
+	}
+	onclickShowDetail();
+});
+
+watch(() => props.shopId, ()=>{
+	shop_id.value = props.shopId;
+})
 
 watch(reviewsPage, async () => {
   await fetchReviews()
@@ -286,12 +314,12 @@ const fetchReviews = async () => {
 }
 
 const onclickGotoShopPage = () => {
-	router.push(`/shop/${shopId}`)
+	router.push(`/shop/${shop_id}`)
 	showDetail.value = false
 }
 
 const onclickDeleteProduct = async () => {
-	if((await deleteProduct(shopId, product.id)).success) {
+	if((await deleteProduct(shop_id.value, product.id)).success) {
 		removeProductCallback(product.id)
 		snackbar.success('商品下架成功');
 	}
@@ -310,7 +338,7 @@ const onclickOnsaleProduct = async () => {
 	const formData = new FormData();
 	formData.append('product_id', product.id);
 	formData.append('status', 'Available');
-	const res = await updateProduct(shopId, formData);
+	const res = await updateProduct(shop_id.value, formData);
 	if (res.success) {
 		snackbar.success('商品上架成功');
 		removeProductCallback(product.id)
@@ -330,7 +358,7 @@ const onclickAddProduct = async () => {
 		formData.append('image', productImage.value);
 	}
 	formData.append('product_id', product.id);
-	const res = await updateProduct(shopId, formData);
+	const res = await updateProduct(shop_id.value, formData);
 	if (res.success) {
 		snackbar.success('商品信息更新成功');
 		showUpdateProduct.value = false;
@@ -346,4 +374,5 @@ const onclickAddProduct = async () => {
 	}
 }
 
+defineExpose({onclickShowDetail});
 </script>

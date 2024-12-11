@@ -63,7 +63,7 @@
                                 formatStatus(order.status) }}</v-chip></span>
                         </v-card-subtitle>
 
-                        <v-list-item v-for="item in order.items" width="100%">
+                        <v-list-item v-for="item in order.items" width="100%" @click="showDetail(item.product.id)">
 
                             <v-container width="100%" style="margin-left: auto;">
                                 <v-row>
@@ -278,10 +278,17 @@
         </v-row>
       </v-sheet>
     </v-container>
+    
     <v-container v-else class="d-flex justify-center align-center">
         <v-progress-circular style="height: 80vh;" indeterminate color="primary"></v-progress-circular>
     </v-container>
-
+    <product-card
+    :product="showedItem" 
+    :shop-id="showedShopId"
+    :category-list="[]"
+    :show="false"
+    ref="itemCard"
+  ></product-card>
 
 </template>
 
@@ -298,6 +305,8 @@ import router from '@/router';
 import { profile } from '@/api/user';
 import AddressSelect from '@/components/addressSelect.vue';
 import { useRoute } from 'vue-router';
+import productCard from '@/components/productCard.vue';
+import { getProductDetail } from '@/api/product';
 
 const currency = (value) => {
     let val = parseFloat(value);
@@ -467,6 +476,17 @@ const fetchOrders = async (page, status) => {
 Pending Payment, Payment Received, Completed, 
 Cancelled, Shipped
 */
+
+const itemCard = ref(null);
+const showedItem = ref({});
+const showedShopId = ref(0);
+const showDetail = async(item_id) => {
+  const response = await getProductDetail(item_id);
+  if (response.success) {
+    showedItem.value = response.data;
+    showedShopId.value = response.data.shop;
+  }
+}
 
 
 const curOrder = ref();

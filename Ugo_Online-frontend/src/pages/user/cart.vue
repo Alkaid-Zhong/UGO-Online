@@ -54,18 +54,15 @@
                        'background-position': 'center',
                        'background-size': 'auto 90%',
                        'background-repeat': 'no-repeat' }" 
+                       @click="showDetail(item.product_id)"
                       class="pl-0 pt-2 pb-3 pr-0" v-for="item in shop.items" :key="item.item_id">
+
+                      
 
                         <v-list-item-action class="d-inline-flex" style="width:100%">
                           <v-checkbox v-model="itemSelected" :value="item" class="d-flex" :disabled="disabledItem(item)"></v-checkbox>
                         
                           <v-img :src="item.image" :height="$vuetify.display.xs?'60':'96'" :width="$vuetify.display.xs?'60':'96'"></v-img>
-                          <!-- <v-overlay activator="parent"  class="align-center justify-center" contained :model-value="disabledItem(item)">
-                            
-                              <span>无货</span>
-                          </v-overlay> -->
-                          
-
 
                           <v-container width="100%" style="margin-left: auto;">
                             <v-row>
@@ -210,6 +207,13 @@
       </v-col>
     </v-row>
     <div v-if="$vuetify.display.smAndDown" style="height:64px">&nbsp;</div>
+    <product-card
+    :product="showedItem" 
+    :shop-id="showedShopId"
+    :category-list="[]"
+    :show="false"
+    ref="itemCard"
+  ></product-card>
   </v-container>
   
   
@@ -290,6 +294,8 @@ import { deleteItem, getCart, updateCart } from '@/api/cart';
 import snackbar from '@/api/snackbar';
 import router from '@/router';
 import { cart } from '@/store/cart';
+import { getProductDetail } from '@/api/product';
+import productCard from '@/components/productCard.vue';
 
 const loading = ref(true);
 const realQuantitys = ref({});
@@ -481,7 +487,18 @@ watch(selectAll, (value) => {
     itemSelected.value = [];
   }
 });
+// let itemCard=ref(null);
 
+const itemCard = ref(null);
+const showedItem = ref({});
+const showedShopId = ref(0);
+const showDetail = async(item_id) => {
+  const response = await getProductDetail(item_id);
+  if (response.success) {
+    showedItem.value = response.data;
+    showedShopId.value = response.data.shop;
+  }
+}
 
 const checkout = () => {
   if (selectedNotEmpty.value) {
