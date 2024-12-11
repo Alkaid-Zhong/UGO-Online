@@ -1,3 +1,5 @@
+from decimal import Decimal, InvalidOperation
+
 from django.db.models import Avg, ExpressionWrapper, F, FloatField, Func, IntegerField
 from django.db.models.expressions import RawSQL
 from django.db.models.functions import Cast, Coalesce
@@ -495,6 +497,13 @@ class ShopCommissionView(APIView):
             return api_response(False, code=404, message='用户不存在')
 
         money = request.data.get("money")
+
+        try:
+            # 将 money 转换为 Decimal 类型
+            money = Decimal(money)
+        except (InvalidOperation, TypeError):
+            return api_response(False, code=400, message='金额格式不正确')
+
         if shop.total_income < money:
             return api_response(False, code=404, message='店铺余额不足')
         shop.total_income -= money
