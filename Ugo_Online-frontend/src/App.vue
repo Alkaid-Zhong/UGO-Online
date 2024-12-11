@@ -201,11 +201,13 @@ onMounted(async () => {
     } else {
       
     }
+    setInterval(checkUnread, 5000);
   });
 });
 
 watch(user, async (newVal) => {
   if (newVal.login) { 
+    checkUnread();
     if (route.path === '/user/login') {
       router.replace('/user/profile');
     }
@@ -314,11 +316,15 @@ watch(showMessage, (newVal)=> {
 })
 
 const checkUnread = async()=>{
-  const  response = await hasUnreadMessage();
+  if (user.login === false) {
+    return;
+  }
+  const response = await hasUnreadMessage();
   if (response.success) {
     if (response.data.has_unread_message) {
       unreadMessageNum.value = response.data.unread_num;
-
+    } else {
+      unreadMessageNum.value = 0;
     }
   }
 }

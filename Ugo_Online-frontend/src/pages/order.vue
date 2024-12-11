@@ -1,5 +1,6 @@
 <template>
     <v-container v-if="!loading">
+      <v-sheet elevation="2" class="pa-4">
         <v-row class="mt-3 mb-1">
             <v-col cols="4" v-if="isSeller ">
                 <v-select
@@ -57,6 +58,7 @@
                         <v-card-subtitle class="font-weight-bold">
                             <span> 共 {{ order.items.length }} 件商品，总价:</span> <span style="color:orangered;">￥{{
                                 order.total_price }}</span>
+                                <br v-if="$vuetify.display.xs">
                             <span> 订单状态：<v-chip tile :color="orderStatusColor(order.status)">{{
                                 formatStatus(order.status) }}</v-chip></span>
                         </v-card-subtitle>
@@ -106,13 +108,13 @@
                         <v-divider></v-divider>
                         <v-card-text>
                             <v-row>
-                                <v-col cols="3" sm="4" >
+                                <v-col cols="12" sm="4" >
                                     <div :class="infoTitleSizeClass">下单时间：</div>
                                     <div class="ml-2 mt-1">
                                         <div><strong>{{formatDate(order.order_date)}}</strong></div>
                                     </div>
                                 </v-col>
-                                <v-col cols="6" sm="4" class="d-flex justify-center flex-column">
+                                <v-col cols="12" sm="4" class="d-flex justify-center flex-column">
                                     <div :class="infoTitleSizeClass">地址信息：</div>
                                     <div class="ml-2 mt-1">
                                         <div><strong>收件人姓名:</strong> {{ order.address.recipient_name }}</div>
@@ -121,7 +123,7 @@
                                         <div><strong>具体地址:</strong> {{ order.address.address }}</div>
                                     </div>
                                 </v-col>
-                                <v-col cols="3" sm="4">
+                                <v-col cols="12" sm="4">
                                     <div :class="infoTitleSizeClass">订单总价格：</div>
                                     <div class="ml-2 mt-1">
                                         <div style="color:orangered;" class="text-h5"><strong>￥{{ order.total_price }}</strong></div>
@@ -215,7 +217,7 @@
 
             <template v-else-if="dialogContent === 'change address'" v-slot:default="{ isActive }">
                 <v-card title="修改地址">
-                    <AddressSelect :addressPerPage="3" :paying="false" :cardElevator="0" :preSelect="false"
+                    <AddressSelect :addressPerPage="$vuetify.display.mdAndUp?3:($vuetify.display.xs?1:2)" :paying="false" :cardElevator="0" :preSelect="false"
                         @updateSelectedAddress="updateSelectedAddress">
 
                     </AddressSelect>
@@ -271,6 +273,7 @@
                 <!--@input="fetchOrders(currentPage)"-->
             </v-col>
         </v-row>
+      </v-sheet>
     </v-container>
     <v-container v-else class="d-flex justify-center align-center">
         <v-progress-circular style="height: 80vh;" indeterminate color="primary"></v-progress-circular>
@@ -347,6 +350,7 @@ watch(selectedStatus, (newVal, oldVal) => {
     if (currentPage.value !== 1 ){
         currentPage.value = 1;
     }else {
+        console.log(currentPage.value, selectedStatus.value);
         fetchOrders(currentPage.value, selectedStatus.value);
     } 
 });
@@ -400,7 +404,7 @@ onMounted(() => {
                     
                     //loading.value = false;
                     if (queryShopId.value !== -1) {
-                        selectedShop.value = sellerShops.value.filter(shop=> shop.id == queryShopId.value);
+                        selectedShop.value = sellerShops.value.filter(shop=> shop.id == queryShopId.value)[0].id;
                         //console.log("商家order specify");
                         getSpecificOrder(queryOrderId.value).then(()=> {
                             orderLoading.value = false;
@@ -460,6 +464,7 @@ const fetchOrders = async (page, status) => {
             console.log(err);
         })
     } else {
+        console.log(selectedShop.value, currentPage.value, status);
         sellerGetOrders(selectedShop.value , currentPage.value, status).then(res => {
             orders.value = res.data.orders;
             totalPages.value = res.data.total_page;
@@ -828,7 +833,7 @@ function formatDate(dateStr) {
 }
 
 const { xs, mdAndUp } = useDisplay();
-const infoTitleSizeClass = computed(() => xs.value ? 'text-body-1' : 'text-h6');
+const infoTitleSizeClass = computed(() => xs.value ? 'text-h6' : 'text-h6');
 
 
 </script>
