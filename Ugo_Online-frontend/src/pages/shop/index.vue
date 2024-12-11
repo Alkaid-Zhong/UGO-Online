@@ -15,6 +15,14 @@
 					style="height: 100%;"
 					elevation="2"
 				>
+					<div :style="shop.picture ? {} : {backgroundColor: '#f2f2f2', padding: '10px'}">
+						<v-img
+							:src="shop.picture || '/logo.png'"
+							:max-height="shop.picture ? '' : '150px'"
+							
+							class="mb-2"
+						></v-img>
+					</div>
 					<v-card-text>
 						<p class="headline mt-2 font-weight-bold text-h5">{{ shop.name }}</p>
 						<v-chip

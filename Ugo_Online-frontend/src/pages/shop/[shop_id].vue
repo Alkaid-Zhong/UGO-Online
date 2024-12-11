@@ -24,10 +24,16 @@
 				<template #append>
 					<v-chip v-if="user.shops.includes(Number(shop_id))" color="green" prepend-icon="mdi-store">我的商铺</v-chip>
 				</template>
+				<template #prepend>
+					<v-avatar size="100px" class="mr-2 rounded-lg" tile>
+						<v-img :src="shopInfo.picture || '/logo.png'" aspect-ratio="1"></v-img>
+					</v-avatar>
+				</template>
 				<v-card-actions v-if="user.shops.includes(Number(shop_id))">
 					<v-btn color="primary" @click="showAddProduct = true" prepend-icon="mdi-plus">添加商品</v-btn>
 					<v-btn color="primary" @click="showInvite = true" prepend-icon="mdi-account-plus">邀请加入商店</v-btn>
 					<v-btn color="primary" @click="onclickShowFlow" prepend-icon="mdi-chart-line" :loading="loadingFlow">查看商店流水</v-btn>
+					<v-btn color="primary" @click="onclickModifyShopInfo" prepend-icon="mdi-pencil">修改商店信息</v-btn>
 				</v-card-actions>
 			</v-card>
 			<v-menu
@@ -374,12 +380,56 @@
 		</v-card>
 	</v-dialog>
 	
+	<v-dialog
+		v-model="showModifyShopInfo"
+		transition="dialog-bottom-transition"
+		max-width="600px"
+	>
+		<v-card>
+			<v-toolbar>
+				<v-btn
+					icon="mdi-close"
+					@click="showModifyShopInfo = false"
+				></v-btn>
+				<v-toolbar-title>编辑商店信息</v-toolbar-title>
+			</v-toolbar>
+			<v-card-item>
+				<v-text-field
+					label="商店名称"
+					v-model="shopName"
+					required
+				></v-text-field>
+				<v-text-field
+					label="商店描述"
+					v-model="shopDescription"
+					required
+				></v-text-field>
+				<v-text-field
+					label="商店地址"
+					v-model="shopAddress"
+					required
+				></v-text-field>
+				<v-file-input
+					label="商店Logo"
+					accept="image/*"
+					@change="shopLogo = $event.target.files[0]"
+				></v-file-input>
+				<v-btn
+					color="primary"
+					@click="onclickSubmitModifyShopInfo"
+					text="确认修改"
+					:loading="splitLoading"
+				></v-btn>
+			</v-card-item>
+		</v-card>
+	</v-dialog>
+	
 </template>
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { user } from '@/store/user';
-import { getInviteCode, getShopFlow, getShopInfo, splitToSeller } from '@/api/shop';
+import { getInviteCode, getShopFlow, getShopInfo, modifyShopInfo, splitToSeller } from '@/api/shop';
 import { addProduct, getCategories, getProductList, getShopCategories } from '@/api/product';
 import snackbar from '@/api/snackbar';
 import productCard from '@/components/productCard.vue';
@@ -427,6 +477,32 @@ const showSplitDialog = ref(false)
 const splitAmount = ref(0)
 const splitSeller = ref(null)
 const splitLoading = ref(false)
+
+const showModifyShopInfo = ref(false)
+const shopName = ref('')
+const shopDescription = ref('')
+const shopAddress = ref('')
+const shopLogo = ref(null)
+
+const onclickModifyShopInfo = async () => {
+	showModifyShopInfo.value = true
+	shopName.value = shopInfo.value.name
+	shopDescription.value = shopInfo.value.description
+	shopAddress.value = shopInfo.value.address
+}
+
+const onclickSubmitModifyShopInfo = async () => {
+	const data = new FormData()
+	data.append('name', shopName.value)
+	data.append('description', shopDescription.value)
+	data.append('address', shopAddress.value)
+	if (shopLogo.value) {
+		data.append('picture', shopLogo.value)
+	}
+	const res = await modifyShopInfo(shop_id, data)
+	shopInfo.value = await getShopInfo(shop_id)
+	showModifyShopInfo.value = false
+}
 
 const flowHeaders = [
 	{ title: '流水号', key: 'id', sortable: false },
