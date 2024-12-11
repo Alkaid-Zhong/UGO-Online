@@ -67,18 +67,21 @@
 
                             <v-container width="100%" style="margin-left: auto;">
                                 <v-row>
-                                    <v-col cols=3>
+                                    <v-col cols="3">
                                         <v-img :src="item.product.image" height="96" width="96"></v-img>
                                     </v-col>
-                                    <v-col cols="3">
+                                    <v-col cols="5" md="3">
                                         <strong>{{ item.product.name }}</strong>
                                     </v-col>
 
-                                    <v-col cols="3" :style="item.is_cancelled ? 'text-decoration: line-through; color: gray;' : 'color:orangered;'" class="text-h6  text-center">
+                                    <v-col v-if="$vuetify.display.mdAndUp" md="3" :style="item.is_cancelled ? 'text-decoration: line-through; color: gray;' : 'color:orangered;'" class="text-h6  text-center">
                                         {{ currency(item.unit_price) }}
                                     </v-col>
 
-                                    <v-col cols="3" class="text-center">
+                                    <v-col cols="4" md="3" class="text-center">  
+                                        <span v-if="$vuetify.display.smAndDown" :style="item.is_cancelled ? 'text-decoration: line-through; color: gray;' : 'color:orangered;'"
+                                         class="text-h6  text-center">{{ currency(item.unit_price) }}
+                                        </span><br v-if="$vuetify.display.smAndDown">
 
                                         <b>x {{ item.is_cancelled ? 0 :item.quantity }} <br>{{ item.is_cancelled?'（已退货）':'' }}</b><br><br>
                                         <!-- {{order.status}} {{  item.is_cancelled }} -->
@@ -108,13 +111,13 @@
                         <v-divider></v-divider>
                         <v-card-text>
                             <v-row>
-                                <v-col cols="12" sm="4" >
+                                <v-col cols="12" sm="4" :class="{'pb-0':$vuetify.display.smAndDown}">
                                     <div :class="infoTitleSizeClass">下单时间：</div>
                                     <div class="ml-2 mt-1">
                                         <div><strong>{{formatDate(order.order_date)}}</strong></div>
                                     </div>
                                 </v-col>
-                                <v-col cols="12" sm="4" class="d-flex justify-center flex-column">
+                                <v-col cols="12" sm="4" class="d-flex justify-center flex-column" :class="{'pb-0':$vuetify.display.smAndDown}">
                                     <div :class="infoTitleSizeClass">地址信息：</div>
                                     <div class="ml-2 mt-1">
                                         <div><strong>收件人姓名:</strong> {{ order.address.recipient_name }}</div>
@@ -123,7 +126,7 @@
                                         <div><strong>具体地址:</strong> {{ order.address.address }}</div>
                                     </div>
                                 </v-col>
-                                <v-col cols="12" sm="4">
+                                <v-col cols="12" sm="4" :class="{'pb-0':$vuetify.display.smAndDown}">
                                     <div :class="infoTitleSizeClass">订单总价格：</div>
                                     <div class="ml-2 mt-1">
                                         <div style="color:orangered;" class="text-h5"><strong>￥{{ order.total_price }}</strong></div>
