@@ -1,6 +1,6 @@
 from zhipuai import ZhipuAI
 
-# from message.models import Message
+from message.models import Message
 
 
 def get_error_message(errors):
