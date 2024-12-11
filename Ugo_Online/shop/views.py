@@ -21,7 +21,7 @@ from accounts.serializers import ProfileSerializer
 from order.models import OrderItem
 from shop.filters import ShopTransactionFilter
 from shop.pagination import SmallResultsSetPagination
-from utils import get_error_message, new_message
+from utils import get_error_message, new_message, generate_product_introduction, betterize_introduction
 from Ugo_Online.utils import api_response, list_response
 from shop.models import SellerShop, Shop, InvitationCode, Product, Category, ShopTransaction, Review
 from shop.serializers import ShopSerializer, ShopProfileSerializer, InvitationCodeSerializer, ProductSerializer, \
@@ -523,3 +523,17 @@ class ShopCommissionView(APIView):
         new_message(getter, f'[{shop}] 您得到了 {money} 元的分成！', -1, shop.id)
 
         return api_response(True, message='分成成功')
+
+
+
+class GenerateProductIntroductionView(APIView):
+    permission_classes = [IsAuthenticated, IsSeller]
+
+    def post(self, request):
+        name = request.data.get('name')
+        introduction = request.data.get('introduction')
+        if not introduction:
+            introduction = generate_product_introduction(name)
+        else:
+            introduction = betterize_introduction(name, introduction)
+        return api_response(True, message='生成成功', data={'introduction': introduction})
