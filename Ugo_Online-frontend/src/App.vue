@@ -2,7 +2,7 @@
   <v-app :theme="theme">
     <v-app-bar>
       <v-app-bar-title>
-        <v-icon class="mr-2">mdi-store</v-icon>
+        <v-icon class="mr-2"><v-img src="/logo.png"></v-img></v-icon>
         UGO Online
       </v-app-bar-title>
       <template v-slot:append>
