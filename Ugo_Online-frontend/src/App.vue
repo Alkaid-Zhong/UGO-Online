@@ -237,6 +237,7 @@ const messageClick = async(message)=> {
         router.go(0);
       });
     } else {
+      showMessage.value = false;
       router.push({path: `/order`,query:{id:message.order_id, shop:message.shop_id}});
     }
     
@@ -246,6 +247,7 @@ const messageClick = async(message)=> {
         router.go(0);
       });
     } else {
+      showMessage.value = false;
       router.push({path: `/shop/${message.shop_id}`});
     }
   }
