@@ -238,7 +238,8 @@ const bannerItems = [
 	{
 		title: '',
 		// color: '#FF5722',
-		image: '/black_monkey_short.png'
+		image: '/black_monkey_short.png',
+    to: '/shop/9'
 	},
 	// {
 	// 	title: '全球直邮，轻松购物',
