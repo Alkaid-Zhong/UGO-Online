@@ -36,7 +36,7 @@
         <v-divider></v-divider>
         <v-row v-if="!orderLoading" class="mt-1"> 
             
-            <v-col cols="12" v-if="orders.length !== 0">
+            <v-col cols="12" v-if="orders.length !== 0"  :class="{'px-0':$vuetify.display.xs}">
                 <v-list v-for="order in orders">
                     <v-card>
                         <v-card-title v-if="isCustomer">
@@ -63,14 +63,14 @@
                                 formatStatus(order.status) }}</v-chip></span>
                         </v-card-subtitle>
 
-                        <v-list-item v-for="item in order.items" width="100%" @click="showDetail(item.product.id)">
+                        <v-list-item :class="{'px-0':$vuetify.display.xs}" v-for="item in order.items" width="100%" @click="showDetail(item.product.id)">
 
                             <v-container width="100%" style="margin-left: auto;">
                                 <v-row>
-                                    <v-col cols="3">
-                                        <v-img :src="item.product.image" height="96" width="96"></v-img>
+                                    <v-col cols="3" :class="{'px-1':$vuetify.display.xs}">
+                                        <v-img :src="item.product.image" height="96" width="96" min-width="48px"></v-img>
                                     </v-col>
-                                    <v-col cols="5" md="3">
+                                    <v-col cols="5" md="3"  :class="[{'px-1':$vuetify.display.xs},'text-center']">
                                         <strong>{{ item.product.name }}</strong>
                                     </v-col>
 
@@ -78,9 +78,11 @@
                                         {{ currency(item.unit_price) }}
                                     </v-col>
 
-                                    <v-col cols="4" md="3" class="text-center">  
+                                    <v-col cols="4" md="3" class="text-center" :class="{'px-1':$vuetify.display.xs}">  
                                         <span v-if="$vuetify.display.smAndDown" :style="item.is_cancelled ? 'text-decoration: line-through; color: gray;' : 'color:orangered;'"
-                                         class="text-h6  text-center">{{ currency(item.unit_price) }}
+                                         class="text-h6  text-center"> 
+                                         ￥{{ item.unit_price.toString().split('.')[0] }}{{ item.unit_price.toString().split('.')[1] ?'.':'' }}<small>{{ item.unit_price.toString().split('.')[1]  }}</small>
+                                         <!-- {{ currency(item.unit_price) }} -->
                                         </span><br v-if="$vuetify.display.smAndDown">
 
                                         <b>x {{ item.is_cancelled ? 0 :item.quantity }} <br>{{ item.is_cancelled?'（已退货）':'' }}</b><br><br>

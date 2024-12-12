@@ -1,31 +1,34 @@
 <template>
 	<v-container>
 		<v-carousel
-			:height="'calc(30vh - 64px)'"
+			:height="$vuetify.display.xs?'15vh':'calc(30vh - 64px)'"
 			show-arrows="hover"
 			cycle
-			interval="5000"
+			interval="500000"
 			hide-delimiter-background
 			hide-delimiters
-		>
+		><!-- ['精选好物，尽在UGO', '价格实惠，值得信赖', '品质保证，放心选购', '全球直邮，轻松购物'] -->
 			<v-carousel-item
-				v-for="(slide, i) in ['精选好物，尽在UGO', '价格实惠，值得信赖', '品质保证，放心选购', '全球直邮，轻松购物']"
+				v-for="(slide, i) in bannerItems"
 				:key="i"
 				rounded="lg"
 
 			>
 				<v-sheet
-					@click="() => router.push('/shop/3')"
-					:color="['#4CAF50', '#2196F3', '#FF5722', '#9C27B0'][i]"
+					@click="() => router.push(slide.to)"
+					class="banner_item"
 					height="100%"
-					:style="{'background-image': 'url(/apple.png)',
+					:style="{'background-image': 'url('+slide.image+')',
 					'background-position': 'center',
-                       'background-size': 'auto 90%',
+					   'background-size': 'auto 100% !important',
+					   'overflow': 'hidden',
 					   'background-repeat': 'no-repeat',
 					   'background-size': 'cover' }"
 				>
 					<div class="d-flex fill-height justify-center align-center">
-						<p :style="$vuetify.display.sm || $vuetify.display.md || $vuetify.display.lg || $vuetify.display.xl || $vuetify.display.xxl ? {fontSize: '3.6rem', fontWeight: 'lighter'} : { fontSize: '2.5rem', fontWeight: 'lighter' }">{{ slide }}</p>
+						<p :style="$vuetify.display.sm || $vuetify.display.md || $vuetify.display.lg || $vuetify.display.xl || $vuetify.display.xxl ? {fontSize: '3.6rem', fontWeight: 'lighter'} : { fontSize: '2.5rem', fontWeight: 'lighter' }">
+							{{ slide.title }}
+						</p>
 					</div>
 				</v-sheet>
 			</v-carousel-item>
@@ -219,7 +222,30 @@ const orderBy = ref(null)
 const loading = ref(false)
 
 
-
+const bannerItems = [
+	{
+		title: '',
+		// color: '#4CAF50',
+		image: '/apple.png',
+		to: '/shop/3'
+	},
+	{
+		title: '',
+		// color: '#2196F3',
+		image: '/new_12_1.png',
+		to: '/shop/'
+	},
+	{
+		title: '',
+		// color: '#FF5722',
+		image: '/blackmonkey.png'
+	},
+	// {
+	// 	title: '全球直邮，轻松购物',
+	// 	color: '#9C27B0',
+	// 	image: '/apple.png'
+	// }
+]
 const onclickOrderBy = ( option ) => {
 	const nowOption = orderBy.value
 	if (nowOption === null) {
@@ -275,3 +301,9 @@ onMounted(async () => {
 
 
 </script>
+
+<style scoped>
+/* .banner_item {
+  background-size: auto 100% !important;
+} */
+</style>

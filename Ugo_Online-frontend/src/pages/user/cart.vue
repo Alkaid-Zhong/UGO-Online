@@ -85,7 +85,7 @@
                                 <v-row>
                                   <v-col cols="3" class="pa-0">
                                     <v-responsive aspect-ratio="1" width="100%">
-                                      <v-btn @click="decreaseQuantity(item)" class="w-100 h-100" block tile 
+                                      <v-btn @click.stop="decreaseQuantity(item)" class="w-100 h-100" block tile 
                                       style=" border: 1px solid #d6d6d6" :disabled="item.product_status === 'Unavailable'">
                                       <v-icon size="midium">mdi-minus</v-icon>
                                     </v-btn>
@@ -94,7 +94,7 @@
                                   </v-col>
                                   <v-col cols="6" class="pa-0">
                                   <v-responsive aspect-ratio="2" width="100%">
-                                    <input type="number" v-model="item.quantity" @click="saveOldValue(item.quantity)" @blur="changeQuantity($event, item)" class="w-100 h-100" 
+                                    <input type="number" v-model="item.quantity" @click.stop="saveOldValue(item.quantity)" @blur="changeQuantity($event, item)" class="w-100 h-100" 
                                     style="text-align: center; border-top: 1px solid #d6d6d6;
                                     border-bottom: 1px solid #d6d6d6;
                                     border-left: 0;
@@ -103,7 +103,7 @@
                                   </v-col>
                                   <v-col cols="3" class="pa-0">
                                   <v-responsive aspect-ratio="1" width="100%">
-                                    <v-btn @click="increaseQuantity(item)" block class="w-100 h-100" tile
+                                    <v-btn @click.stop="increaseQuantity(item)" block class="w-100 h-100" tile
                                     style=" border: 1px solid #d6d6d6" :disabled="item.product_status === 'Unavailable'">
                                   <v-icon>mdi-plus</v-icon>
                                 </v-btn>
@@ -278,6 +278,7 @@
             color="orange-lighten-2"
             variant="elevated"
             class="mr-4"
+            @click="checkout"
           >
             结算
           </v-btn>
