@@ -328,6 +328,7 @@ const readNotify = async(message)=>{
   if (res.success) {
     if (selectedNotifyStatus.value === true) 
       messages.value = messages.value.filter(tmessage=> tmessage.id !== message.id);
+    message.is_read = true;
     unreadMessageNum.value --;
     //message.is_read = true;
   }
