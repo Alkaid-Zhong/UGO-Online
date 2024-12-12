@@ -326,7 +326,8 @@ const checkUnread = async()=>{
 const readNotify = async(message)=>{
   const res = await readMessage(message.id);
   if (res.success) {
-    messages.value = messages.value.filter(tmessage=> tmessage.id !== message.id);
+    if (selectedNotifyStatus.value === true) 
+      messages.value = messages.value.filter(tmessage=> tmessage.id !== message.id);
     unreadMessageNum.value --;
     //message.is_read = true;
   }
