@@ -1,7 +1,7 @@
 <template>
 	<v-container>
 		<v-carousel
-			:height="'calc(20vh - 64px)'"
+			:height="'calc(30vh - 64px)'"
 			show-arrows="hover"
 			cycle
 			interval="5000"
@@ -12,10 +12,17 @@
 				v-for="(slide, i) in ['精选好物，尽在UGO', '价格实惠，值得信赖', '品质保证，放心选购', '全球直邮，轻松购物']"
 				:key="i"
 				rounded="lg"
+
 			>
 				<v-sheet
+					@click="() => router.push('/shop/3')"
 					:color="['#4CAF50', '#2196F3', '#FF5722', '#9C27B0'][i]"
 					height="100%"
+					:style="{'background-image': 'url(/apple.png)',
+					'background-position': 'center',
+                       'background-size': 'auto 90%',
+					   'background-repeat': 'no-repeat',
+					   'background-size': 'cover' }"
 				>
 					<div class="d-flex fill-height justify-center align-center">
 						<p :style="$vuetify.display.sm || $vuetify.display.md || $vuetify.display.lg || $vuetify.display.xl || $vuetify.display.xxl ? {fontSize: '3.6rem', fontWeight: 'lighter'} : { fontSize: '2.5rem', fontWeight: 'lighter' }">{{ slide }}</p>
@@ -198,6 +205,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { getAllProductList, getCategories } from '@/api/product';
 import productCard from '@/components/productCard';
+import router from '@/router';
 
 const latestProductList = ref(null)
 const categoryList = ref(null)
@@ -209,6 +217,8 @@ const priceRange_high = ref(null)
 const searchName = ref('')
 const orderBy = ref(null)
 const loading = ref(false)
+
+
 
 const onclickOrderBy = ( option ) => {
 	const nowOption = orderBy.value
