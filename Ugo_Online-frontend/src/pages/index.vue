@@ -4,7 +4,7 @@
 			:height="$vuetify.display.xs?'15vh':'calc(30vh - 64px)'"
 			show-arrows="hover"
 			cycle
-			interval="500000"
+			interval="5000"
 			hide-delimiter-background
 			hide-delimiters
 		><!-- ['精选好物，尽在UGO', '价格实惠，值得信赖', '品质保证，放心选购', '全球直邮，轻松购物'] -->
@@ -58,32 +58,32 @@
 					</v-col>
 				</v-row>
 				<v-icon>mdi-filter-variant</v-icon>
-				<v-btn 
-					:prepend-icon="orderBy === 'price'? 'mdi-sort-descending' : orderBy === '-price' ? 'mdi-sort-ascending' : ''" 
+				<v-btn
+					:prepend-icon="orderBy === 'price'? 'mdi-sort-descending' : orderBy === '-price' ? 'mdi-sort-ascending' : ''"
 					@click="onclickOrderBy('price')"
 					variant="text"
 					:color="orderBy === 'price' || orderBy === '-price' ? 'green' : ''"
 				>价格</v-btn>
-				<v-btn 
-					:prepend-icon="orderBy === 'name' ? 'mdi-sort-descending' : orderBy === '-name' ? 'mdi-sort-ascending' : ''" 
+				<v-btn
+					:prepend-icon="orderBy === 'name' ? 'mdi-sort-descending' : orderBy === '-name' ? 'mdi-sort-ascending' : ''"
 					@click="onclickOrderBy('name')"
 					variant="text"
 					:color="orderBy === 'name' || orderBy === '-name' ? 'green' : ''"
 				>名称</v-btn>
-				<v-btn 
-					:prepend-icon="orderBy === 'rating'? 'mdi-sort-descending' : orderBy === '-rating' ? 'mdi-sort-ascending' : ''" 
+				<v-btn
+					:prepend-icon="orderBy === 'rating'? 'mdi-sort-descending' : orderBy === '-rating' ? 'mdi-sort-ascending' : ''"
 					@click="onclickOrderBy('rating')"
 					variant="text"
 					:color="orderBy === 'rating' || orderBy === '-rating' ? 'green' : ''"
 				>评分</v-btn>
-				<v-btn 
-					:prepend-icon="orderBy === 'create_date'? 'mdi-sort-descending' : orderBy === '-create_date' ? 'mdi-sort-ascending' : ''" 
+				<v-btn
+					:prepend-icon="orderBy === 'create_date'? 'mdi-sort-descending' : orderBy === '-create_date' ? 'mdi-sort-ascending' : ''"
 					@click="onclickOrderBy('create_date')"
 					variant="text"
 					:color="orderBy === 'create_date' || orderBy === '-create_date' ? 'green' : ''"
 				>上架时间</v-btn>
-				<v-btn 
-					:prepend-icon="orderBy === 'sales_volume'? 'mdi-sort-descending' : orderBy === '-sales_volume' ? 'mdi-sort-ascending' : ''" 
+				<v-btn
+					:prepend-icon="orderBy === 'sales_volume'? 'mdi-sort-descending' : orderBy === '-sales_volume' ? 'mdi-sort-ascending' : ''"
 					@click="onclickOrderBy('sales_volume')"
 					variant="text"
 					:color="orderBy === 'sales_volume' || orderBy === '-sales_volume' ? 'green' : ''"
@@ -113,7 +113,7 @@
 						<v-row v-if="index % 4 === 0" style="width: 100%;" class="mt-2">
 							<v-col cols="3">
 								<product-card
-									:product="item" 
+									:product="item"
 									:shop-id="item.shop"
 									:category-list="categoryList"
 								></product-card>
@@ -121,7 +121,7 @@
 							<v-col cols="3">
 								<product-card
 									v-if="index + 1 < items.length"
-									:product="items[index + 1]" 
+									:product="items[index + 1]"
 									:shop-id="items[index + 1].shop"
 									:category-list="categoryList"
 								></product-card>
@@ -129,7 +129,7 @@
 							<v-col cols="3">
 								<product-card
 									v-if="index + 2 < items.length"
-									:product="items[index + 2]" 
+									:product="items[index + 2]"
 									:shop-id="items[index + 2].shop"
 									:category-list="categoryList"
 								></product-card>
@@ -137,7 +137,7 @@
 							<v-col cols="3">
 								<product-card
 									v-if="index + 3 < items.length"
-									:product="items[index + 3]" 
+									:product="items[index + 3]"
 									:shop-id="items[index + 3].shop"
 									:category-list="categoryList"
 								></product-card>
@@ -148,7 +148,7 @@
 						<v-row v-if="index % 3 === 0" style="width: 100%;" class="mt-2">
 							<v-col cols="4">
 								<product-card
-									:product="item" 
+									:product="item"
 									:shop-id="item.shop"
 									:category-list="categoryList"
 								></product-card>
@@ -156,7 +156,7 @@
 							<v-col cols="4">
 								<product-card
 									v-if="index + 1 < items.length"
-									:product="items[index + 1]" 
+									:product="items[index + 1]"
 									:shop-id="items[index + 1].shop"
 									:category-list="categoryList"
 								></product-card>
@@ -164,7 +164,7 @@
 							<v-col cols="4">
 								<product-card
 									v-if="index + 2 < items.length"
-									:product="items[index + 2]" 
+									:product="items[index + 2]"
 									:shop-id="items[index + 2].shop"
 									:category-list="categoryList"
 								></product-card>
@@ -175,7 +175,7 @@
 						<v-row v-if="index % 2 === 0" style="width: 100%;" class="mt-2">
 							<v-col cols="6">
 								<product-card
-									:product="item" 
+									:product="item"
 									:shop-id="item.shop"
 									:category-list="categoryList"
 								></product-card>
@@ -183,7 +183,7 @@
 							<v-col cols="6">
 								<product-card
 									v-if="index + 1 < items.length"
-									:product="items[index + 1]" 
+									:product="items[index + 1]"
 									:shop-id="items[index + 1].shop"
 									:category-list="categoryList"
 								></product-card>
@@ -193,7 +193,7 @@
 					<div v-else>
 						<div class="mb-2"></div>
 						<product-card
-							:product="item" 
+							:product="item"
 							:shop-id="item.shop"
 							:category-list="categoryList"
 						></product-card>
@@ -238,7 +238,7 @@ const bannerItems = [
 	{
 		title: '',
 		// color: '#FF5722',
-		image: '/blackmonkey.png'
+		image: '/black_monkey_short.png'
 	},
 	// {
 	// 	title: '全球直邮，轻松购物',

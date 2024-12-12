@@ -2,7 +2,7 @@ import re
 
 from zhipuai import ZhipuAI
 
-from message.models import Message
+# from message.models import Message
 
 
 def get_error_message(errors):
@@ -67,6 +67,8 @@ def generate_product_introduction(name):
             break
         res += chunk.choices[0].delta.content
 
+    print(res)
+
     # res = res.replace("```text\n", "").replace("\n```", "")
     res = extract_text_block_with_regex(res)
 
@@ -107,5 +109,5 @@ def betterize_introduction(name, introduction):
 
 
 if __name__ == '__main__':
-    print(betterize_introduction("iphone 16", "苹果手机，拍照清晰，使用流畅，非常好用！"))
-    print(generate_product_introduction("iphone 16"))
+    # print(betterize_introduction("iphone 16", "苹果手机，拍照清晰，使用流畅，非常好用！"))
+    print(generate_product_introduction("```"))
