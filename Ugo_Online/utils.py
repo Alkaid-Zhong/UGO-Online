@@ -1,3 +1,5 @@
+import re
+
 from zhipuai import ZhipuAI
 
 from message.models import Message
@@ -27,6 +29,19 @@ def new_message(user, message, order_id, shop_id):
     )
 
 
+def extract_text_block_with_regex(res):
+    # 正则表达式模式，用来匹配 ```text 和 ``` 之间的所有内容，包括换行符
+    pattern = r'```text\n(.*?)\n```'
+    # 使用 re.DOTALL 标志使得 . 可以匹配包括换行在内的所有字符
+    match = re.search(pattern, res, re.DOTALL)
+    if match:
+        # 如果找到匹配项，则返回匹配的内容
+        return match.group(1).strip()
+    else:
+        # 如果没有找到匹配项，可以选择返回原始文本或空字符串（根据需求）
+        return "好像出现了问题，请重新生成~"
+
+
 def generate_product_introduction(name):
     client = ZhipuAI(api_key="dd298178f76a36d1c261c6bdb5daa560.QdaFb4f3V327xa9C")
 
@@ -52,7 +67,8 @@ def generate_product_introduction(name):
             break
         res += chunk.choices[0].delta.content
 
-    res = res.replace("```text\n", "").replace("\n```", "")
+    # res = res.replace("```text\n", "").replace("\n```", "")
+    res = extract_text_block_with_regex(res)
 
     return res
 
@@ -83,9 +99,12 @@ def betterize_introduction(name, introduction):
             break
         res += chunk.choices[0].delta.content
 
-    res = res.replace("```text\n", "").replace("\n```", "")
+    # res = res.replace("```text\n", "").replace("\n```", "")
+    # 保留text框内的内容，去除框前与框后
+    res = extract_text_block_with_regex(res)
 
     return res
+
 
 if __name__ == '__main__':
     print(betterize_introduction("iphone 16", "苹果手机，拍照清晰，使用流畅，非常好用！"))
