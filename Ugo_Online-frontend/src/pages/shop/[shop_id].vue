@@ -495,7 +495,6 @@ const shopAddress = ref('')
 const shopLogo = ref(null)
 
 const loadingGenIntro = ref(false)
-const genIntro = ref(null)
 
 const onclickGenIntro = async () => {
 	loadingGenIntro.value = true
