@@ -67,11 +67,21 @@
 						v-model="productName"
 						required
 					></v-text-field>
-					<v-text-field
-						label="商品描述"
-						v-model="productDescription"
-						required
-					></v-text-field>
+					<div class="d-flex mb-2">
+						<v-text-field
+							label="商品描述"
+							v-model="productDescription"
+							required
+						></v-text-field>
+						<v-btn
+							class="ml-4 mr-2 mt-2"
+							size="large"
+							:loading="loadingGenIntro"
+							:prepend-icon="productDescription.trim() === '' ? 'mdi-pencil' : 'mdi-refresh'"
+							@click="onclickGenIntro"
+							:text="productDescription.trim() === '' ? '生成简介' : '润色简介'"
+						></v-btn>
+					</div>
 					<v-text-field
 						label="商品价格"
 						v-model="productPrice"
@@ -227,7 +237,7 @@ import { onMounted, ref, watch } from 'vue';
 import { addToCart } from '@/api/cart';
 import snackbar from '@/api/snackbar';
 import { user } from '@/store/user';
-import { deleteProduct, getReview, updateProduct } from '@/api/product';
+import { deleteProduct, generateProductIntro, getReview, updateProduct } from '@/api/product';
 import router from '@/router';
 
 const props = defineProps({
@@ -269,6 +279,21 @@ const productImage = ref(null)
 const reviews = ref(null)
 const reviewsPage = ref(1)
 const reviewsTotalPage = ref(1)
+
+const loadingGenIntro = ref(false)
+
+const onclickGenIntro = async () => {
+	loadingGenIntro.value = true
+	let res
+	if (productDescription.value.trim() === '') {
+		res = await generateProductIntro(productName.value)
+	} else {
+		res = await generateProductIntro(productName.value, productDescription.value)
+	}
+	productDescription.value = res.data.introduction
+	loadingGenIntro.value = false
+}
+
 
 watch(() => props.product, (newVal) => {
 	const keys = ["id",

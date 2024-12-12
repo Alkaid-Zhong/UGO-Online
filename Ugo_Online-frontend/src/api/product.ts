@@ -108,3 +108,13 @@ export const getReview = async (id: number, page: number = 1) => {
         }
     });
 }
+
+export const generateProductIntro = async (name: string, introduction?: string) => {
+    return await server.post({
+        url: "/shop/gen_intro/",
+        data: {
+            name,
+            introduction
+        }
+    });
+}
