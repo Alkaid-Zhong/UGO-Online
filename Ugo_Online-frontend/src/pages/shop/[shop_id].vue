@@ -171,11 +171,21 @@
 						v-model="productName"
 						required
 					></v-text-field>
-					<v-text-field
-						label="商品描述"
-						v-model="productDescription"
-						required
-					></v-text-field>
+					<div class="d-flex mb-2">
+						<v-text-field
+							label="商品描述"
+							v-model="productDescription"
+							required
+						></v-text-field>
+						<v-btn
+							class="ml-4 mr-2 mt-2"
+							size="large"
+							:loading="loadingGenIntro"
+							:prepend-icon="productDescription.trim() === '' ? 'mdi-pencil' : 'mdi-refresh'"
+							@click="onclickGenIntro"
+							:text="productDescription.trim() === '' ? '生成简介' : '润色简介'"
+						></v-btn>
+					</div>
 					<v-text-field
 						label="商品价格"
 						v-model="productPrice"
@@ -430,7 +440,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { user } from '@/store/user';
 import { getInviteCode, getShopFlow, getShopInfo, modifyShopInfo, splitToSeller } from '@/api/shop';
-import { addProduct, getCategories, getProductList, getShopCategories } from '@/api/product';
+import { addProduct, generateProductIntro, getCategories, getProductList, getShopCategories } from '@/api/product';
 import snackbar from '@/api/snackbar';
 import productCard from '@/components/productCard.vue';
 
@@ -483,6 +493,21 @@ const shopName = ref('')
 const shopDescription = ref('')
 const shopAddress = ref('')
 const shopLogo = ref(null)
+
+const loadingGenIntro = ref(false)
+const genIntro = ref(null)
+
+const onclickGenIntro = async () => {
+	loadingGenIntro.value = true
+	let res
+	if (productDescription.value.trim() === '') {
+		res = await generateProductIntro(productName.value)
+	} else {
+		res = await generateProductIntro(productName.value, productDescription.value)
+	}
+	productDescription.value = res.data.introduction
+	loadingGenIntro.value = false
+}
 
 const onclickModifyShopInfo = async () => {
 	showModifyShopInfo.value = true
