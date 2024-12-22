@@ -339,7 +339,7 @@ const fetchReviews = async () => {
 }
 
 const onclickGotoShopPage = () => {
-	router.push(`/shop/${shop_id}`)
+	router.push(`/shop/${shop_id.value}`)
 	showDetail.value = false
 }
 

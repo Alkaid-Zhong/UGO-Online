@@ -2,7 +2,7 @@
   <v-app :theme="theme">
     <v-app-bar>
       <v-app-bar-title>
-        <v-icon class="mr-2">mdi-store</v-icon>
+        <v-icon class="mr-2"><v-img src="/logo.png"></v-img></v-icon>
         UGO Online
       </v-app-bar-title>
       <template v-slot:append>
@@ -232,11 +232,12 @@ const messageClick = async(message)=> {
     await readNotify(message);
   }
   if (message.order_id !== -1) {
-    if(route.path === '/order' && route.fullPath !== '/order?id='+message.order_id + '&shop='+message.shop_id) {
+    if(route.path === '/order') {
       router.push({path: `/order`,query:{id:message.order_id, shop:message.shop_id}}).then(() => {
         router.go(0);
       });
     } else {
+      showMessage.value = false;
       router.push({path: `/order`,query:{id:message.order_id, shop:message.shop_id}});
     }
     
@@ -246,6 +247,7 @@ const messageClick = async(message)=> {
         router.go(0);
       });
     } else {
+      showMessage.value = false;
       router.push({path: `/shop/${message.shop_id}`});
     }
   }
@@ -324,7 +326,9 @@ const checkUnread = async()=>{
 const readNotify = async(message)=>{
   const res = await readMessage(message.id);
   if (res.success) {
-    messages.value = messages.value.filter(tmessage=> tmessage.id !== message.id);
+    if (selectedNotifyStatus.value === true) 
+      messages.value = messages.value.filter(tmessage=> tmessage.id !== message.id);
+    message.is_read = true;
     unreadMessageNum.value --;
     //message.is_read = true;
   }
