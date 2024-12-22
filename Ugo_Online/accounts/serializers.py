@@ -173,6 +173,8 @@ class AddMoneySerializer(serializers.ModelSerializer):
     def validate_add_money(self, value):
         if value <= 0:
             raise serializers.ValidationError({"error": "充值金额必须大于0"})
+        if value + self.instance.money > 99999999.99:
+            raise serializers.ValidationError({"error": "充值后金额过大，请重新输入"})
         return value
 
     def update(self, instance, validated_data):
