@@ -25,11 +25,11 @@ def extract_files_content(root_dir, output_file, target_files):
 
 if __name__ == "__main__":
     # 根目录
-    root_directory = "./"  # 替换为你的目标目录
+    root_directory = "./order/"  # 替换为你的目标目录
     # 输出文件路径
     output_txt_file = "extracted_files_content.txt"
     # 目标文件名列表
-    target_file_names = ["models.py", "views.py", "serializers.py"]
+    target_file_names = ["serializers.py", "views.py", "urls.py"]
 
     extract_files_content(root_directory, output_txt_file, target_file_names)
     print(f"文件内容已提取到 {output_txt_file}")
