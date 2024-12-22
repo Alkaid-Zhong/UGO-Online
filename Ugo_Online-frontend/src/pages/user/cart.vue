@@ -29,12 +29,13 @@
               <v-divider></v-divider>
               
               <transition-group name="list">
-              <v-list-item v-if="shopLists.length === 0">
+              
+              <transition-group name="list">
+                <v-list-item v-if="shopLists.length === 0" key="emptyShop">
                 <br>
                 <v-alert type="info" outlined>购物车空空如也，快去逛逛吧</v-alert>
               </v-list-item>
-              
-              <v-list-item v-for="shop in shopLists" v-else :class="$vuetify.display.xs?'px-1':''">
+              <v-list-item v-for="shop in shopLists" v-else :class="$vuetify.display.xs?'px-1':''" :key="shop.shop_id">
                 <v-card elevation="0">
                 <v-card-title class="mt-2 pa-2">
                   <v-btn
@@ -133,6 +134,7 @@
 
             <v-divider></v-divider>
           </v-list-item>
+        </transition-group>
           
           </transition-group>
         </v-list>

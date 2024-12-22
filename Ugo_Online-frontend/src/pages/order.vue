@@ -41,7 +41,7 @@
                     <v-card>
                         <v-card-title v-if="isCustomer">
                             <v-btn class="text-h6 font-weight-bold" variant="text" prepend-icon="mdi-store"
-                                append-icon="mdi-chevron-right" @click="router.push(`/shop/${order.shop_id}/`)">{{
+                                append-icon="mdi-chevron-right" @click.stop="router.push(`/shop/${order.shop_id}/`)">{{
                                     ShopInfo(order.shop_id).name }} </v-btn>
                         </v-card-title>
                         <v-card-title v-else>
@@ -89,17 +89,17 @@
                                         <!-- {{order.status}} {{  item.is_cancelled }} -->
                                         <v-btn text="退货" color="warning"
                                             v-if="isCustomer && showRefundButton(order.status, item.is_cancelled)"
-                                            @click="refund(order, item)"></v-btn>
+                                            @click.stop="refund(order, item)"></v-btn>
 
                                         <v-btn text="评价" color="primary"
                                             v-if="isCustomer && order.status === 'Completed' && !item.has_reviewed"
-                                            @click="review(order, item)"></v-btn>
+                                            @click.stop="review(order, item)"></v-btn>
                                         <v-btn text="查看评价" color="info"
                                             v-if="isCustomer && order.status ==='Completed' && item.has_reviewed"
-                                            @click="seeReview(order,item)"></v-btn>
+                                            @click.stop="seeReview(order,item)"></v-btn>
                                         <v-btn :text="item.review_has_reply?'查看回复':'回复评价'" :color="item.review_has_reply?'primary':'warning'" 
                                             v-if="isSeller && order.status === 'Completed' && item.has_reviewed"
-                                            @click="reply(order,item)">
+                                            @click.stop="reply(order,item)">
                                         </v-btn>
                                         <!-- v-if="showRefuncButton(order)"  bug？-->
 
@@ -139,17 +139,17 @@
                         <v-card-actions v-if="isCustomer && (order.status === 'Pending Payment' || showChangeAddressButton(order.status) || order.status === 'Shipped') || isSeller && order.status === 'Payment Received'">
                             <v-spacer></v-spacer>
                             <v-btn color="red" v-if="isCustomer && order.status === 'Pending Payment'"
-                                @click="orderDialog('cancel', order)">取消订单</v-btn>
+                                @click.stop="orderDialog('cancel', order)">取消订单</v-btn>
                             <v-btn color="" v-if="isCustomer && showChangeAddressButton(order.status)"
-                                @click="orderDialog('change address', order)">修改地址</v-btn>
+                                @click.stop="orderDialog('change address', order)">修改地址</v-btn>
                             <v-btn color="warning" v-if="isCustomer && order.status === 'Pending Payment'"
-                                class="font-weight-bold" @click="orderDialog('pay', order)">支付</v-btn>
+                                class="font-weight-bold" @click.stop="orderDialog('pay', order)">支付</v-btn>
                             <!--payOrder(order)-->
                             <v-btn color="success" v-if="isCustomer && order.status === 'Shipped'"
-                                class="font-weight-bold" @click="orderDialog('receive', order)">确认收货</v-btn>
+                                class="font-weight-bold" @click.stop="orderDialog('receive', order)">确认收货</v-btn>
 
                             <v-btn color="success" v-if="isSeller && order.status === 'Payment Received'"
-                                @click="ship(order)">发货</v-btn>
+                                @click.stop="ship(order)">发货</v-btn>
                             <!-- <v-btn color="primary" @click="router.push(`/order/${order.order_id}/`)">查看详情</v-btn> -->
                         </v-card-actions>
                         <!-- <br v-else> -->
