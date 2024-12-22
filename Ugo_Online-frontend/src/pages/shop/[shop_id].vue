@@ -269,7 +269,7 @@
 						<v-icon size="36px" color="white" class="mr-2 my-2">mdi-check</v-icon>
 						<span class="font-weight-bold text-h5">邀请码：{{ inviteInfo.code }}</span>
 					</v-sheet>
-					<v-card-text>创建日期：{{ new Date(inviteInfo.create_date).toLocaleString() }}</v-card-text>
+					<v-card-text>创建日期：{{ new Date(inviteInfo.created_at).toLocaleString() }}</v-card-text>
 					<v-card-text>有效期至：{{ inviteInfo.expires_at ? new Date(inviteInfo.expires_at).toLocaleString() : '永久' }}</v-card-text>
 					<v-card-text>已用次数：{{ inviteInfo.usage_count }}</v-card-text>
 					<v-card-text>剩余次数：{{ inviteInfo.usage_limit - inviteInfo.usage_count }}</v-card-text>
